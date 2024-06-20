@@ -74,7 +74,7 @@ async function createCart() {
     uri: uri,
     method: "POST",
     body: {
-      currency: "EUR",
+      currency: "USD",
       country: "DE",
     },
     headers: {

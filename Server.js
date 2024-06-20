@@ -17,6 +17,16 @@ const __dirname = dirname(__filename);
 
 app.use(express.static(path.join(__dirname, "client/build")));
 app.use("/confirm", express.static(path.join(__dirname, "client/build")));
+
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'], // puedes agregar más métodos si es necesario
+  allowedHeaders: ['Content-Type'], // puedes agregar más encabezados si es necesario
+  optionsSuccessStatus: 200 // algunos navegadores (IE11, algunos SmartTVs) requieren esto
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(cors());
 
 dotenv.config();
@@ -127,9 +137,9 @@ app.post("/cart/line-item", async (req, res) => {
   const productId = req.body.productId;
   const variantId = req.body.variantId;
   const version = req.body.version;
-  res.send(
-    await commerceTools.cartAddLineItem(cartId, productId, variantId, version)
-  );
+  let result = await commerceTools.cartAddLineItem(cartId, productId, variantId, version)
+    .catch(e => console.log(`Error : ${e}`))
+  res.send(result);
 });
 
 /* ------ ADD CUSTOMER TO CART------ */
@@ -159,9 +169,20 @@ app.post("/customer", async (req, res) => {
       },
     }
   };
-  let stripeCustomer = await stripe.customers.create(payload);
-  payload.cartId = req.body.cartId;
-  res.send(await commerceTools.createCustomer(payload, stripeCustomer.id));
+  try{
+    let stripeCustomer = await stripe.customers.create(payload);
+    console.log({stripeCustomer})
+    payload.cartId = req.body.cartId;
+    res.send(await commerceTools.createCustomer(payload, stripeCustomer.id));
+  }catch(e){
+    res.status(400)
+    .send({
+      error : {
+        description : "bad request",
+        details : e
+      }
+    })
+  }
 });
 
 /* ------ HOSTED CHECKOUT ------ */

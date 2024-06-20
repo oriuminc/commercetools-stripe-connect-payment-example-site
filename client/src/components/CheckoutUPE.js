@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import getSymbolFromCurrency from "currency-symbol-map";
+import { getCTSessionId, loadEnabler } from "../utils";
 
+const procesorUrl = process.env.REACT_APP_PROCESOR_URL;
+// console.log({procesorUrl})
 export default function CheckoutUPE(props) {
+  const [enabler, setEnabler] = useState()
+
+
   const [clientSecret, setClientSecret] = useState("");
   const [paymentElement, setPaymentElement] = useState();
   const [elements, setElements] = useState();
@@ -58,48 +64,75 @@ export default function CheckoutUPE(props) {
     },
   };
 
-  // Create the PI when the customer ID is obtained
-  useEffect(() => {
-    fetch("/create-payment-intent", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cart: props.cart,
-        customer: props.custId,
-        currency: props.currency,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setClientSecret(data.clientSecret);
-      });
-  }, [props.custId]);
+  // const onActionRequired = () => {
+  // }
+
+  // const onComplete = () => {
+  // }
+
+  // const onError = () => {
+
+  // }
+
+  // const authenticateEnabler = () => {
+
+  // }
 
   useEffect(() => {
-    if (clientSecret !== "") {
-      const stripe = window.Stripe(process.env.REACT_APP_PK);
-      const elements = stripe.elements({
-        clientSecret: clientSecret, 
-        appearance,
-        fonts: [{ cssSrc: "https://fonts.googleapis.com/css?family=Roboto" }],
-      });
+    (async () => {
+      let { Enabler } = await loadEnabler();
+      let sessionId = await getCTSessionId(props.cart.id);
+      setEnabler(new Enabler({
+        processorURL : procesorUrl, 
+        returnURL : "/success",
+        sessionId,
+        onActionRequired : () => {},
+        onComplete: () => {},
+        onError : (e) => {
+          console.log({error : e})
+        }
+      }));
+    })()
+  },[])
+
+  // // Create the PI when the customer ID is obtained
+  // useEffect(() => {
+
+  //   if (clientSecret !== "") {
+  //     // const stripe = window.Stripe(process.env.REACT_APP_PK);
+  //     // const elements = stripe.elements({
+  //     //   clientSecret: clientSecret,
+  //     //   appearance,
+  //     //   fonts: [{ cssSrc: "https://fonts.googleapis.com/css?family=Roboto" }],
+  //     // });
+
+  //     // const paymentElement = elements.create(["payment"]);
+  //     // paymentElement.mount("#payment-element");
+  //     // setStripe(stripe);
+  //     // setPaymentElement(paymentElement);
+  //     // setElements(elements);
+  //   }
+  // }, [clientSecret]);
+
+  // useEffect(() => {
+  //   if (!enabler) return;
+  //   // console.log("check if enabler exists")
+  //   enabler.createStripeElement({
+  //     type: "card"
+  //   })
+  //   .then(element => {
+  //       // console.log({element})
+  //   });
   
-      const paymentElement = elements.create("payment");
-      paymentElement.mount("#payment-element");
-      setStripe(stripe);
-      setPaymentElement(paymentElement);
-      setElements(elements);
-    }
-  }, [clientSecret]);
+  // }, [enabler]);
+
+  useEffect(() => {
+    console.log({enabler})
+  },[enabler])
 
   const submitPayment = async (e) => {
     e.preventDefault();
 
-
-
-    // Code below to add the billing and shipping address info is a temporary fix for an issue with Afterpay
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {

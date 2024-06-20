@@ -45,7 +45,7 @@ export default function Header(props) {
 
   // On intitial load only, retrieve branding details
   useEffect(() => {
-    fetch("/settings/")
+    fetch("http://127.0.0.1:8081/settings/")
       .then((res) => res.json())
       .then((data) => {
         setShopName(data.shop_name);
@@ -53,6 +53,7 @@ export default function Header(props) {
         props.setBrandColor(data.primary_color);
       })
       .then(() => setIsLoaded(true));
+
   }, []);
 
   // On changing the currency, empty the cart
@@ -79,8 +80,8 @@ export default function Header(props) {
                 value={props.currency}
                 style={styles.switcher}
               >
-                <option value="eur">€</option>
-                <option value="gbp">£</option>
+                <option value="eur">€ test</option>
+                <option value="gbp">£ test</option>
               </select>
               <Link
                 to="/checkout"

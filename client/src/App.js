@@ -1,5 +1,5 @@
 // Modules
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -14,11 +14,12 @@ const promise = loadStripe(process.env.REACT_APP_PK);
 export default function App() {
   const [cart, setCart] = useState();
   const [brandColor, setBrandColor] = useState("#425466");
-  const [currency, setCurrency] = useState("eur");
+  const [currency, setCurrency] = useState("usd");
+
 
   const addToCart = async (obj) => {
     if (!cart) {
-      fetch("/cart", {
+      fetch("http://127.0.0.1:8081/cart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,8 +29,12 @@ export default function App() {
         .then((data) => {
           setCart(data);
           updateCart(data.id, obj.id, null, 1);
-        });
+        })
+        .catch(e => console.log(e));
     } else {
+      console.log({
+        cartId : cart.id
+      })
       updateCart(
         cart.id,
         obj.id,
@@ -38,9 +43,10 @@ export default function App() {
       );
     }
   };
+  
 
   const updateCart = async (cartId, productId, variantId, version) => {
-    fetch("/cart/line-item", {
+    fetch("http://127.0.0.1:8081/cart/line-item", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,68 +73,68 @@ export default function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route path="/checkout">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            pickCurrency={pickCurrency}
-            showCart={false}
-          />
-          <Elements stripe={promise}>
-            <Checkout
+      <BrowserRouter>
+        <Switch>
+          <Route path="/checkout">
+            <Header
               cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              pickCurrency={pickCurrency}
+              showCart={false}
+            />
+            <Elements stripe={promise}>
+              <Checkout
+                cart={cart}
+                brandColor={brandColor}
+                currency={currency}
+                setCart={setCart}
+              />
+            </Elements>
+          </Route>
+          <Route path="/confirm/:id">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              pickCurrency={pickCurrency}
+              showCart={false}
+            />
+            <Confirmation />
+          </Route>
+          <Route path="/confirm">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              pickCurrency={pickCurrency}
+              showCart={false}
+            />
+            <Confirmation />
+          </Route>
+          <Route path="/">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              pickCurrency={pickCurrency}
+              showCart={true}
+            />
+            <ProductList
+              addToCart={addToCart}
               brandColor={brandColor}
               currency={currency}
-              setCart={setCart}
             />
-          </Elements>
-        </Route>
-        <Route path="/confirm/:id">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            pickCurrency={pickCurrency}
-            showCart={false}
-          />
-          <Confirmation />
-        </Route>
-        <Route path="/confirm">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            pickCurrency={pickCurrency}
-            showCart={false}
-          />
-          <Confirmation />
-        </Route>
-        <Route path="/">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            pickCurrency={pickCurrency}
-            showCart={true}
-          />
-          <ProductList
-            addToCart={addToCart}
-            brandColor={brandColor}
-            currency={currency}
-          />
-        </Route>
-      </Switch>
-    </BrowserRouter>
+          </Route>
+        </Switch>
+      </BrowserRouter>
   );
 }

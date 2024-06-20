@@ -9,7 +9,7 @@ export default function ProductList(props) {
   useEffect(() => {
     setIsLoaded(false);
     setProducts([]);
-    fetch("/products/" + props.currency)
+    fetch("http://127.0.0.1:8081/products/" + props.currency)
       .then((res) => res.json())
       .then((obj) => {
         setProducts(obj);
