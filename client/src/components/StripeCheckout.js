@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useEnabler } from "../hooks/useEnabler";
 import { AddressElement, LinkAuthenticationElement } from "@stripe/react-stripe-js";
 import LinkAuthentication from "./LinkAuthentication";
 import Address from "./Address";
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css'
 
 const StripeCheckout = () => {
 
     const {stripe, elements, enabler, submit, createElement} = useEnabler();
 
-    const [isReady, setIsReady] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if(!enabler?.elementsConfiguration){
+            return;
+        }
+        console.log(enabler.elementsConfiguration.captureMethod);
+    }, [enabler])
 
     useEffect(() => {
         createElement({
@@ -29,26 +34,10 @@ const StripeCheckout = () => {
             return;
         }
 
-        console.log(elements)
-        debugger
-        const result = await submit();    
-        console.log({result})    
+        setIsLoading(true)
+        const result = await submit(`${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}`);    
+        console.log({result})
     }
-
-    const getSkeleton = () => {
-        return (
-            <>
-                <SkeletonTheme baseColor="#202020">
-                    <Skeleton/>
-                    <Skeleton count={5}/>
-                    <Skeleton/>
-                    <Skeleton count={5}/>
-                    <Skeleton/>
-                    <Skeleton count={5}/>
-                </SkeletonTheme>
-            </>
-        )
-    } 
 
     return (
         <>
@@ -57,7 +46,7 @@ const StripeCheckout = () => {
                     <h3>
                         Account
                     </h3>
-                    <LinkAuthentication setIsReady={setIsReady}/>
+                    <LinkAuthentication />
                 </div>
                 <div>
                     <h3>
@@ -72,7 +61,7 @@ const StripeCheckout = () => {
                     <div id="payment"></div>
                     <div id="express"></div>
                 </div>
-                <button className="bg-[#635bff] text-white text-lg font-medium  p-3 rounded-md">Pay</button>
+                <button disabled={isLoading} className={`${!isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"} text-white text-lg font-medium p-3 rounded-md`}>Pay</button>
             </form>
         </>
     )
