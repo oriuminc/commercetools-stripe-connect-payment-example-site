@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import { getCTSessionId, loadEnabler } from "../utils";
 
 export const EnablerContext = createContext({

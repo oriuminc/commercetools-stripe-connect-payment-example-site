@@ -39,8 +39,12 @@ export const useEnabler = () => {
         .catch(e => console.error(e))
     }
 
-    const submit = async () => {
+    const submit = async (returnUrl) => {
         if(!enablerElement) return;
+        debugger
+        if (returnUrl) {
+            enablerElement.returnURL = returnUrl;
+        }
 
         return await enablerElement.submit();
     }

@@ -45,9 +45,7 @@ export default function Checkout(props) {
     
   },[stripe])
 
-  const stripePromise = loadStripe(stripepk)
-  console.log({cartId : props.cart?.id})
-  console.log({cart : props.cart})
+  
   return (
     <>
     {props.cart && (

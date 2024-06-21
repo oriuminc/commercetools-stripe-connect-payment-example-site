@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useEnabler } from '../hooks/useEnabler'
 
-const LinkAuthentication = ({setIsReady}) => {
+const LinkAuthentication = () => {
     const {elements} = useEnabler();
     const [stripeAuthElement, setStripeAuthElement] = useState(null)
-
-    const onChange =  (event) => {
-        console.log({event})
-        const email = event.value.email;
-
-    }
-
-    const onReady = () => {
-        setIsReady(true)
-    }
 
     useEffect(() => {
         if(!elements || stripeAuthElement) return;
@@ -22,8 +12,7 @@ const LinkAuthentication = ({setIsReady}) => {
         setStripeAuthElement(element)
             
         element.mount("#link-auth-element")
-        element.on("change", onChange)
-        element.on("ready", onReady)
+        
     },[elements])
 
     return (
