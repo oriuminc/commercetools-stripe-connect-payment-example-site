@@ -3,7 +3,7 @@ import getSymbolFromCurrency from "currency-symbol-map";
 import { getCTSessionId, loadEnabler } from "../utils";
 
 const procesorUrl = process.env.REACT_APP_PROCESOR_URL;
-// console.log({procesorUrl})
+
 export default function CheckoutUPE(props) {
   const [enabler, setEnabler] = useState()
 
@@ -125,10 +125,6 @@ export default function CheckoutUPE(props) {
   //   });
   
   // }, [enabler]);
-
-  useEffect(() => {
-    console.log({enabler})
-  },[enabler])
 
   const submitPayment = async (e) => {
     e.preventDefault();

@@ -4,6 +4,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
+const BACKEND_URL = process.env.REACT_APP_BASE_URL;
+
+
 export default function Header(props) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [shopName, setShopName] = useState();
@@ -45,7 +48,7 @@ export default function Header(props) {
 
   // On intitial load only, retrieve branding details
   useEffect(() => {
-    fetch("http://127.0.0.1:8081/settings/")
+    fetch(`${BACKEND_URL}/settings/`)
       .then((res) => res.json())
       .then((data) => {
         setShopName(data.shop_name);

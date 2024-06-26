@@ -75,7 +75,7 @@ async function createCart() {
     method: "POST",
     body: {
       currency: "USD",
-      country: "DE",
+      country: "US",
     },
     headers: {
       Accept: "application/json",
@@ -260,11 +260,14 @@ async function createOrder(cart) {
   let orderBody = {
     cart: {
       id: cart.id,
+      typeId : "cart"
     },
     version: cart.version,
     orderState: "Open",
-    paymentState: "Pending",
+    // paymentState: "Pending",
   };
+  console.log(uri)
+  console.log(orderBody)
   const rsp = await client.execute({
     uri: uri,
     method: "POST",
@@ -416,6 +419,40 @@ async function updateOrder(orderId, paymentState) {
   return await rsp.body;
 }
 
+async function cartAddShippingAddres(cartId, address, version) {
+  if (!client) {
+    client = await createCtClient();
+  }
+
+  let uri = requestBuilder.carts.byId(cartId).build();
+  const rsp = await client.execute({
+    uri: uri,
+    method: "POST",
+    body: {
+      version: version,
+      actions: [
+        {
+          action: "setShippingAddress",
+          address: {
+            key: address.addressName,
+            country: address.addressCountry,
+            streetName: address.addressLine1,
+            postalCode: address.addressPostalCode,
+            state: address.addressState,
+            city: address.addressCity,
+
+          }
+        },
+      ],
+    },
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+  return await rsp.body;
+}
+
 export default {
   getProducts,
   createCart,
@@ -430,4 +467,5 @@ export default {
   addPaymentToOrder,
   updateOrder,
   updatePaymentState,
+  cartAddShippingAddres
 };

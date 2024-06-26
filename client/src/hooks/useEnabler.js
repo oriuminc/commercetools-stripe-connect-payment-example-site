@@ -7,7 +7,7 @@ export const useEnabler = () => {
     const [stripeSDK, setStripeSDK] = useState(null)
     const [elements, setElements] = useState(null)
 
-    const [enablerElement, setEnablerElement] = useState(null)
+    const [enablerElement, setEnablerElement] = useState([])
 
     useEffect(() => {
         
@@ -30,30 +30,25 @@ export const useEnabler = () => {
 
         if(!enabler) return;
 
-        enabler.createStripeElement({type, options})
-        .then(element => {
-            element.mount(selector);
-            setEnablerElement(element);
-            return element
-        })
-        .catch(e => console.error(e))
+        return await enabler.createStripeElement({type, options})
+            .then(element => {
+
+                element.mount(selector);
+
+                setEnablerElement(prev => [...prev, element]);
+                
+                return element
+            })
+            .catch(e => {
+                console.error(e)
+            })
     }
 
-    const submit = async (returnUrl) => {
-        if(!enablerElement) return;
-        debugger
-        if (returnUrl) {
-            enablerElement.returnURL = returnUrl;
-        }
-
-        return await enablerElement.submit();
-    }
 
     return {
         enabler : enablerValue.enabler,
         stripe : stripeSDK,
         elements,
-        createElement,
-        submit
+        createElement
     };
 }

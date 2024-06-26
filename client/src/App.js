@@ -12,6 +12,8 @@ import Success from "./components/Success";
 
 const promise = loadStripe(process.env.REACT_APP_PK);
 
+const BACKEND_URL = process.env.REACT_APP_BASE_URL;
+
 export default function App() {
   const [cart, setCart] = useState();
   const [brandColor, setBrandColor] = useState("#425466");
@@ -20,7 +22,7 @@ export default function App() {
 
   const addToCart = async (obj) => {
     if (!cart) {
-      fetch("http://127.0.0.1:8081/cart", {
+      fetch(`${BACKEND_URL}/cart`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,9 +35,6 @@ export default function App() {
         })
         .catch(e => console.log(e));
     } else {
-      console.log({
-        cartId : cart.id
-      })
       updateCart(
         cart.id,
         obj.id,
@@ -47,7 +46,7 @@ export default function App() {
   
 
   const updateCart = async (cartId, productId, variantId, version) => {
-    fetch("http://127.0.0.1:8081/cart/line-item", {
+    fetch(`${BACKEND_URL}/cart/line-item`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

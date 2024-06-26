@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard.js";
+const BACKEND_URL = process.env.REACT_APP_BASE_URL;
+
 
 export default function ProductList(props) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -9,7 +11,7 @@ export default function ProductList(props) {
   useEffect(() => {
     setIsLoaded(false);
     setProducts([]);
-    fetch("http://127.0.0.1:8081/products/" + props.currency)
+    fetch(`${BACKEND_URL}/products/` + props.currency)
       .then((res) => res.json())
       .then((obj) => {
         setProducts(obj);

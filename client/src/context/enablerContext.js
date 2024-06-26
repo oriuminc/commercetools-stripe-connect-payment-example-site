@@ -23,10 +23,12 @@ export const EnablerContextProvider = ({children, cartId}) => {
                 
                 setEnabler(new Enabler({
                     processorURL : procesorUrl, 
-                    returnURL : "/success",
+                    returnURL : "",
                     sessionId,
                     onActionRequired : () => {},
-                    onComplete: () => {},
+                    onComplete: (e) => {
+                        console.log({onSuccess : e})
+                    },
                     onError : (e) => {
                         console.log({error : e})
                     }

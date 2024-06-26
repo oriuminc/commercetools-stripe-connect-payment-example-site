@@ -1,4 +1,6 @@
 const projectKey = process.env.REACT_APP_PROJECT_KEY;
+const BACKEND_URL = process.env.REACT_APP_BASE_URL;
+
 
 export const loadEnabler = async () => {
     try {
@@ -78,3 +80,32 @@ export const getCTSessionId = async (cartId) => {
   console.log("Session created:", data)
   return data.id;
 }
+
+export const updateCartShippingAddress = async ( setCart, cart, address) => {
+  const bodyConst = JSON.stringify({
+    cartId: cart.id,
+    address:{
+      addressName: address.name,
+      addressLine1: address.address.line1,
+      addressCity: address.address.city,
+      addressCountry: address.address.country,
+      addressPostalCode: address.address.postal_code,
+      addressState: address.address.state,
+    },
+    version: cart.version,
+  })
+
+  return fetch(`${BACKEND_URL}/cart/address`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: bodyConst,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data)
+        setCart(data);
+        return data
+    });
+};

@@ -356,14 +356,76 @@ app.post("/create-payment-intent", async (req, res) => {
   });
 });
 
+/* ------ ADD CART ADDRESS SHIPING ------ */
+app.post("/cart/address", async (req, res) => {
+  
+  const cartId = req.body.cartId;
+  const version = req.body.version;
+  const address = req.body.address;
+  let result = await commerceTools.cartAddShippingAddres(cartId, address, version)
+    .catch(e => console.log(`Error : ${e}`))
+  res.send(result);
+});
+
+app.post("/create-order", async (req, res) => {
+  const id = req.body.id;
+  const {version} = await commerceTools.getCart(id);
+  
+  let result = await commerceTools.createOrder({id, version})
+    .catch(e => console.log(`Error : ${e}`))
+  res.send(result);
+});
+
+app.post("/capture-payment", async (req, res) => {
+  const payment_intent = req.body.payment_intent;
+  
+  const paymentResult = await stripe.paymentIntents.capture(
+    payment_intent
+  );
+
+  res.send(paymentResult);
+
+});
+
+app.post("/cancel-payment", async (req, res) => {
+  const payment_intent = req.body.payment_intent;
+  
+  const cancelResult = await stripe.paymentIntents.cancel(
+    payment_intent
+  );
+
+  res.send(cancelResult);
+
+});
+
+app.post("/request-refund", async (req, res) => {
+  const chargeId = req.body.chargeId;
+  
+  const refundResult = await stripe.refunds.create(
+    {
+      charge: chargeId
+    }
+  );
+  
+  res.send(refundResult);
+  
+});
+
+app.get("/payment-intent/:payment_intent", async (req, res) => {
+  const payment_intent  = req.params.payment_intent;
+
+  const paymentIntent = await stripe.paymentIntents.retrieve(
+    payment_intent
+  );
+  res.send(paymentIntent);
+});
+
 /* ------ WEBHOOK ENDPOINT ------ */
 app.post("/events", async (req, res) => {
 
   // console.log('====================================');
   // console.log('webhook event : ', req.body.type);
   // console.log('====================================');
-
-
 
   if (req.body.type == "payment_intent.succeeded") {
 
