@@ -27,14 +27,7 @@ export const EnablerContextProvider = ({children, cartId}) => {
                     publishableKey : STRIPE_PUBLISHABLE_KEY,
                     processorURL : procesorUrl, 
                     returnURL : "",
-                    sessionId,
-                    onActionRequired : () => {},
-                    onComplete: (e) => {
-                        console.log({onSuccess : e})
-                    },
-                    onError : (e) => {
-                        console.log({error : e})
-                    }
+                    sessionId
                 }))
             } catch (e) {
                 console.error(e);

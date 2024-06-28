@@ -2,20 +2,21 @@ const projectKey = process.env.REACT_APP_PROJECT_KEY;
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
 
-export const loadEnabler = async () => {
+export const loadEnabler = async() => {
     try {
-        const enablerModule = await import(process.env.REACT_APP_ENABLER_BUILD_URL);
-    
+        const enablerModule = await
+        import (process.env.REACT_APP_ENABLER_BUILD_URL);
+
         return enablerModule
     } catch (error) {
         console.error("Error while loading Enabler module", error);
     }
 }
 
-export const fetchAdminToken = async () => {
-    const headers = new Headers();
+export const fetchAdminToken = async() => {
+        const headers = new Headers();
 
-    headers.append('Authorization', `Basic ${btoa(`${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`)}`);
+        headers.append('Authorization', `Basic ${btoa(`${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`)}`);
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
     var urlencoded = new URLSearchParams();

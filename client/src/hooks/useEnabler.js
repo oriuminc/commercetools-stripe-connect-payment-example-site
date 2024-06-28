@@ -25,12 +25,12 @@ export const useEnabler = () => {
 
     },[enablerValue.enabler?.elements])
 
-    const createElement = async ({selector, type, options}) => {
+    const createElement = async ({selector, type, options, onError, onComplete}) => {
         const enabler = await enablerValue.enabler;
 
         if(!enabler) return;
         
-        return await enabler.createStripeElement({type, options})
+        return await enabler.createStripeElement({type, options, onError, onComplete})
             .then(element => {
 
                 element.mount(selector);

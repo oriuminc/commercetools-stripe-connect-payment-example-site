@@ -17,7 +17,9 @@ const Success = () => {
     const [chargeId, setChargeId] = useState(null)
 
     const query = useQuery()
-    
+
+    const [isCapturing, setIsCapturing] = useState(false)
+
     useEffect(() => {
         const payment_method = query.get("payment_method");
         const payment_intent = query.get("payment_intent");
@@ -97,6 +99,7 @@ const Success = () => {
     
     const capture = async () => {
         const payment_intent = query.get("payment_intent")
+        setIsCapturing(true)
         let {latest_charge} = await fetch(`${BACKEND_URL}/capture-payment/`,
             {
                 method : "POST",
@@ -107,8 +110,10 @@ const Success = () => {
                 body: JSON.stringify({payment_intent})
             }
         ).then(res => res.json()) 
-        
+        .catch(e => setIsCapturing(false))
+
         setChargeId(latest_charge)
+        setIsCapturing(false)
     }
 
     return (
@@ -116,7 +121,7 @@ const Success = () => {
             {
                 capture_method === "manual" &&
                 <button onClick={capture} className='px-3 py-2 rounded-md font-medium border-2 border-[#635bff] text-[#635bff]'>
-                    Capture
+                    {isCapturing ? "Loading" :"Capture"}
                 </button>
             }
             {
