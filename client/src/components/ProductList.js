@@ -11,7 +11,11 @@ export default function ProductList(props) {
   useEffect(() => {
     setIsLoaded(false);
     setProducts([]);
-    fetch(`${BACKEND_URL}/products/` + props.currency)
+    fetch(`${BACKEND_URL}/products/` + props.currency, {
+      headers: {
+        "ngrok-skip-browser-warning": "69420",
+      }
+    })
       .then((res) => res.json())
       .then((obj) => {
         setProducts(obj);
