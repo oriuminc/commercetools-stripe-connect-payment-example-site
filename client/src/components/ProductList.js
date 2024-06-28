@@ -12,9 +12,9 @@ export default function ProductList(props) {
     setIsLoaded(false);
     setProducts([]);
     fetch(`${BACKEND_URL}/products/` + props.currency, {
-      headers: {
+      headers: new Headers({
         "ngrok-skip-browser-warning": "69420",
-      }
+      })
     })
       .then((res) => res.json())
       .then((obj) => {
