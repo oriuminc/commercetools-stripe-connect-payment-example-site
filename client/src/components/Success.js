@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom'
+import {DEV_REQUEST_HEADERS, updateCartShippingAddress} from "../utils"
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
 
@@ -18,6 +19,19 @@ const Success = () => {
     const query = useQuery()
     
     useEffect(() => {
+        const payment_method = query.get("payment_method");
+        const payment_intent = query.get("payment_intent");
+
+        if (!payment_method || payment_method === "express_checkout") return;
+
+        const asyncCall = async () => {
+            await updateCartShippingAddress(cart, value)
+        }
+
+        asyncCall()
+    },[])
+
+    useEffect(() => {
         const id = query.get("cart_id")
 
         
@@ -26,6 +40,7 @@ const Success = () => {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body : JSON.stringify({id})    
             }
@@ -56,6 +71,7 @@ const Success = () => {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body: JSON.stringify({chargeId})
             }
@@ -71,6 +87,7 @@ const Success = () => {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body: JSON.stringify({payment_intent})
             }
@@ -85,6 +102,7 @@ const Success = () => {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body: JSON.stringify({payment_intent})
             }

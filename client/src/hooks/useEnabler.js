@@ -29,7 +29,7 @@ export const useEnabler = () => {
         const enabler = await enablerValue.enabler;
 
         if(!enabler) return;
-
+        
         return await enabler.createStripeElement({type, options})
             .then(element => {
 

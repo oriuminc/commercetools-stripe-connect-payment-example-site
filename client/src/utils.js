@@ -81,7 +81,7 @@ export const getCTSessionId = async (cartId) => {
   return data.id;
 }
 
-export const updateCartShippingAddress = async ( setCart, cart, address) => {
+export const updateCartShippingAddress = async (cart, address) => {
   const bodyConst = JSON.stringify({
     cartId: cart.id,
     address:{
@@ -99,13 +99,16 @@ export const updateCartShippingAddress = async ( setCart, cart, address) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...DEV_REQUEST_HEADERS
     },
     body: bodyConst,
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data)
-        setCart(data);
-        return data
-    });
+  });
 };
+
+const MODE = process.env.REACT_APP_MODE;
+console.log({MODE})
+export const DEV_REQUEST_HEADERS = MODE === "dev" ? {
+  "ngrok-skip-browser-warning": "6024"
+} : {}
+
+console.log({DEV_REQUEST_HEADERS})

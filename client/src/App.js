@@ -2,15 +2,13 @@
 import React, { useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
 import Checkout from "./components/Checkout";
 import Confirmation from "./components/Confirmation";
 import "./styles/index.css";
 import Success from "./components/Success";
-
-const promise = loadStripe(process.env.REACT_APP_PK);
+import {DEV_REQUEST_HEADERS} from "./utils"
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -26,6 +24,7 @@ export default function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...DEV_REQUEST_HEADERS
         },
       })
         .then((res) => res.json())
@@ -50,6 +49,7 @@ export default function App() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...DEV_REQUEST_HEADERS
       },
       body: JSON.stringify({
         cartId: cartId,
@@ -85,14 +85,12 @@ export default function App() {
             pickCurrency={pickCurrency}
             showCart={false}
           />
-          <Elements stripe={promise}>
             <Checkout
               cart={cart}
               brandColor={brandColor}
               currency={currency}
               setCart={setCart}
             />
-          </Elements>
         </Route>
         <Route path="/success/:capture_method">
           <Header
@@ -104,9 +102,7 @@ export default function App() {
             pickCurrency={pickCurrency}
             showCart={false}
           />
-          <Elements stripe={promise}>
-            <Success />
-          </Elements>
+          <Success />
         </Route>
         <Route path="/confirm/:id">
           <Header

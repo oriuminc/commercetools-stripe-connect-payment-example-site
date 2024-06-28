@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard.js";
+import {DEV_REQUEST_HEADERS} from "../utils"
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
-
 
 export default function ProductList(props) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -11,7 +11,11 @@ export default function ProductList(props) {
   useEffect(() => {
     setIsLoaded(false);
     setProducts([]);
-    fetch(`${BACKEND_URL}/products/` + props.currency)
+    fetch(`${BACKEND_URL}/products/` + props.currency,{
+      headers: new Headers({
+        ...DEV_REQUEST_HEADERS
+      }),
+    })
       .then((res) => res.json())
       .then((obj) => {
         setProducts(obj);

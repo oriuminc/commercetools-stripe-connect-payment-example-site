@@ -7,6 +7,8 @@ export const EnablerContext = createContext({
 
 const procesorUrl = process.env.REACT_APP_PROCESOR_URL;
 
+const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_PK;
+
 export const EnablerContextProvider = ({children, cartId}) => {
 
     const [enabler, setEnabler] = useState(null)
@@ -22,6 +24,7 @@ export const EnablerContextProvider = ({children, cartId}) => {
                 let sessionId = await getCTSessionId(cartId);
                 
                 setEnabler(new Enabler({
+                    publishableKey : STRIPE_PUBLISHABLE_KEY,
                     processorURL : procesorUrl, 
                     returnURL : "",
                     sessionId,
