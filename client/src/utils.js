@@ -5,7 +5,7 @@ const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 export const loadEnabler = async () => {
     try {
         const enablerModule = await import(process.env.REACT_APP_ENABLER_BUILD_URL);
-    
+
         return enablerModule
     } catch (error) {
         console.error("Error while loading Enabler module", error);
@@ -99,6 +99,7 @@ export const updateCartShippingAddress = async ( setCart, cart, address) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "69420",
     },
     body: bodyConst,
   })

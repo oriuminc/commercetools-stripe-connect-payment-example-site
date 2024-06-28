@@ -48,7 +48,11 @@ export default function Header(props) {
 
   // On intitial load only, retrieve branding details
   useEffect(() => {
-    fetch(`${BACKEND_URL}/settings/`)
+    fetch(`${BACKEND_URL}/settings/`,
+      {
+        headers: new Headers({
+          "ngrok-skip-browser-warning": "69420",
+        })})
       .then((res) => res.json())
       .then((data) => {
         setShopName(data.shop_name);
