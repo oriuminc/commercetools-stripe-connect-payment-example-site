@@ -7,9 +7,9 @@ import { updateCartShippingAddress } from "../utils";
 import { Spinner } from "./Spinner";
 import ExpressCheckout from "./ExpressCheckout";
 
-const StripeCheckout = ({ cart, setCart }) => {
+const StripeCheckout = ({cart, setCart}) => {
 
-    const { stripe, elements, enabler, createElement, } = useEnabler();
+    const {stripe, elements, enabler, createElement, } = useEnabler();
 
     const [isLoading, setIsLoading] = useState(false);
     const [paymentError, setPaymentError] = useState("")
@@ -18,20 +18,20 @@ const StripeCheckout = ({ cart, setCart }) => {
     const [paymentElement, setPaymentElement] = useState(null)
 
     useEffect(() => {
-        if (!enabler ? .elementsConfiguration) {
+        if(!enabler?.elementsConfiguration){
             return;
         }
     }, [enabler])
 
     useEffect(() => {
         if (!enabler) return;
-
+        
         createElement({
-            selector: "#payment",
-            type: "payment",
+            selector : "#payment",
+            type : "payment",
             cart: {
-                id: cart.id,
-                version: cart.version
+                id : cart.id,
+                version : cart.version
             },
             onComplete,
             onError,
@@ -41,27 +41,27 @@ const StripeCheckout = ({ cart, setCart }) => {
             element.onError = onError;
             setPaymentElement(element)
         });
+        
+    },[enabler])
 
-    }, [enabler])
-
-    const onError = ({ type, message }) => {
+    const onError  = ({type, message}) => {
         setPaymentError(message)
-        console.error({ type, message })
+        console.error({type, message})
         setIsLoading(false)
     }
 
-    const onComplete = async() => {
+    const onComplete = async () => {
         const addressElement = elements.getElement('address');
-
-        const { value } = await addressElement.getValue();
-
+            
+        const {value} = await addressElement.getValue();
+        
         await updateCartShippingAddress(cart, value);
     }
 
-    const onSubmit = async(e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
         setPaymentError("")
-
+        
         if (!stripe || !elements) {
             // Stripe.js hasn't yet loaded.
             // Make sure to disable form submission until Stripe.js has loaded.
@@ -72,68 +72,58 @@ const StripeCheckout = ({ cart, setCart }) => {
 
         try {
 
-            const { error: submitError } = await elements.submit();
+            const { error : submitError } = await elements.submit();
 
-            if (submitError) {
+            if(submitError) {
                 onError(submitError)
                 return;
             }
-
+            
             paymentElement.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}?cart_id=${cart.id}`
-
+            
             await paymentElement.submit();
-        } catch (e) {
+        }catch(e) {
             console.error(e)
             setIsLoading(false)
         }
     }
 
-    return ( <
-        div className = "flex flex-col gap-4 w-8/12" >
-        <
-        ExpressCheckout cart = { cart }
-        />
-        or <
-        form className = "flex flex-col gap-4"
-        id = "test"
-        onSubmit = { onSubmit } >
-        <
-        div >
-        <
-        h3 >
-        Account <
-        /h3> <
-        LinkAuthentication / >
-        <
-        /div> <
-        div >
-        <
-        h3 >
-        Address <
-        /h3> <
-        Address / >
-        <
-        /div> <
-        div >
-        <
-        h3 >
-        Payment <
-        /h3> <
-        div id = "payment" > < /div> <
-        /div> <
-        span className = "text-[#df1c41]" > { paymentError } <
-        /span> <
-        button disabled = { isLoading }
-        className = { `${!isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"} flex justify-center text-white text-lg font-medium p-3 rounded-md` } > {
-            isLoading ?
-            <
-            Spinner / >
-            :
-                "Pay"
-        } <
-        /button> <
-        /form> <
-        /div>
+    return (
+        <div className="flex flex-col gap-4 w-8/12">
+            <ExpressCheckout cart={cart} />
+            or
+            <form className="flex flex-col gap-4" id="test" onSubmit={onSubmit}>
+                <div>
+                    <h3>
+                        Account
+                    </h3>
+                    <LinkAuthentication />
+                </div>
+                <div>
+                    <h3>
+                        Address
+                    </h3>
+                    <Address/>
+                </div>
+                <div>
+                    <h3>
+                        Payment
+                    </h3>
+                    <div id="payment"></div>
+                </div>
+                <span className="text-[#df1c41]">
+                    {paymentError}
+                </span>
+                <button disabled={isLoading} className={`${!isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"} flex justify-center text-white text-lg font-medium p-3 rounded-md`}>
+                    {
+                        isLoading ?
+                        <Spinner />
+                        :
+                        "Pay"
+                    }
+                </button>
+            </form>
+        </div>
     )
 }
 
