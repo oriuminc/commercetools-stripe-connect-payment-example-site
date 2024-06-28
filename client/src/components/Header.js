@@ -63,7 +63,6 @@ export default function Header(props) {
         props.setBrandColor(data.primary_color);
       })
       .then(() => setIsLoaded(true));
-
   }, []);
 
   // On changing the currency, empty the cart
@@ -98,7 +97,7 @@ export default function Header(props) {
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <FontAwesomeIcon icon={faShoppingCart} />{" "}
-                {props.cart?.lineItems.length ? props.cart.lineItems.length : 0}
+                {props.totalQuantity}
               </Link>
             </div>
           )}

@@ -8,7 +8,13 @@ import getSymbolFromCurrency from "currency-symbol-map";
 export default function ProductCard(props) {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [quantityValue, setQuantityValue] = React.useState('1');
+  const handleQuantityChange = (event) => setQuantityValue(event.target.value);
+
+  const handleShow = () => {
+    setShow(true);
+    setQuantityValue(1);
+  }
 
   const styles = {
     price: {
@@ -39,8 +45,16 @@ export default function ProductCard(props) {
     },
   };
 
+  const quantitySelectOptions = [
+    { value: '1', label: '1' },
+    { value: '2', label: '2' },
+    { value: '3', label: '3' },
+    { value: '4', label: '4' },
+    { value: '5', label: '5' }
+  ];
+
   const addToCart = (e) => {
-    props.addToCart(props.product);
+    props.addToCart(props.product, parseInt(quantityValue));
     setShow(false);
   };
 
@@ -96,7 +110,7 @@ export default function ProductCard(props) {
           </div>
         </div>
       </div>
-      <Modal show={show} centered onHide={handleClose} size="lg">
+      <Modal show={show} centered onHide={handleClose} size="xl">
         <Modal.Header style={styles.nameModal}>
           {props.product.masterData.current.name["en-US"]}
           <FontAwesomeIcon
@@ -107,7 +121,7 @@ export default function ProductCard(props) {
         </Modal.Header>
         <Modal.Body>
           <div className="row">
-            <div className="col-5">
+            <div className="col-4">
               <Carousel
                 id={"modal_" + props.product.id}
                 images={[
@@ -115,20 +129,32 @@ export default function ProductCard(props) {
                 ]}
               />
             </div>
-            <div className="col-5">
+            <div className="col-7">
               <p>{props.product.masterData.current.description["en-US"]}</p>
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <button
-            className="btn"
-            style={{ backgroundColor: props.brandColor, color: "blue" }}
-            id={props.product.id}
-            onClick={addToCart}
-          >
-            Add to Cart
-          </button>
+          <div className="col-1">
+            <label>
+              Quantity
+              <select value={quantityValue} onChange={handleQuantityChange}>
+                {quantitySelectOptions.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="col-2">
+            <button
+              className="btn"
+              style={{ backgroundColor: props.brandColor, color: "blue" }}
+              id={props.product.id}
+              onClick={addToCart}
+            >
+              Add to Cart
+            </button>
+          </div>
         </Modal.Footer>
       </Modal>
     </>

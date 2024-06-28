@@ -136,8 +136,9 @@ app.post("/cart/line-item", async (req, res) => {
   const cartId = req.body.cartId;
   const productId = req.body.productId;
   const variantId = req.body.variantId;
+  const quantity = req.body.quantity;
   const version = req.body.version;
-  let result = await commerceTools.cartAddLineItem(cartId, productId, variantId, version)
+  let result = await commerceTools.cartAddLineItem(cartId, productId, variantId, quantity, version)
     .catch(e => console.log(`Error : ${e}`))
   res.send(result);
 });
@@ -169,19 +170,19 @@ app.post("/customer", async (req, res) => {
       },
     }
   };
-  try{
+  try {
     let stripeCustomer = await stripe.customers.create(payload);
-    console.log({stripeCustomer})
+    console.log({ stripeCustomer })
     payload.cartId = req.body.cartId;
     res.send(await commerceTools.createCustomer(payload, stripeCustomer.id));
-  }catch(e){
+  } catch (e) {
     res.status(400)
-    .send({
-      error : {
-        description : "bad request",
-        details : e
-      }
-    })
+      .send({
+        error: {
+          description: "bad request",
+          details: e
+        }
+      })
   }
 });
 
@@ -220,8 +221,8 @@ app.post("/create-checkout-session", async (req, res) => {
       success_url: BASE_URL + "/confirm?checkout_session={CHECKOUT_SESSION_ID}",
       cancel_url: BASE_URL,
       metadata: { summary: summary },
-      payment_intent_data:{
-        metadata:{
+      payment_intent_data: {
+        metadata: {
           summary: summary,
           commerceToolsCartId: cart.id,
           commerceToolsOrderId: order.id,
@@ -256,7 +257,7 @@ app.post("/create-checkout-session", async (req, res) => {
     //need to use old api version as the new one doesn't create payment intent when creating checkout session.
     //https://stripe.com/docs/upgrades#2022-08-01
 
-    const stripe2020 = new Stripe(STRIPE_KEY, {apiVersion: '2020-08-27'});
+    const stripe2020 = new Stripe(STRIPE_KEY, { apiVersion: '2020-08-27' });
 
     const session = await stripe2020.checkout.sessions.create(payload);
 
@@ -358,7 +359,7 @@ app.post("/create-payment-intent", async (req, res) => {
 
 /* ------ ADD CART ADDRESS SHIPING ------ */
 app.post("/cart/address", async (req, res) => {
-  
+
   const cartId = req.body.cartId;
   const version = req.body.version;
   const address = req.body.address;
@@ -369,16 +370,16 @@ app.post("/cart/address", async (req, res) => {
 
 app.post("/create-order", async (req, res) => {
   const id = req.body.id;
-  const {version} = await commerceTools.getCart(id);
-  
-  let result = await commerceTools.createOrder({id, version})
+  const { version } = await commerceTools.getCart(id);
+
+  let result = await commerceTools.createOrder({ id, version })
     .catch(e => console.log(`Error : ${e}`))
   res.send(result);
 });
 
 app.post("/capture-payment", async (req, res) => {
   const payment_intent = req.body.payment_intent;
-  
+
   const paymentResult = await stripe.paymentIntents.capture(
     payment_intent
   );
@@ -389,7 +390,7 @@ app.post("/capture-payment", async (req, res) => {
 
 app.post("/cancel-payment", async (req, res) => {
   const payment_intent = req.body.payment_intent;
-  
+
   const cancelResult = await stripe.paymentIntents.cancel(
     payment_intent
   );
@@ -400,19 +401,19 @@ app.post("/cancel-payment", async (req, res) => {
 
 app.post("/request-refund", async (req, res) => {
   const chargeId = req.body.chargeId;
-  
+
   const refundResult = await stripe.refunds.create(
     {
       charge: chargeId
     }
   );
-  
+
   res.send(refundResult);
-  
+
 });
 
 app.get("/payment-intent/:payment_intent", async (req, res) => {
-  const payment_intent  = req.params.payment_intent;
+  const payment_intent = req.params.payment_intent;
 
   const paymentIntent = await stripe.paymentIntents.retrieve(
     payment_intent
@@ -437,7 +438,7 @@ app.post("/events", async (req, res) => {
       "Paid",
       paymentIntent
     );
-    
+
     const paymentstatus = await commerceTools.updatePaymentState("Charge", paymentIntent);
 
   }

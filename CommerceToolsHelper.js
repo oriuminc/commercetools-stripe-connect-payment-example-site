@@ -117,7 +117,7 @@ async function getCustomer(custId) {
   return await rsp.body;
 }
 
-async function cartAddLineItem(cartId, productId, variantId, version) {
+async function cartAddLineItem(cartId, productId, variantId, quantity, version) {
   if (!client) {
     client = await createCtClient();
   }
@@ -132,6 +132,7 @@ async function cartAddLineItem(cartId, productId, variantId, version) {
           action: "addLineItem",
           productId: productId,
           variantId: variantId,
+          quantity: quantity,
         },
       ],
     },
@@ -260,7 +261,7 @@ async function createOrder(cart) {
   let orderBody = {
     cart: {
       id: cart.id,
-      typeId : "cart"
+      typeId: "cart"
     },
     version: cart.version,
     orderState: "Open",
@@ -351,7 +352,7 @@ async function updatePaymentState(paymentType, paymentIntent) {
   let uri = requestBuilder.payments.byKey(paymentIntent.id).build();
 
   let paymentState = "Pending";
-  
+
   if (paymentType == "Charge" || paymentType == "Refund") {
     paymentState = "Success";
   }
@@ -385,12 +386,12 @@ async function updatePaymentState(paymentType, paymentIntent) {
 
     return await rsp.body;
 
-  } catch(e) {
+  } catch (e) {
     console.log('====================================');
     console.log('commercetools error msg: ', e);
     console.log('====================================');
   }
- 
+
 }
 
 async function updateOrder(orderId, paymentState) {

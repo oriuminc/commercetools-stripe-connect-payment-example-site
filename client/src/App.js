@@ -16,9 +16,11 @@ export default function App() {
   const [cart, setCart] = useState();
   const [brandColor, setBrandColor] = useState("#425466");
   const [currency, setCurrency] = useState("usd");
+  const [totalQuantity, setTotalQuantity] = useState(0);
 
 
-  const addToCart = async (obj) => {
+  const addToCart = async (obj, quantity) => {
+    setTotalQuantity(parseInt(totalQuantity) + quantity);
     if (!cart) {
       fetch(`${BACKEND_URL}/cart`, {
         method: "POST",
@@ -30,7 +32,7 @@ export default function App() {
         .then((res) => res.json())
         .then((data) => {
           setCart(data);
-          updateCart(data.id, obj.id, null, 1);
+          updateCart(data.id, obj.id, null, quantity, 1);
         })
         .catch(e => console.log(e));
     } else {
@@ -38,13 +40,14 @@ export default function App() {
         cart.id,
         obj.id,
         obj.masterData.current.masterVariant.id,
+        quantity,
         cart.version
       );
     }
   };
-  
 
-  const updateCart = async (cartId, productId, variantId, version) => {
+
+  const updateCart = async (cartId, productId, variantId, quantity, version) => {
     fetch(`${BACKEND_URL}/cart/line-item`, {
       method: "POST",
       headers: {
@@ -55,6 +58,7 @@ export default function App() {
         cartId: cartId,
         productId: productId,
         variantId: variantId,
+        quantity: quantity,
         version: version,
       }),
     })
@@ -84,6 +88,7 @@ export default function App() {
             currency={currency}
             pickCurrency={pickCurrency}
             showCart={false}
+            totalQuantity={totalQuantity}
           />
             <Checkout
               cart={cart}
@@ -101,6 +106,7 @@ export default function App() {
             currency={currency}
             pickCurrency={pickCurrency}
             showCart={false}
+            totalQuantity={totalQuantity}
           />
           <Success />
         </Route>
@@ -113,6 +119,7 @@ export default function App() {
             currency={currency}
             pickCurrency={pickCurrency}
             showCart={false}
+            totalQuantity={totalQuantity}
           />
           <Confirmation />
         </Route>
@@ -125,6 +132,7 @@ export default function App() {
             currency={currency}
             pickCurrency={pickCurrency}
             showCart={false}
+            totalQuantity={totalQuantity}
           />
           <Confirmation />
         </Route>
@@ -137,6 +145,7 @@ export default function App() {
             currency={currency}
             pickCurrency={pickCurrency}
             showCart={true}
+            totalQuantity={totalQuantity}
           />
           <ProductList
             addToCart={addToCart}
