@@ -268,7 +268,7 @@ async function createOrder(cart) {
     orderState: "Open",
     paymentState: "Pending",
     shipmentState: 'Pending',
-    purchaseOrderNumber : crypto.randomUUID()
+    purchaseOrderNumber : `order-${crypto.randomUUID().split('-')[0]}`
 
   };
   console.log(uri)
