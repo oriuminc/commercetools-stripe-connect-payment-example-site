@@ -89,8 +89,9 @@ export default function Header(props) {
                 value={props.currency}
                 style={styles.switcher}
               >
-                <option value="eur">€ test</option>
-                <option value="gbp">£ test</option>
+                <option value="USD">$ test</option>
+                <option value="EUR">€ test</option>
+                <option value="GBP">£ test</option>
               </select>
               <Link
                 to="/checkout"
