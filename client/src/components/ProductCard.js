@@ -36,7 +36,7 @@ export default function ProductCard(props) {
       fontWeight: 500,
     },
     img: {
-      maxHeight: 500,
+      maxHeight: 180,
       objectFit: "cover",
       marginLeft: "auto",
       marginRight: "auto",
@@ -90,16 +90,17 @@ export default function ProductCard(props) {
     <>
       <div className="col">
         <div style={styles.card} className="h-100" onClick={handleShow}>
-          <img
-            alt="product"
-            src={props.product.masterData.current.masterVariant.images[0]?.url}
-            className="w-100"
-            style={styles.img}
-          />
-          <div className="card-body" style={{ paddingBottom: 0 }}>
-            <h5 style={styles.name}>
+          <div className="card-image" style={styles.boxCard}>
+            <img
+              alt="product"
+              src={props.product.masterData.current.masterVariant.images[0]?.url}
+              style={styles.img}
+            />
+          </div>
+          <div className="card-body" style={{ paddingBottom: 10 }}>
+            <p styles={styles.name}>
               {props.product.masterData.current.name["en-US"]}
-            </h5>
+            </p>
             <h3 style={styles.price}>
               {displayPrice(
                 props.product.masterData.current.masterVariant.prices[0]?.value
