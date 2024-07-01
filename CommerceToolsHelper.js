@@ -2,6 +2,7 @@ import { createClient } from "@commercetools/sdk-client";
 import { createAuthMiddlewareForClientCredentialsFlow } from "@commercetools/sdk-middleware-auth";
 import { createHttpMiddleware } from "@commercetools/sdk-middleware-http";
 import { createRequestBuilder } from "@commercetools/api-request-builder";
+import crypto from 'crypto';
 
 import fetch from "node-fetch";
 
@@ -265,7 +266,10 @@ async function createOrder(cart) {
     },
     version: cart.version,
     orderState: "Open",
-    // paymentState: "Pending",
+    paymentState: "Pending",
+    shipmentState: 'Pending',
+    purchaseOrderNumber : `order-${crypto.randomUUID().split('-')[0]}`
+
   };
   
   const rsp = await client.execute({

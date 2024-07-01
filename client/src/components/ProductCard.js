@@ -17,20 +17,19 @@ export default function ProductCard(props) {
   }
 
   const styles = {
-    price: {
-      fontSize: "larger",
-      fontWeight: 600,
-      display: "block",
+    boxCard: {
+      height: 200,
     },
     card: {
+      maxHeight: 500,
       borderRadius: 5,
       boxShadow: "silver 0px 0px 6px 0px",
       cursor: "pointer",
       border: "1px solid silver",
     },
-    name: {
-      fontSize: "1.1em",
-      fontWeight: 500,
+    price: {
+      fontSize: "1.2em",
+      fontWeight: 600,
     },
     nameModal: {
       fontSize: "1.5em",
@@ -38,6 +37,7 @@ export default function ProductCard(props) {
     },
     img: {
       maxHeight: 500,
+      objectFit: "cover",
       marginLeft: "auto",
       marginRight: "auto",
       borderRadius: "5px 5px 0 0",
@@ -93,19 +93,18 @@ export default function ProductCard(props) {
           <img
             alt="product"
             src={props.product.masterData.current.masterVariant.images[0]?.url}
-            className="w-100 aspect-square object-contain"
+            className="w-100"
             style={styles.img}
           />
           <div className="card-body" style={{ paddingBottom: 0 }}>
             <h5 style={styles.name}>
               {props.product.masterData.current.name["en-US"]}
             </h5>
-            {/* <p style={{ paddingTop: '20px' }}>{props.product.description}</p> */}
-            <p>
+            <h3 style={styles.price}>
               {displayPrice(
                 props.product.masterData.current.masterVariant.prices[0]?.value
               )}
-            </p>
+            </h3>
           </div>
         </div>
       </div>
