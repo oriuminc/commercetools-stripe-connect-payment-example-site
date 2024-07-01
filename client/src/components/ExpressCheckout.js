@@ -37,8 +37,8 @@ const ExpressCheckout = ({ cart }) => {
         });
     }, [enabler])
 
-    return ( <
-        div id = "express" > < /div>
+    return ( 
+        <div id="express"> </div>
     )
 }
 

@@ -10,7 +10,7 @@ function useQuery() {
     return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-const Success = () => {
+const Success = ({cart,}) => {
 
     const { capture_method, ...rest } = useParams();
 
@@ -21,21 +21,7 @@ const Success = () => {
     const [isCapturing, setIsCapturing] = useState(false)
 
     useEffect(() => {
-        const payment_method = query.get("payment_method");
-        const payment_intent = query.get("payment_intent");
-
-        if (!payment_method || payment_method === "express_checkout") return;
-
-        const asyncCall = async () => {
-            await updateCartShippingAddress(cart, value)
-        }
-
-        asyncCall()
-    },[])
-
-    useEffect(() => {
         const id = query.get("cart_id")
-
         
         fetch(`${BACKEND_URL}/create-order/`,
             {
@@ -46,8 +32,8 @@ const Success = () => {
                 },
                 body : JSON.stringify({id})    
             }
-        ).then(res => res.json())
-        .then(res => console.log(res))
+        )
+        .catch(res => console.error(res))
     },[])
     
     useEffect(() => {
@@ -57,7 +43,7 @@ const Success = () => {
 
         const asyncCall = async () => {
 
-            let {latest_charge, ...rest} = await fetch(`${BACKEND_URL}/payment-intent/${payment_intent}`)
+            let {latest_charge} = await fetch(`${BACKEND_URL}/payment-intent/${payment_intent}`)
                 .then(res => res.json())
 
             setChargeId(latest_charge)
