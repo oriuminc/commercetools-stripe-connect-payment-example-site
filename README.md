@@ -1,116 +1,121 @@
-# e-Commerce example integrated with CommerceTools and Stripe
 
-![HomePage](docs/HomePage.png)
+# e-Commerce Example Integrated with commercetools Payment Connector and Stripe
 
-The application provides a basic e-commerce site integrated with CommerceTools and Stripe. This is pulling a product catalog directly from Commercetools and taking advantage of Commercetools’s cart API when a user adds a new item to a cart. Further to this a customer object can be created via stripe, once created a customer can be created in Commercetools providing an external_id linked the stripe customer’s ID, this allows the site to track the customer both on API’s.
+![Sample site.png](docs%2FSample%20site.png)![[Pasted image 20240701172445.png]]
 
-When a user chooses to checkout the e-commerce site will create both a Stripe PaymentIntent and Commercetools Order using the details from the cart, the PaymentIntent will include the Commercetools CartID and OrderID as metadata. The user can now be presented with either Stripe Elements or Stripe Checkout to complete the transaction. A Stripe Webhook will send succeeded or payment_failed to the e-commerce site. The e-commerce site will then process the event and update the Commercetools order status accordingly, getting the order_id from the PaymentIntent’s metadata.
+## Overview
 
-**Stripe technologies included in this demo:**
+This application provides a basic e-commerce site integrated with commercetools [Payment Connector](https://docs.commercetools.com/checkout/payment-connectors-applications) and [Stripe Web Elements](https://stripe.com/docs/payments/elements). It retrieves a product catalog directly from commercetools and uses commercetools' cart API when a user adds a new item to the cart. The Stripe Payment Element and Express Checkout are embedded through the Payment Connector.
 
-1. Hosted Checkout page
-1. Universal Payment Element (EUR - cards, iDEAL, SoFort, Giropay)
+## Stripe Integration
+
+The following Stripe Web Elements are used directly from Stripe:
+
+- [Link Authentication Element](https://docs.stripe.com/payments/elements/link-authentication-element)
+- [Address Element](https://docs.stripe.com/elements/address-element)
+
+Additionally, the [Stripe Payment Element](https://docs.stripe.com/payments/payment-element) and [Express Checkout Element](https://docs.stripe.com/elements/express-checkout-element) are embedded through the Payment Connector Integration found in the [Stripe commercetools Connect App GitHub repository](https://github.com/stripe/stripe-commercetools-connect-app).
+
+## Checkout Process
+
+When a user chooses to checkout, the e-commerce platform will:
+
+1. Create the [Link Authentication Element](https://docs.stripe.com/payments/elements/link-authentication-element) and [Address Element](https://docs.stripe.com/elements/address-element) to collect complete billing and shipping addresses.
+2. Add the shipping information to the cart in commercetools.
+3. Utilize the Payment Connector integration for payment components, namely the [Stripe Payment Element](https://docs.stripe.com/payments/payment-element) and [Express Checkout Element](https://docs.stripe.com/elements/express-checkout-element).
+
+## Payment Submission
+
+After the user submits the payment:
+
+1. The embedded components will call the Payment Connector processor responsible of creating the payment intent on Stripe.
+2. The payment intent will contain metadata including the cart ID, commercetools project ID, and payment ID created in commercetools.
+3. The payment created in commercetools will have the payment intent ID from Stripe in the `interfaceId` field.
+
+## Webhook Handling
+
+All Stripe webhooks will be sent to the Payment Connector backend. The Payment Connector will then:
+
+1. Process the events.
+2. Update the commercetools status accordingly.
+
+## Stripe Technologies Included in This Demo
+
+1. [Link Authentication Element](https://docs.stripe.com/payments/elements/link-authentication-element) (e-commerce site integrated)
+2. [Address Element](https://docs.stripe.com/elements/address-element) (e-commerce site integrated)
+3. [Stripe Payment Element](https://docs.stripe.com/payments/payment-element) (from Payment Connector integration)
+4. [Express Checkout Element](https://docs.stripe.com/elements/express-checkout-element) (from Payment Connector integration)
 
 ## Installation
+
+To install the necessary packages, run:
 
 ```bash
 npm install
 ```
 
+**Note:** Please make sure to have the Payment Connector from the commercetools marketplace and deploy the Payment Connector URL. To install it, you will need to run the example site and the Payment Connector project locally or add the Payment Connector from the commercetools marketplace. Further information on how to run the Payment Connector can be found in the [Payment Connector documentation](https://github.com/stripe/stripe-commercetools-connect-app).
+
 ## Running Locally
 
-Then to start the app, run the following from the _root_ directory:
+To start the app server, run the following command from the _root_ directory:
 
 ```bash
-npm run build
 npm start
 ```
 
-## Update .env with
+To run the app, navigate to the client directory and start it:
 
-When running locally copy `/.env-sample` to `/.env` **and** `/client/.env-sample` to `/client/.env` and update with your details
+```bash
+cd client
+npm start
+```
+
+## Update .env
+
+When running locally, copy /.env-sample to /.env and update it with your details:
 
 ```bash
 cp .env-sample .env
-cp client/.env-sample client/.env
 ```
+
 
 | Variable                 | Description               | Example                                         |
 | ------------------------ | ------------------------- | ----------------------------------------------- |
-| REACT_APP_PK             | Stripe Public Key         | pk*test*\*\*\*\*                                |
 | REACT_APP_SK             | Stripe Private Key        | sk*test*\*\*\*\*                                |
 | REACT_APP_ADMIN          | Stripe Account ID         | actt\_\*\*\*\*                                  |
 | REACT_APP_PORT           | Port to run the server    | 8081                                            |
 | REACT_APP_BASE_URL       | Base URL of the server    | http://localhost:8081                           |
-| REACT_APP_CT_PROJECT_KEY | CommerceTools Project Key | **\***                                          |
-| REACT_APP_CT_CLIENT_ID   | CommerceTools Client ID   | **\***                                          |
-| REACT_APP_CT_SECRET      | CommerceTools Secret Key  | **\***                                          |
-| REACT_APP_CT_API_URL     | CommerceTools API URL     | https://api.europe-west1.gcp.commercetools.com  |
-| REACT_APP_CT_AUTH_URL    | CommerceTools Auth URL    | https://auth.europe-west1.gcp.commercetools.com |
+| REACT_APP_CT_PROJECT_KEY | commercetools Project Key | **\***                                          |
+| REACT_APP_CT_CLIENT_ID   | commercetools Client ID   | **\***                                          |
+| REACT_APP_CT_SECRET      | commercetools Secret Key  | **\***                                          |
+| REACT_APP_CT_API_URL     | commercetools API URL     | https://api.europe-west1.gcp.commercetools.com  |
+| REACT_APP_CT_AUTH_URL    | commercetools Auth URL    | https://auth.europe-west1.gcp.commercetools.com |
 
-# Webhooks
 
-This example used webhooks to handel payment's asynchronously, an Stripe webhook will be configured when starting the sever which will use the `REACT_APP_BASE_URL` configured in the .env file.
-
-## Testing Webhooks
-
-You can test your webhook endpoint using the Stripe CLI, or by making your webhook endpoint (URL) publicly accessible and registering it with Stripe to run tests.
-
-To install the Stripe CLI with homebrew, run:
+Similarly, copy /client/.env-sample to /client/.env and update it with your details:
 
 ```bash
-brew install stripe/stripe-cli/stripe
+cp client/.env-sample client/.env
 ```
 
-To install the Stripe CLI on Windows without Scoop:
 
-1. Download the latest `windows` tar.gz file from [here](https://github.com/stripe/stripe-cli/releases/latest)
-2. Unzip the `stripe_X.X.X_windows_x86_64.zip` file
-3. Run the unzipped `.exe` file
+| Variable                    | Description                                              | Example                                                                                                                         |
+| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| REACT_APP_PK                | Stripe Publishable Key                                   | pktest****                                                                                                                      |
+| REACT_APP_BASE_URL          | Base URL of the server example site                      | http://localhost:8081                                                                                                           |
+| REACT_APP_PROJECT_KEY       | commercetools Project Key                                | **\***                                                                                                                          |
+| REACT_APP_CTP_CLIENT_ID     | commercetools Client ID                                  | **\***                                                                                                                          |
+| REACT_APP_CLIENT_SECRET     | commercetools Secret Key                                 | **\***                                                                                                                          |
+| REACT_APP_SESSION_URL       | commercetools API session url                            | [https://session.us-central1.gcp.commercetools.com](https://session.us-central1.gcp.commercetools.com/)                         |
+| REACT_APP_AUTH_URL          | commercetools Auth URL                                   | https://auth.europe-west1.gcp.commercetools.com                                                                                 |
+| REACT_APP_ENABLER_BUILD_URL | URL of the Connector enabler deployed in commercetools   | https://assets-307a12410-95f0-4c70-8d69-75ca21sd28ad4c.assets.us-central1.gcp.preview.commercetools.app/connector-enabler.es.js |
+| REACT_APP_PROCESOR_URL      | URL of the Connector Processor deployed in commercetools | https://service-1d71326-3fd2-4bd5-b7c4-a12134.us-central1.gcp.preview.commercetools.app                                         |
 
-After installing the Stripe CLI, pair it with your Stripe account by running stripe login in the terminal. You’ll be prompted to log in to the Stripe Dashboard to grant the Stripe CLI access to your account.
-
-```bash
-$ stripe login
-```
-
-Pairing generates a pair of secret API keys - one test mode, one live mode - that are valid for 90 days.
-
-After linking your Stripe account, you can use the Stripe CLI to listen for events via stripe listen. But to test your endpoint, you’ll want to forward received events to your server. Do so by adding the --forward-to flag when invoking stripe listen:
-
-```bash
-stripe listen --forward-to http://127.0.0.1:8081/events
-```
-
-more details can be found [here](https://stripe.com/docs/webhooks/test)
-
----
-
-## Webhooks Details [OPTIONAL]
-
-You can register up to 16 webhook endpoints with Stripe. To register your webhook endpoint, provide the publicly accessible HTTPS URL to your webhook endpoint, and select the type of events you’re receiving in your endpoint. The URL format to register a webhook endpoint is:
-
-```
-https://<your-website>/events
-```
-
-For example, if your domain is `https://mycompanysite.com` specify `https://mycompanysite.com/events` as the endpoint URL.
-
-## Add a webhook endpoint [OPTIONAL]
-
-Use the following steps to register a webhook endpoint in the Developers Dashboard.
-
-Open the [Webhooks](https://dashboard.stripe.com/webhooks) page.
-Click Add endpoint.
-Add your webhook endpoint’s HTTPS URL in Endpoint URL.
-If you have a Stripe Connect account, enter a description and select Listen to events on Connected accounts.
-Select the events **Payment Intent**>**Select All**.
-Click Add endpoint.
 
 # Sequence Diagram
-
-Below is a detailed sequence diagram of the calls used in this example:
-![SequenceDiagram](docs/SequenceDiagram.png)
+Below is a detailed sequence diagram of the calls used inside the checkout example:
+![sequence_diagram.png](docs%2Fsequence_diagram.png)
 
 # Commerce Tools
 
