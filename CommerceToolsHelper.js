@@ -265,7 +265,10 @@ async function createOrder(cart) {
     },
     version: cart.version,
     orderState: "Open",
-    // paymentState: "Pending",
+    paymentState: "Pending",
+    shipmentState: 'Pending',
+    purchaseOrderNumber : crypto.randomUUID()
+
   };
   console.log(uri)
   console.log(orderBody)
