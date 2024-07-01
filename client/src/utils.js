@@ -92,8 +92,7 @@ export const updateCartShippingAddress = async (cart, address) => {
       addressCountry: address.address.country,
       addressPostalCode: address.address.postal_code,
       addressState: address.address.state,
-    },
-    version: cart.version,
+    }
   })
 
   return fetch(`${BACKEND_URL}/cart/address`, {
