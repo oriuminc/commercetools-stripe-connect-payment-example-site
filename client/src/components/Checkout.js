@@ -6,11 +6,10 @@ import Customer from "./Customer";
 import { getCTSessionId, loadEnabler } from "../utils";
 import { EnablerContext, EnablerContextProvider } from "../context/enablerContext";
 import { AddressElement, Elements, LinkAuthenticationElement } from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js";
+
 import StripeCheckout from "./StripeCheckout";
 
 const procesorUrl = process.env.REACT_APP_PROCESOR_URL;
-const stripepk = process.env.REACT_APP_PK;
 
 export default function Checkout(props) {
   // If you want to only show one way to checkout, turn one of the following 3 variable to default to true

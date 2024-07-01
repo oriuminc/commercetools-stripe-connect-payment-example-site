@@ -3,6 +3,8 @@ import Helmet from "react-helmet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import {DEV_REQUEST_HEADERS} from "../utils"
+
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -48,11 +50,12 @@ export default function Header(props) {
 
   // On intitial load only, retrieve branding details
   useEffect(() => {
-    fetch(`${BACKEND_URL}/settings/`,
-      {
-        headers: new Headers({
-          "ngrok-skip-browser-warning": "69420",
-        })})
+    fetch(`${BACKEND_URL}/settings/`,{
+      headers: {
+
+        ...DEV_REQUEST_HEADERS
+      }
+    })
       .then((res) => res.json())
       .then((data) => {
         setShopName(data.shop_name);

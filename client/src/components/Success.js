@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom'
+import {DEV_REQUEST_HEADERS, updateCartShippingAddress} from "../utils"
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
 
@@ -16,7 +17,22 @@ const Success = () => {
     const [chargeId, setChargeId] = useState(null)
 
     const query = useQuery()
-    
+
+    const [isCapturing, setIsCapturing] = useState(false)
+
+    useEffect(() => {
+        const payment_method = query.get("payment_method");
+        const payment_intent = query.get("payment_intent");
+
+        if (!payment_method || payment_method === "express_checkout") return;
+
+        const asyncCall = async () => {
+            await updateCartShippingAddress(cart, value)
+        }
+
+        asyncCall()
+    },[])
+
     useEffect(() => {
         const id = query.get("cart_id")
 
@@ -26,6 +42,7 @@ const Success = () => {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body : JSON.stringify({id})    
             }
@@ -56,6 +73,7 @@ const Success = () => {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body: JSON.stringify({chargeId})
             }
@@ -71,6 +89,7 @@ const Success = () => {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body: JSON.stringify({payment_intent})
             }
@@ -80,17 +99,21 @@ const Success = () => {
     
     const capture = async () => {
         const payment_intent = query.get("payment_intent")
+        setIsCapturing(true)
         let {latest_charge} = await fetch(`${BACKEND_URL}/capture-payment/`,
             {
                 method : "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...DEV_REQUEST_HEADERS
                 },
                 body: JSON.stringify({payment_intent})
             }
         ).then(res => res.json()) 
-        
+        .catch(e => setIsCapturing(false))
+
         setChargeId(latest_charge)
+        setIsCapturing(false)
     }
 
     return (
@@ -98,7 +121,7 @@ const Success = () => {
             {
                 capture_method === "manual" &&
                 <button onClick={capture} className='px-3 py-2 rounded-md font-medium border-2 border-[#635bff] text-[#635bff]'>
-                    Capture
+                    {isCapturing ? "Loading" :"Capture"}
                 </button>
             }
             {

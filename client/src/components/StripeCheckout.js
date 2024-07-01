@@ -4,16 +4,18 @@ import { AddressElement, LinkAuthenticationElement } from "@stripe/react-stripe-
 import LinkAuthentication from "./LinkAuthentication";
 import Address from "./Address";
 import { updateCartShippingAddress } from "../utils";
+import { Spinner } from "./Spinner";
+import ExpressCheckout from "./ExpressCheckout";
 
 const StripeCheckout = ({cart, setCart}) => {
 
     const {stripe, elements, enabler, createElement, } = useEnabler();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [paymentError, setPaymentError] = useState("")
 
     //This elements are from the enabler, not the natives from stripe
     const [paymentElement, setPaymentElement] = useState(null)
-    const [_, setExpressCheckoutElement] = useState(null)
 
     useEffect(() => {
         if(!enabler?.elementsConfiguration){
@@ -23,14 +25,6 @@ const StripeCheckout = ({cart, setCart}) => {
 
     useEffect(() => {
         if (!enabler) return;
-
-        createElement({
-            selector : "#express",
-            type : "expressCheckout",
-        }).then(element => {
-            if (!element) return
-            setExpressCheckoutElement(element)
-        });
         
         createElement({
             selector : "#payment",
@@ -38,7 +32,9 @@ const StripeCheckout = ({cart, setCart}) => {
             cart: {
                 id : cart.id,
                 version : cart.version
-            }
+            },
+            onComplete,
+            onError,
         }).then(element => {
             if (!element) return
 
@@ -48,12 +44,23 @@ const StripeCheckout = ({cart, setCart}) => {
         
     },[enabler])
 
-    const onError  = (e) => {
+    const onError  = ({type, message}) => {
+        setPaymentError(message)
+        console.error({type, message})
         setIsLoading(false)
+    }
+
+    const onComplete = async () => {
+        const addressElement = elements.getElement('address');
+            
+        const {value} = await addressElement.getValue();
+        
+        await updateCartShippingAddress(cart, value);
     }
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        setPaymentError("")
         
         if (!stripe || !elements) {
             // Stripe.js hasn't yet loaded.
@@ -64,6 +71,7 @@ const StripeCheckout = ({cart, setCart}) => {
         setIsLoading(true)
 
         try {
+
             const { error : submitError } = await elements.submit();
 
             if(submitError) {
@@ -71,26 +79,18 @@ const StripeCheckout = ({cart, setCart}) => {
                 return;
             }
             
-            const addressElement = elements.getElement('address');
-            const {complete, value} = await addressElement.getValue();
-            
-            let updatedCart;
-            
-            if (complete) {
-                updatedCart = await updateCartShippingAddress( setCart, cart, value)
-            }
-            
-            paymentElement.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}${updatedCart? `?cart_id=${updatedCart.id}&cart_version=${updatedCart.version}`: ""}`
+            paymentElement.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}?cart_id=${cart.id}`
             
             await paymentElement.submit();
         }catch(e) {
+            console.error(e)
             setIsLoading(false)
         }
     }
 
     return (
         <div className="flex flex-col gap-4 w-8/12">
-            <div id="express"></div>
+            <ExpressCheckout cart={cart} />
             or
             <form className="flex flex-col gap-4" id="test" onSubmit={onSubmit}>
                 <div>
@@ -111,7 +111,17 @@ const StripeCheckout = ({cart, setCart}) => {
                     </h3>
                     <div id="payment"></div>
                 </div>
-                <button disabled={isLoading} className={`${!isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"} text-white text-lg font-medium p-3 rounded-md`}>Pay</button>
+                <span className="text-[#df1c41]">
+                    {paymentError}
+                </span>
+                <button disabled={isLoading} className={`${!isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"} flex justify-center text-white text-lg font-medium p-3 rounded-md`}>
+                    {
+                        isLoading ?
+                        <Spinner />
+                        :
+                        "Pay"
+                    }
+                </button>
             </form>
         </div>
     )
