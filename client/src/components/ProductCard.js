@@ -17,27 +17,26 @@ export default function ProductCard(props) {
   }
 
   const styles = {
-    price: {
-      fontSize: "larger",
-      fontWeight: 600,
-      display: "block",
+    boxCard: {
+      height: 200,
     },
     card: {
+      maxHeight: 500,
       borderRadius: 5,
       boxShadow: "silver 0px 0px 6px 0px",
       cursor: "pointer",
       border: "1px solid silver",
     },
-    name: {
-      fontSize: "1.1em",
-      fontWeight: 500,
+    price: {
+      fontSize: "1.2em",
+      fontWeight: 600,
     },
     nameModal: {
       fontSize: "1.5em",
       fontWeight: 500,
     },
     img: {
-      maxHeight: 500,
+      maxHeight: 180,
       objectFit: "cover",
       marginLeft: "auto",
       marginRight: "auto",
@@ -91,22 +90,22 @@ export default function ProductCard(props) {
     <>
       <div className="col">
         <div style={styles.card} className="h-100" onClick={handleShow}>
-          <img
-            alt="product"
-            src={props.product.masterData.current.masterVariant.images[0]?.url}
-            className="w-100"
-            style={styles.img}
-          />
-          <div className="card-body" style={{ paddingBottom: 0 }}>
-            <h5 style={styles.name}>
+          <div className="card-image" style={styles.boxCard}>
+            <img
+              alt="product"
+              src={props.product.masterData.current.masterVariant.images[0]?.url}
+              style={styles.img}
+            />
+          </div>
+          <div className="card-body" style={{ paddingBottom: 10 }}>
+            <p styles={styles.name}>
               {props.product.masterData.current.name["en-US"]}
-            </h5>
-            {/* <p style={{ paddingTop: '20px' }}>{props.product.description}</p> */}
-            <p>
+            </p>
+            <h3 style={styles.price}>
               {displayPrice(
                 props.product.masterData.current.masterVariant.prices[0]?.value
               )}
-            </p>
+            </h3>
           </div>
         </div>
       </div>
