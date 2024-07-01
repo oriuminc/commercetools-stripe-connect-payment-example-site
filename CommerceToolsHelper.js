@@ -267,8 +267,7 @@ async function createOrder(cart) {
     orderState: "Open",
     // paymentState: "Pending",
   };
-  console.log(uri)
-  console.log(orderBody)
+  
   const rsp = await client.execute({
     uri: uri,
     method: "POST",
@@ -457,6 +456,7 @@ async function cartAddShippingAddres(cartId, address, version) {
 export default {
   getProducts,
   createCart,
+  getPayment,
   cartAddLineItem,
   getCustomerByEmail,
   createCustomer,

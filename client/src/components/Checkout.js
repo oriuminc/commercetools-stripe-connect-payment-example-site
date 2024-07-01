@@ -59,6 +59,12 @@ export default function Checkout(props) {
         </div>
       </EnablerContextProvider>
     )}
+    {
+      !props.cart && 
+      <p>
+        Your cart is empty, add products <a href="/" className="text-[#635bff] underline">here</a>
+      </p>
+    }
     </>
   );
 }

@@ -421,6 +421,14 @@ app.get("/payment-intent/:payment_intent", async (req, res) => {
   res.send(paymentIntent);
 });
 
+app.get("/charge/:charge_id", async (req, res) => {
+  const charge_id = req.params.charge_id;
+
+  const charge = await stripe.charges.retrieve(charge_id)
+
+  res.send(charge)
+})
+
 /* ------ WEBHOOK ENDPOINT ------ */
 app.post("/events", async (req, res) => {
 

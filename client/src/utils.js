@@ -16,7 +16,7 @@ export const loadEnabler = async() => {
 export const fetchAdminToken = async() => {
         const headers = new Headers();
 
-        headers.append('Authorization', `Basic ${btoa(`${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`)}`);
+    headers.append('Authorization', `Basic ${btoa(`${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`)}`);
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
     var urlencoded = new URLSearchParams();

@@ -38,7 +38,6 @@ export default function ProductCard(props) {
     },
     img: {
       maxHeight: 500,
-      objectFit: "cover",
       marginLeft: "auto",
       marginRight: "auto",
       borderRadius: "5px 5px 0 0",
@@ -94,7 +93,7 @@ export default function ProductCard(props) {
           <img
             alt="product"
             src={props.product.masterData.current.masterVariant.images[0]?.url}
-            className="w-100"
+            className="w-100 aspect-square object-contain"
             style={styles.img}
           />
           <div className="card-body" style={{ paddingBottom: 0 }}>

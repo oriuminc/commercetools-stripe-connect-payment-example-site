@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import {DEV_REQUEST_HEADERS} from "../utils"
-
+import logo from "../images/logo.svg"
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -12,7 +12,7 @@ const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 export default function Header(props) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [shopName, setShopName] = useState();
-  const [shopIcon, setShopIcon] = useState("logo.svg");
+  const [shopIcon, setShopIcon] = useState();
 
   const styles = {
     top: {
@@ -79,19 +79,11 @@ export default function Header(props) {
         <div className="row" style={styles.top}>
           <div className="col-8">
             <a href="/">
-              <img src={shopIcon} style={styles.icon} alt="icon" />
+              <img src={shopIcon ? shopIcon : logo} style={styles.icon} alt="icon" />
             </a>
           </div>
           {props.showCart && (
             <div className="col-4 align-text-bottom" style={styles.cart}>
-              <select
-                onChange={props.pickCurrency}
-                value={props.currency}
-                style={styles.switcher}
-              >
-                <option value="eur">€ test</option>
-                <option value="gbp">£ test</option>
-              </select>
               <Link
                 to="/checkout"
                 style={{ textDecoration: "none", color: "inherit" }}

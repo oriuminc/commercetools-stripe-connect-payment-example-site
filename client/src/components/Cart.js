@@ -8,6 +8,7 @@ export default function Cart(props) {
       currency: props.currency,
     });
   };
+  console.log(props.cart)
 
   return (
     <>
@@ -27,13 +28,20 @@ export default function Cart(props) {
                       {item.name["en-US"]}
                     </span>
                     <span>
+                      Unit price ${displayPrice(
+                        (item.price.value.centAmount / Math.pow(10, item.price.value.fractionDigits)).toFixed(
+                          item.price.value.fractionDigits
+                        )
+                      )}
+                    </span>
+                    <span>
                       Qty: {item.quantity}
                     </span>
                   </div>
                 </div>
                 <div>
                   ${displayPrice(
-                    (item.price.value.centAmount / 100).toFixed(
+                    (item.totalPrice.centAmount / Math.pow(10, item.totalPrice.fractionDigits)).toFixed(
                       item.price.value.fractionDigits
                     )
                   )}
