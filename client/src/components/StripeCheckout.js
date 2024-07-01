@@ -33,7 +33,6 @@ const StripeCheckout = ({cart, setCart}) => {
                 id : cart.id,
                 version : cart.version
             },
-            onComplete,
             onError,
         }).then(element => {
             if (!element) return
@@ -48,14 +47,6 @@ const StripeCheckout = ({cart, setCart}) => {
         setPaymentError(message)
         console.error({type, message})
         setIsLoading(false)
-    }
-
-    const onComplete = async () => {
-        const addressElement = elements.getElement('address');
-            
-        const {value} = await addressElement.getValue();
-        
-        await updateCartShippingAddress(cart, value);
     }
 
     const onSubmit = async (e) => {
@@ -79,6 +70,12 @@ const StripeCheckout = ({cart, setCart}) => {
                 return;
             }
             
+            const addressElement = elements.getElement('address');
+            
+            const {value} = await addressElement.getValue();
+            
+            await updateCartShippingAddress(cart, value);
+
             paymentElement.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}?cart_id=${cart.id}`
             
             await paymentElement.submit();

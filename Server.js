@@ -361,7 +361,7 @@ app.post("/create-payment-intent", async (req, res) => {
 app.post("/cart/address", async (req, res) => {
 
   const cartId = req.body.cartId;
-  const version = req.body.version;
+  const { version } = await commerceTools.getCart(id);
   const address = req.body.address;
   let result = await commerceTools.cartAddShippingAddres(cartId, address, version)
     .catch(e => console.log(`Error : ${e}`))
