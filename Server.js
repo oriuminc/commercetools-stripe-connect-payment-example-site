@@ -21,13 +21,13 @@ app.use("/confirm", express.static(path.join(__dirname, "client/build")));
 const corsOptions = {
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'], // puedes agregar más métodos si es necesario
-  allowedHeaders: ['Content-Type'], // puedes agregar más encabezados si es necesario
+  allowedHeaders: ['Content-Type', 'ngrok-skip-browser-warning'], // puedes agregar más encabezados si es necesario
   optionsSuccessStatus: 200 // algunos navegadores (IE11, algunos SmartTVs) requieren esto
 };
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-app.use(cors());
+// app.use(cors());
 
 dotenv.config();
 

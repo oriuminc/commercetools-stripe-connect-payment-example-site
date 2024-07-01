@@ -2,20 +2,21 @@ const projectKey = process.env.REACT_APP_PROJECT_KEY;
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
 
-export const loadEnabler = async () => {
+export const loadEnabler = async() => {
     try {
-        const enablerModule = await import(process.env.REACT_APP_ENABLER_BUILD_URL);
-    
+        const enablerModule = await
+        import (process.env.REACT_APP_ENABLER_BUILD_URL);
+
         return enablerModule
     } catch (error) {
         console.error("Error while loading Enabler module", error);
     }
 }
 
-export const fetchAdminToken = async () => {
-    const headers = new Headers();
+export const fetchAdminToken = async() => {
+        const headers = new Headers();
 
-    headers.append('Authorization', `Basic ${btoa(`${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`)}`);
+        headers.append('Authorization', `Basic ${btoa(`${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`)}`);
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
     var urlencoded = new URLSearchParams();
@@ -81,7 +82,7 @@ export const getCTSessionId = async (cartId) => {
   return data.id;
 }
 
-export const updateCartShippingAddress = async ( setCart, cart, address) => {
+export const updateCartShippingAddress = async (cart, address) => {
   const bodyConst = JSON.stringify({
     cartId: cart.id,
     address:{
@@ -99,13 +100,16 @@ export const updateCartShippingAddress = async ( setCart, cart, address) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...DEV_REQUEST_HEADERS
     },
     body: bodyConst,
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data)
-        setCart(data);
-        return data
-    });
+  });
 };
+
+const MODE = process.env.REACT_APP_MODE;
+console.log({MODE})
+export const DEV_REQUEST_HEADERS = MODE === "dev" ? {
+  "ngrok-skip-browser-warning": "6024"
+} : {}
+
+console.log({DEV_REQUEST_HEADERS})
