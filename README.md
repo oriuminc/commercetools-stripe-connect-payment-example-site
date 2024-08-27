@@ -46,6 +46,23 @@ All Stripe webhooks will be sent to the Payment Connector backend. The Payment C
 3. [Stripe Payment Element](https://docs.stripe.com/payments/payment-element) (from Payment Connector integration)
 4. [Express Checkout Element](https://docs.stripe.com/elements/express-checkout-element) (from Payment Connector integration)
 
+### Considerations about Apple Pay
+
+To enable the Apple Pay button in the payment element component, your website must have the correct domain association file hosted. This file is crucial for Apple to verify that you control the domain where Apple Pay will be used.
+
+1. **Domain Association File**: Stripe generates a domain association file named `apple-developer-merchantid-domain-association`. You need to host this file at the following URL on your website:
+    - `https://yourwebsite.com/.well-known/apple-developer-merchantid-domain-association`
+    - Replace `https://yourwebsite.com` with your actual domain.
+2. **Verification Process**: Once the file is correctly hosted, Stripe will automatically attempt to verify your domain with Apple. This verification is necessary for Apple Pay to function correctly on your site.
+3. **Updating the File**: Keep in mind that this file has an expiration date. If you receive an error about an outdated file, you'll need to download the latest version from Stripe and replace the old file on your server.
+   These steps ensure that the Apple Pay button is displayed and functional when using the payment element on your site.
+
+## Installation Guide PDF
+
+For a comprehensive step-by-step guide on installing both the Payment Connector and the example e-commerce site, please refer to the PDF guide linked below. This guide includes detailed instructions, screenshots, and troubleshooting tips to ensure a smooth setup process.
+
+[Download Installation Guide PDF](docs%2FImplementation%20Guide%20-%20Payment%20Connector%20%2B%20Example%20Site.pdf)
+
 ## Installation
 
 To install the necessary packages, run:
