@@ -1,54 +1,46 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { EnablerContext } from "../context/enablerContext"
 
 export const useEnabler = () => {
-    const enablerValue = useContext(EnablerContext);
- 
-    const [stripeSDK, setStripeSDK] = useState(null)
+    const enablerContext = useContext(EnablerContext);
+
     const [elements, setElements] = useState(null)
 
-    const [enablerElement, setEnablerElement] = useState([])
 
-    useEffect(() => {
-        
-        if (!enablerValue.enabler?.stripeSDK) return;
-        
-        enablerValue.enabler.stripeSDK
-            .then(stripe => setStripeSDK(stripe));
-        
-    },[enablerValue.enabler?.stripeSDK])
-    
-    useEffect(() => {
-        if (!enablerValue.enabler?.elements) return;
-
-        setElements(enablerValue.enabler.elements);
-
-    },[enablerValue.enabler?.elements])
-
-    const createElement = async ({selector, type, options, onError, onComplete}) => {
-        const enabler = await enablerValue.enabler;
+    const createElement = async ({selector, onError, onComplete}) => {
+        const enabler = await enablerContext.enabler;
 
         if(!enabler) return;
-        
-        return await enabler.createStripeElement({type, options, onError, onComplete})
-            .then(element => {
 
-                element.mount(selector);
+        const builder = await enabler.createDropinBuilder('embedded');
+        const component = await builder.build({
+            showPayButton: !builder.componentHasSubmit,
+        });
+        component.mount(selector);
+        setElements(component.baseOptions.elements)
+        return component
+    }
 
-                setEnablerElement(prev => [...prev, element]);
-                
-                return element
-            })
-            .catch(e => {
-                console.error(e)
-            })
+    const createElementExpress = async ({selector, type, options, onError, onComplete}) => {
+        const enablerExpress = await enablerContext.enablerExpress;
+
+        if(!enablerExpress) return;
+
+        const builder = await enablerExpress.createDropinBuilder('embedded');
+        const component = await builder.build({
+            showPayButton: !builder.componentHasSubmit
+        });
+        component.mount(selector);
+        setElements(component.baseOptions.elements)
+        return component
     }
 
 
     return {
-        enabler : enablerValue.enabler,
-        stripe : stripeSDK,
+        enabler : enablerContext.enabler,
+        enablerExpress: enablerContext.enablerExpress,
         elements,
-        createElement
+        createElement,
+        createElementExpress,
     };
 }

@@ -2,46 +2,66 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import { getCTSessionId, loadEnabler } from "../utils";
 
 export const EnablerContext = createContext({
-    enabler : null
+    enabler : null,
+    enablerExpress: null,
 });
 
-const procesorUrl = process.env.REACT_APP_PROCESOR_URL;
+const processorUrl = process.env.REACT_APP_PROCESOR_URL;
 
-const STRIPE_PUBLISHABLE_KEY = process.env.REACT_APP_PK;
+export const EnablerContextProvider = ({children, cartId, paymentHandler}) => {
 
-export const EnablerContextProvider = ({children, cartId}) => {
+    const [enablerPayment, setEnablerPayment] = useState(null)
+    const [enablerExpress, setEnablerExpress ]= useState(null)
 
-    const [enabler, setEnabler] = useState(null)
-    
+
     useEffect(() => {
-        
         if(!cartId) return;
-        
+
         const asyncCall = async () => {
             try{
                 let { Enabler } = await loadEnabler();
-                
                 let sessionId = await getCTSessionId(cartId);
-                
-                setEnabler(new Enabler({
-                    publishableKey : STRIPE_PUBLISHABLE_KEY,
-                    processorURL : procesorUrl, 
-                    returnURL : "",
-                    sessionId
+
+                setEnablerPayment(new Enabler({
+                    processorUrl: processorUrl,
+                    sessionId: sessionId,
+                    currency: "EUR",
+                    onComplete: ({ isSuccess, paymentReference, paymentIntent }) => {
+                        console.log("onComplete2", { isSuccess, paymentReference, paymentIntent });
+                        paymentHandler(paymentIntent)
+                    },
+                    onError: (err) => {
+                        console.error("onError", err);
+                    },
+                    paymentElementType: 'payment',
                 }))
+                setEnablerExpress(new Enabler({
+                    processorUrl: processorUrl,
+                    sessionId: sessionId,
+                    currency: "EUR",
+                    onComplete: ({ isSuccess, paymentReference }) => {
+                        console.log("onComplete", { isSuccess, paymentReference });
+
+                    },
+                    onError: (err) => {
+                        console.error("onError", err);
+                    },
+                    paymentElementType: 'expressCheckout',
+                }))
+
             } catch (e) {
                 console.error(e);
                 return null;
             }
         };
-        
         asyncCall()
     },[cartId])
 
     return (
         <EnablerContext.Provider value={
             {
-                enabler
+                enabler: enablerPayment,
+                enablerExpress: enablerExpress,
             }
         }>
             {children}

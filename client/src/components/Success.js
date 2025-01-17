@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom'
 import {DEV_REQUEST_HEADERS, updateCartShippingAddress} from "../utils"
 import { Spinner } from './Spinner';
@@ -7,13 +7,13 @@ const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
 function useQuery() {
     const { search } = useLocation();
-  
+
     return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-const Success = () => {
+const Success = ({paymentIntent}) => {
 
-    const { capture_method} = useParams();
+    const capture_method = useRef()
 
     const [chargeId, setChargeId] = useState(null)
 
@@ -47,7 +47,9 @@ const Success = () => {
             }
         )
         const payment_intent = await response.json()
-    
+        capture_method.current = payment_intent.capture_method;
+        console.log('....................-.-.-.---.-.-.-.-.-.-.-.-..-.-')
+        console.log(JSON.stringify(payment_intent,null,2))
         setPaymentIntentStatus(payment_intent.status)
         setChargeId(payment_intent.latest_charge)
         updateChargeObject()
@@ -81,7 +83,7 @@ const Success = () => {
 
     useEffect(() => {
         const id = query.get("cart_id")
-        
+
         fetch(`${BACKEND_URL}/create-order/`,
             {
                 method : "POST",
@@ -89,15 +91,15 @@ const Success = () => {
                     "Content-Type": "application/json",
                     ...DEV_REQUEST_HEADERS
                 },
-                body : JSON.stringify({id})    
+                body : JSON.stringify({id})
             }
         )
         .catch(res => console.error(res))
     },[])
-    
+
     useEffect(() => {
-        if(capture_method === "manual") return;
-        
+        if(capture_method.current === "manual") return;
+
         const payment_intent = query.get("payment_intent");
 
         const asyncCall = async () => {
@@ -107,7 +109,7 @@ const Success = () => {
 
             setChargeId(latest_charge)
         }
-        
+
         asyncCall()
     },[query])
 
@@ -128,15 +130,15 @@ const Success = () => {
         .catch(_ =>  setFetchingState(prev => ({...prev, isRefunding : false})))
 
         await getPaymentIntent()
-        
+
         setFetchingState(prev => ({...prev, isCapturing : false}))
     }
-    
+
     const cancelPayment = async () => {
 
         const payment_intent = query.get("payment_intent")
         setFetchingState(prev => ({...prev, isCanceling : true}))
-        
+
         let response = await fetch(`${BACKEND_URL}/cancel-payment/`,
             {
                 method : "POST",
@@ -147,13 +149,13 @@ const Success = () => {
                 body: JSON.stringify({payment_intent})
             }
         ).then(res => res.json())
-        .catch(res => setFetchingState(prev => ({...prev, isCanceling : false})))   
-        
+        .catch(res => setFetchingState(prev => ({...prev, isCanceling : false})))
+
         await getPaymentIntent()
         setFetchingState(prev => ({...prev, isCanceling : false}))
-                
+
     }
-    
+
     const capture = async () => {
         const payment_intent = query.get("payment_intent")
         setFetchingState(prev => ({...prev, isCapturing : true}))
@@ -166,7 +168,7 @@ const Success = () => {
                 },
                 body: JSON.stringify({payment_intent})
             }
-        ).then(res => res.json()) 
+        ).then(res => res.json())
         .catch(_ => setFetchingState(prev => ({...prev, isCapturing : false})))
 
         setChargeId(latest_charge)
@@ -197,7 +199,7 @@ const Success = () => {
                 {
                     !isCaptured && !isCanceled && !isRefunded &&
                     <button onClick={capture} className={`${!isCapturing ? "border-[#635bff] text-[#635bff]" : "border-[#9d9dad] text-[#9d9dad]"} px-3 py-2 rounded-md font-medium border-2 `}>
-                        {isCapturing ? 
+                        {isCapturing ?
                             <Spinner />
                             :
                             "Capture"
@@ -205,9 +207,9 @@ const Success = () => {
                     </button>
                 }
                 {
-                    (isCaptured || capture_method !== "manual") && !isRefunded &&
+                    (isCaptured || capture_method.current !== "manual") && !isRefunded &&
                     <button onClick={requestRefund} className={`${!isCanceling ? "border-[#635bff] text-[#635bff]" : "text-[#9d9dad] border-[#9d9dad]"} px-3 py-2 rounded-md font-medium border-2`}>
-                        {isRefunding ? 
+                        {isRefunding ?
                             <Spinner />
                             :
                             "Request Refund"
@@ -215,16 +217,16 @@ const Success = () => {
                     </button>
                 }
                 {
-                    !isCanceled && capture_method === "manual" && !isCaptured &&
+                    !isCanceled && capture_method.current === "manual" && !isCaptured &&
                     <button onClick={cancelPayment} className={`${!isCanceling ? "bg-[#ec1313]" : "bg-[#9d9dad]"} px-3 py-2 rounded-md text-white font-medium`}>
-                        {isCanceling ? 
+                        {isCanceling ?
                             <Spinner />
                             :
                             "Cancel Payment Authorization"
                         }
                     </button>
                 }
-                
+
             </div>
         </>
     )

@@ -21,6 +21,8 @@ export default function Checkout(props) {
   const enablerRef = useRef()
   const stripe = useRef()
   const stripeElements = useRef()
+  const paymentIntentTest = useRef()
+
 
   const styles = {
     header: {
@@ -38,19 +40,32 @@ export default function Checkout(props) {
     setShowUPE(e.target.value === "upe");
   };
 
-    
+  const paymentHandler = (val) =>{
+    console.log('+++++++'+val+'---------')
+    paymentIntentTest.current = val
+    console.log('+++++++'+paymentIntentTest.current+'---------')
+    console.log('+++++++'+val+'---------')
+
+  }
+
+  function getPaymentHandler  () {
+    console.log('+++++++'+paymentIntentTest.current+'---------')
+    return paymentIntentTest.current;
+
+  }
+
+
   useEffect(() => {
     if(!stripe) return;
-    
+
   },[stripe])
 
-  
   return (
     <>
     {props.cart && (
-      <EnablerContextProvider cartId={props.cart?.id}>
+      <EnablerContextProvider cartId={props.cart?.id} paymentHandler={paymentHandler}>
         <div className="flex flex-row justify-between gap-5">
-          <StripeCheckout cart={props.cart} setCart={props.setCart}/>
+          <StripeCheckout cart={props.cart} setCart={props.setCart} getPaymentHandler={getPaymentHandler}/>
           <div className="bg-black w-4/12">
             {props.cart && props.cart.lineItems &&
               <Cart cart={props.cart} currency={props.currency} />
@@ -60,7 +75,7 @@ export default function Checkout(props) {
       </EnablerContextProvider>
     )}
     {
-      !props.cart && 
+      !props.cart &&
       <p>
         Your cart is empty, add products <a href="/" className="text-[#635bff] underline">here</a>
       </p>

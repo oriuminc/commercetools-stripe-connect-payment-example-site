@@ -1,5 +1,5 @@
 // Modules
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import Header from "./components/Header";
@@ -9,6 +9,7 @@ import Confirmation from "./components/Confirmation";
 import "./styles/index.css";
 import Success from "./components/Success";
 import {DEV_REQUEST_HEADERS} from "./utils"
+import WellKnowApplePay from "./components/WellKnowApplePay";
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -108,7 +109,7 @@ export default function App() {
             showCart={false}
             totalQuantity={totalQuantity}
           />
-          <Success />
+          <Success/>
         </Route>
         <Route path="/confirm/:id">
           <Header
@@ -136,6 +137,9 @@ export default function App() {
           />
           <Confirmation />
         </Route>
+        <Route path="/.well-known/apple-developer-merchantid-domain-association" >
+          <WellKnowApplePay cart={cart}/>
+        </Route >
         <Route path="/">
           <Header
             cart={cart}
@@ -153,6 +157,7 @@ export default function App() {
             currency={currency}
           />
         </Route>
+
       </Switch>
     </BrowserRouter>
   );

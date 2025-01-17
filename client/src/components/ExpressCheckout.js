@@ -4,7 +4,7 @@ import { updateCartShippingAddress } from '../utils';
 
 const ExpressCheckout = ({ cart }) => {
 
-    const { enabler, createElement, } = useEnabler();
+    const { enablerExpress, createElementExpress, } = useEnabler();
 
     const onError = (e) => {
 
@@ -23,21 +23,24 @@ const ExpressCheckout = ({ cart }) => {
     }
 
     useEffect(() => {
-        if (!enabler) return;
-
-        createElement({
+        console.log('enablerExpress')
+        if (!enablerExpress) return;
+        console.log('enablerExpress1')
+        createElementExpress({
             selector: "#express",
             type: "expressCheckout",
             onComplete,
             onError,
         }).then(element => {
+            console.log('enablerExpress create then')
             if (!element) return;
 
-            element.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}?cart_id=${cart.id}&payment_method=express_checkout`
+            //element.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}?cart_id=${cart.id}&payment_method=express_checkout`
+            element.returnURL = `${window.location.origin}/success?cart_id=${cart.id}&payment_method=express_checkout`
         });
-    }, [enabler])
+    }, [enablerExpress])
 
-    return ( 
+    return (
         <div id="express"> </div>
     )
 }

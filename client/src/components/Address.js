@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { useEnabler } from '../hooks/useEnabler'
 
-const Address = () => {
-    const {elements} = useEnabler();
+const Address = ({elements}) => {
     const [stripeAuthElement, setStripeAuthElement] = useState(null)
 
     useEffect(() => {
         if(!elements || stripeAuthElement) return;
-        
+
         const element = elements.create("address", {
             mode : "shipping",
             autocomplete : { mode: "automatic" }
         });
         setStripeAuthElement(element)
-            
         element.mount("#address-element")
     },[elements])
 

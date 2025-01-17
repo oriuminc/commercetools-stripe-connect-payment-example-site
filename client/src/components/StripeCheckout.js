@@ -1,31 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useEnabler } from "../hooks/useEnabler";
-import { AddressElement, LinkAuthenticationElement } from "@stripe/react-stripe-js";
 import LinkAuthentication from "./LinkAuthentication";
 import Address from "./Address";
 import { updateCartShippingAddress } from "../utils";
 import { Spinner } from "./Spinner";
 import ExpressCheckout from "./ExpressCheckout";
 
-const StripeCheckout = ({cart, setCart}) => {
+const StripeCheckout = ({cart, setCart, paymentSuccess, getPaymentHandler}) => {
 
-    const {stripe, elements, enabler, createElement, } = useEnabler();
+    const { elements, enabler, createElement } = useEnabler();
 
     const [isLoading, setIsLoading] = useState(false);
     const [paymentError, setPaymentError] = useState("")
-
-    //This elements are from the enabler, not the natives from stripe
     const [paymentElement, setPaymentElement] = useState(null)
 
     useEffect(() => {
-        if(!enabler?.elementsConfiguration){
-            return;
-        }
-    }, [enabler])
+        if(!paymentSuccess) return;
+        console.log('paymentSuccess handler ----------'+paymentSuccess)
+    },[paymentSuccess])
 
     useEffect(() => {
         if (!enabler) return;
-        
+
         createElement({
             selector : "#payment",
             type : "payment",
@@ -36,11 +32,11 @@ const StripeCheckout = ({cart, setCart}) => {
             onError,
         }).then(element => {
             if (!element) return
-
-            element.onError = onError;
+            //element.onError = onError;
             setPaymentElement(element)
+        }).catch(err => {
         });
-        
+
     },[enabler])
 
     const onError  = ({type, message}) => {
@@ -52,35 +48,28 @@ const StripeCheckout = ({cart, setCart}) => {
     const onSubmit = async (e) => {
         e.preventDefault();
         setPaymentError("")
-        
-        if (!stripe || !elements) {
+        console.log('Pay clicked')
+        if ( !paymentElement) { //TODO change for the paymentElement component clicked can be payment or express
+
+            console.log(`clicked onSubmit error , ${paymentElement}`)
             // Stripe.js hasn't yet loaded.
             // Make sure to disable form submission until Stripe.js has loaded.
             return;
         }
-
         setIsLoading(true)
-
         try {
-
-            const { error : submitError } = await elements.submit();
-
-            if(submitError) {
-                onError(submitError)
-                return;
-            }
-            
+            const test2 = await paymentElement.submit();
+            console.log(test2)
             const addressElement = elements.getElement('address');
-            
+            console.log('testing3')
             const {value} = await addressElement.getValue();
-            
+            const paymentIntent = getPaymentHandler();
+            console.log(`test${paymentIntent}ing4`)
             await updateCartShippingAddress(cart, value);
+            console.log('testing5'+ paymentSuccess)
+            window.location = `${window.location.origin}/success/manual?payment_intent=${paymentIntent}&cart_id=${cart.id}`
 
-            paymentElement.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}?cart_id=${cart.id}`
-            
-            await paymentElement.submit();
         }catch(e) {
-            console.error(e)
             setIsLoading(false)
         }
     }
@@ -94,13 +83,14 @@ const StripeCheckout = ({cart, setCart}) => {
                     <h3>
                         Account
                     </h3>
-                    <LinkAuthentication />
+                    <LinkAuthentication elements={elements}/>
+
                 </div>
                 <div>
                     <h3>
                         Address
                     </h3>
-                    <Address/>
+                    <Address elements={elements}/>
                 </div>
                 <div>
                     <h3>
@@ -111,7 +101,7 @@ const StripeCheckout = ({cart, setCart}) => {
                 <span className="text-[#df1c41]">
                     {paymentError}
                 </span>
-                <button disabled={isLoading} className={`${!isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"} flex justify-center text-white text-lg font-medium p-3 rounded-md`}>
+                <button disabled={isLoading} type="submit" className={`${!isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"} flex justify-center text-white text-lg font-medium p-3 rounded-md`}>
                     {
                         isLoading ?
                         <Spinner />

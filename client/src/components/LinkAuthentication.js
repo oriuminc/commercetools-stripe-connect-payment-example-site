@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { useEnabler } from '../hooks/useEnabler'
+import React, { useEffect, useState } from "react";
 
-const LinkAuthentication = () => {
-    const {elements} = useEnabler();
+const LinkAuthentication = ({elements}) => {
     const [stripeAuthElement, setStripeAuthElement] = useState(null)
 
     useEffect(() => {
-        if(!elements || stripeAuthElement) return;
-        
+        if (!elements || stripeAuthElement) return;
+
         const element = elements.create("linkAuthentication");
         setStripeAuthElement(element)
-            
         element.mount("#link-auth-element")
-        
+
     },[elements])
 
     return (
