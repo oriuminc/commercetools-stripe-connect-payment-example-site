@@ -12,7 +12,7 @@ function WellKnowApplePay({cart}) {
       try {
 
         // Make API call to fetch the file content (string)
-        const response = await fetch(`${processorUrl}/.well-known/apple-developer-merchantid-domain-association`, {
+        const response = await fetch(`${processorUrl}/applePayConfig`, {
           method: "GET",
         });
 
