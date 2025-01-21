@@ -102,8 +102,37 @@ export const updateCartShippingAddress = async (cart, address) => {
       ...DEV_REQUEST_HEADERS
     },
     body: bodyConst,
-  });
+  }).then((response)=> console.log(response)
+  ).catch((err)=> console.log(err));
 };
+
+export const getAddressFromPaymentIntent = async (payment_intent_id) => {
+  let response = await fetch(`${BACKEND_URL}/payment-intent/${payment_intent_id}`,
+    {
+      headers:{
+        ...DEV_REQUEST_HEADERS
+      }
+    }
+  )
+  const payment_intent = await response.json()
+  const { latest_charge } = payment_intent;
+  let responseCharge = await fetch(`${BACKEND_URL}/charge/${latest_charge}`,
+    {
+      headers:{
+        ...DEV_REQUEST_HEADERS
+      }
+    }
+  )
+  const charge = await responseCharge.json()
+  const { billing_details, shipping } = charge;
+  let billingAlias = shipping;
+
+  if (!shipping && billing_details) {
+    billingAlias = billing_details;
+  }
+
+  return billingAlias
+}
 
 const MODE = process.env.REACT_APP_MODE;
 console.log({MODE})

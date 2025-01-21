@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useEnabler } from "../hooks/useEnabler";
 import LinkAuthentication from "./LinkAuthentication";
 import Address from "./Address";
-import { updateCartShippingAddress } from "../utils";
+import { getAddressFromPaymentIntent, updateCartShippingAddress } from "../utils";
 import { Spinner } from "./Spinner";
 import ExpressCheckout from "./ExpressCheckout";
 
-const StripeCheckout = ({cart, setCart, paymentSuccess, getPaymentHandler}) => {
+const StripeCheckout = ({cart, paymentSuccess}) => {
 
     const { elements, enabler, createElement } = useEnabler();
 
@@ -16,23 +16,18 @@ const StripeCheckout = ({cart, setCart, paymentSuccess, getPaymentHandler}) => {
 
     useEffect(() => {
         if(!paymentSuccess) return;
-        console.log('paymentSuccess handler ----------'+paymentSuccess)
     },[paymentSuccess])
 
     useEffect(() => {
         if (!enabler) return;
 
         createElement({
+            type: 'payment',
             selector : "#payment",
-            type : "payment",
-            cart: {
-                id : cart.id,
-                version : cart.version
-            },
+            onComplete,
             onError,
         }).then(element => {
             if (!element) return
-            //element.onError = onError;
             setPaymentElement(element)
         }).catch(err => {
         });
@@ -45,34 +40,28 @@ const StripeCheckout = ({cart, setCart, paymentSuccess, getPaymentHandler}) => {
         setIsLoading(false)
     }
 
+    const onComplete  = async (paymentIntent) => {
+        const billingAlias = await getAddressFromPaymentIntent(paymentIntent);
+        await updateCartShippingAddress(cart, billingAlias);
+        window.location = `${window.location.origin}/success/manual?payment_intent=${paymentIntent}&cart_id=${cart.id}`
+    }
+
     const onSubmit = async (e) => {
         e.preventDefault();
         setPaymentError("")
-        console.log('Pay clicked')
-        if ( !paymentElement) { //TODO change for the paymentElement component clicked can be payment or express
-
-            console.log(`clicked onSubmit error , ${paymentElement}`)
-            // Stripe.js hasn't yet loaded.
-            // Make sure to disable form submission until Stripe.js has loaded.
+        if ( !paymentElement) {
             return;
         }
         setIsLoading(true)
         try {
-            const test2 = await paymentElement.submit();
-            console.log(test2)
-            const addressElement = elements.getElement('address');
-            console.log('testing3')
-            const {value} = await addressElement.getValue();
-            const paymentIntent = getPaymentHandler();
-            console.log(`test${paymentIntent}ing4`)
-            await updateCartShippingAddress(cart, value);
-            console.log('testing5'+ paymentSuccess)
-            window.location = `${window.location.origin}/success/manual?payment_intent=${paymentIntent}&cart_id=${cart.id}`
+            const { error : submitError } = await paymentElement.submit();
+            if(!submitError) return;
 
         }catch(e) {
             setIsLoading(false)
         }
     }
+
 
     return (
         <div className="flex flex-col gap-4 w-8/12">

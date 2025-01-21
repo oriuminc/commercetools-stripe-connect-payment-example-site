@@ -1,7 +1,6 @@
 // Modules
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { Elements } from "@stripe/react-stripe-js";
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
 import Checkout from "./components/Checkout";

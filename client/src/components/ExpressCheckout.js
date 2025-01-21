@@ -1,44 +1,33 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from "react";
 import { useEnabler } from '../hooks/useEnabler';
-import { updateCartShippingAddress } from '../utils';
+import { getAddressFromPaymentIntent, updateCartShippingAddress } from "../utils";
 
 const ExpressCheckout = ({ cart }) => {
 
-    const { enablerExpress, createElementExpress, } = useEnabler();
+    const { enabler, createElement, } = useEnabler();
 
     const onError = (e) => {
 
     }
 
-    const onComplete = async(e) => {
-        const { billingDetails, shippingAddress } = e;
-
-        let billingAlias = shippingAddress;
-
-        if (!shippingAddress && billingDetails) {
-            billingAlias = billingDetails;
-        }
-
+    const onComplete = async(payment_intent_id) => {
+        const billingAlias = await getAddressFromPaymentIntent(payment_intent_id);
         await updateCartShippingAddress(cart, billingAlias)
+
+        window.location = `${window.location.origin}/success/manual?payment_intent=${payment_intent_id}&cart_id=${cart.id}`
     }
 
     useEffect(() => {
-        console.log('enablerExpress')
-        if (!enablerExpress) return;
-        console.log('enablerExpress1')
-        createElementExpress({
-            selector: "#express",
+        if (!enabler) return;
+        createElement({
             type: "expressCheckout",
+            selector: "#express",
             onComplete,
             onError,
         }).then(element => {
-            console.log('enablerExpress create then')
             if (!element) return;
-
-            //element.returnURL = `${window.location.origin}/success/${enabler.elementsConfiguration.captureMethod}?cart_id=${cart.id}&payment_method=express_checkout`
-            element.returnURL = `${window.location.origin}/success?cart_id=${cart.id}&payment_method=express_checkout`
         });
-    }, [enablerExpress])
+    }, [enabler])
 
     return (
         <div id="express"> </div>
