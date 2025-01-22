@@ -83,17 +83,31 @@ export default function Header(props) {
             </a>
           </div>
           {props.showCart && (
-            <div className="col-4 align-text-bottom" style={styles.cart}>
+            <>
+            <div className="col-2 align-text-bottom" style={styles.cart}>
+              <span>Create Order from Page</span>
               <Link
-                to="/checkout"
+                to="/checkoutOrderPage"
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <FontAwesomeIcon icon={faShoppingCart} />{" "}
                 {props.totalQuantity}
               </Link>
             </div>
-          )}
-        </div>
+            <div className="col-2 align-text-bottom" style={styles.cart}>
+              <span>Create Order from connector</span>
+              <Link
+                to="/checkoutOrderConnector"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <FontAwesomeIcon icon={faShoppingCart} />{" "}
+                {props.totalQuantity}
+              </Link>
+            </div>
+            </>
+
+        )}
+      </div>
       </>
     );
   } else {

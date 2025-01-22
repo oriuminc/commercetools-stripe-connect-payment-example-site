@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useEnabler } from "../hooks/useEnabler";
 import LinkAuthentication from "./LinkAuthentication";
 import Address from "./Address";
-import { getAddressFromPaymentIntent, updateCartShippingAddress } from "../utils";
 import { Spinner } from "./Spinner";
 import ExpressCheckout from "./ExpressCheckout";
 
-const StripeCheckout = ({cart, paymentSuccess}) => {
+const StripeCheckoutOrderConnector = ({cart, paymentSuccess}) => {
 
     const { elements, enabler, createElement } = useEnabler();
 
@@ -41,9 +40,7 @@ const StripeCheckout = ({cart, paymentSuccess}) => {
     }
 
     const onComplete  = async (paymentIntent) => {
-        const billingAlias = await getAddressFromPaymentIntent(paymentIntent);
-        await updateCartShippingAddress(cart, billingAlias);
-        window.location = `${window.location.origin}/success/manual?payment_intent=${paymentIntent}&cart_id=${cart.id}`
+        window.location = `${window.location.origin}/success/manual?payment_intent=${paymentIntent}`
     }
 
     const onSubmit = async (e) => {
@@ -103,4 +100,4 @@ const StripeCheckout = ({cart, paymentSuccess}) => {
     )
 }
 
-export default StripeCheckout;
+export default StripeCheckoutOrderConnector;

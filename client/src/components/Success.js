@@ -48,8 +48,6 @@ const Success = ({paymentIntent}) => {
         )
         const payment_intent = await response.json()
         capture_method.current = payment_intent.capture_method;
-        console.log('....................-.-.-.---.-.-.-.-.-.-.-.-..-.-')
-        console.log(JSON.stringify(payment_intent,null,2))
         setPaymentIntentStatus(payment_intent.status)
         setChargeId(payment_intent.latest_charge)
         updateChargeObject()
@@ -83,18 +81,19 @@ const Success = ({paymentIntent}) => {
 
     useEffect(() => {
         const id = query.get("cart_id")
-
-        fetch(`${BACKEND_URL}/create-order/`,
-            {
-                method : "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...DEV_REQUEST_HEADERS
-                },
-                body : JSON.stringify({id})
-            }
-        )
-        .catch(res => console.error(res))
+        if(id){
+            fetch(`${BACKEND_URL}/create-order/`,
+              {
+                  method : "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                      ...DEV_REQUEST_HEADERS
+                  },
+                  body : JSON.stringify({id})
+              }
+            )
+              .catch(res => console.error(res))
+        }
     },[])
 
     useEffect(() => {

@@ -3,12 +3,13 @@ import React, { useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
-import Checkout from "./components/Checkout";
 import Confirmation from "./components/Confirmation";
 import "./styles/index.css";
 import Success from "./components/Success";
 import {DEV_REQUEST_HEADERS} from "./utils"
 import WellKnowApplePay from "./components/WellKnowApplePay";
+import CheckoutOrderConnector from "./components/CheckoutOrderConnector";
+import CheckoutOrderPage from "./components/CheckoutOrderPage";
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -79,7 +80,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/checkout">
+        <Route path="/checkoutOrderPage">
           <Header
             cart={cart}
             resetCart={resetCart}
@@ -90,12 +91,30 @@ export default function App() {
             showCart={false}
             totalQuantity={totalQuantity}
           />
-            <Checkout
+            <CheckoutOrderPage
               cart={cart}
               brandColor={brandColor}
               currency={currency}
               setCart={setCart}
             />
+        </Route>
+        <Route path="/checkoutOrderConnector">
+          <Header
+            cart={cart}
+            resetCart={resetCart}
+            brandColor={brandColor}
+            setBrandColor={setBrandColor}
+            currency={currency}
+            pickCurrency={pickCurrency}
+            showCart={false}
+            totalQuantity={totalQuantity}
+          />
+          <CheckoutOrderConnector
+            cart={cart}
+            brandColor={brandColor}
+            currency={currency}
+            setCart={setCart}
+          />
         </Route>
         <Route path="/success/:capture_method">
           <Header
