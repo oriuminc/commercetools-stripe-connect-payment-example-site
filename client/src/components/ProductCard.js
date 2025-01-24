@@ -40,6 +40,7 @@ export default function ProductCard(props) {
       objectFit: "cover",
       marginLeft: "auto",
       marginRight: "auto",
+      marginTop: "10px",
       borderRadius: "5px 5px 0 0",
     },
   };
