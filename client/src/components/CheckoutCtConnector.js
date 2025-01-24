@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import Cart from "./Cart";
 import { EnablerContextProvider } from "../context/enablerContext";
-import StripeCheckoutOrderConnector from "./StripeCheckoutOrderConnector";
+import StripeCommercetoolsCheckoutConnector from "./StripeCommercetoolsCheckoutConnector";
 
 
-export default function CheckoutOrderConnector(props) {
+export default function CheckoutCtConnector(props) {
   const stripe = useRef()
 
   useEffect(() => {
@@ -15,14 +14,9 @@ export default function CheckoutOrderConnector(props) {
   return (
     <>
     {props.cart && (
-      <EnablerContextProvider cartId={props.cart?.id} connector={'orderConnector'}>
+      <EnablerContextProvider cartId={props.cart?.id} connector={'ctConnector'}>
         <div className="flex flex-row justify-between gap-5">
-          <StripeCheckoutOrderConnector cart={props.cart} />
-          <div className="bg-black w-4/12">
-            {props.cart && props.cart.lineItems &&
-              <Cart cart={props.cart} currency={props.currency} />
-            }
-          </div>
+          <StripeCommercetoolsCheckoutConnector cart={props.cart} />
         </div>
       </EnablerContextProvider>
     )}

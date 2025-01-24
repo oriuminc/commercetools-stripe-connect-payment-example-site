@@ -14,7 +14,7 @@ export default function CheckoutOrderPage(props) {
   return (
     <>
     {props.cart && (
-      <EnablerContextProvider cartId={props.cart?.id} orderConnector={false}>
+      <EnablerContextProvider cartId={props.cart?.id} connector={'pageConnector'}>
         <div className="flex flex-row justify-between gap-5">
           <StripeCheckoutOrderPage cart={props.cart} />
           <div className="bg-black w-4/12">

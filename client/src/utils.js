@@ -51,7 +51,7 @@ export const getCTSessionId = async (cartId) => {
   const accessToken = await fetchAdminToken();
 
   const sessionMetadata = {
-    allowedPaymentMethods: ['card'], // add here your allowed methods for development purposes
+    applicationKey: 'checkout-test-subscription'
   };
 
   const url = `${process.env.REACT_APP_SESSION_URL}/${projectKey}/sessions`

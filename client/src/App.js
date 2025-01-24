@@ -10,6 +10,7 @@ import {DEV_REQUEST_HEADERS} from "./utils"
 import WellKnowApplePay from "./components/WellKnowApplePay";
 import CheckoutOrderConnector from "./components/CheckoutOrderConnector";
 import CheckoutOrderPage from "./components/CheckoutOrderPage";
+import CheckoutCtConnector from "./components/CheckoutCtConnector";
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -18,6 +19,7 @@ export default function App() {
   const [brandColor, setBrandColor] = useState("#425466");
   const [currency, setCurrency] = useState("usd");
   const [totalQuantity, setTotalQuantity] = useState(0);
+  const [ctCheckoutToggled, setCtCheckoutToggled ] = useState(true);
 
 
   const addToCart = async (obj, quantity) => {
@@ -116,6 +118,24 @@ export default function App() {
             setCart={setCart}
           />
         </Route>
+        <Route path="/checkoutCtConnector">
+          <Header
+            cart={cart}
+            resetCart={resetCart}
+            brandColor={brandColor}
+            setBrandColor={setBrandColor}
+            currency={currency}
+            pickCurrency={pickCurrency}
+            showCart={false}
+            totalQuantity={totalQuantity}
+          />
+          <CheckoutCtConnector
+            cart={cart}
+            brandColor={brandColor}
+            currency={currency}
+            setCart={setCart}
+          />
+        </Route>
         <Route path="/success/:capture_method">
           <Header
             cart={cart}
@@ -168,6 +188,8 @@ export default function App() {
             pickCurrency={pickCurrency}
             showCart={true}
             totalQuantity={totalQuantity}
+            ctCheckoutToggled={ctCheckoutToggled}
+            setCtCheckoutToggled={setCtCheckoutToggled}
           />
           <ProductList
             addToCart={addToCart}

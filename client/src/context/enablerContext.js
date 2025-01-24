@@ -6,10 +6,14 @@ export const EnablerContext = createContext({
     sessionId: null,
 });
 
-const processorOrderPageUrl = process.env.REACT_APP_PROCESOR_URL;
-const processorOrderConnectorUrl = process.env.REACT_APP_PROCESOR_ORDER_CONNECTOR_URL;
+const processorConfig ={
+    'pageConnector' : process.env.REACT_APP_PROCESOR_URL,
+    'orderConnector' : process.env.REACT_APP_PROCESOR_ORDER_CONNECTOR_URL,
+    'ctConnector': process.env.REACT_APP_PROCESOR_CHECKOUT_CONNECTOR_URL,
+  }
 
-export const EnablerContextProvider = ({children, cartId, orderConnector}) => {
+
+export const EnablerContextProvider = ({children, cartId, connector}) => {
 
     const [sessionId, setSessionId ] = useState(null)
 
@@ -33,7 +37,7 @@ export const EnablerContextProvider = ({children, cartId, orderConnector}) => {
     return (
         <EnablerContext.Provider value={
             {
-                processorUrl: orderConnector ? processorOrderConnectorUrl: processorOrderPageUrl,
+                processorUrl: processorConfig[connector],
                 sessionId: sessionId,
             }
         }>

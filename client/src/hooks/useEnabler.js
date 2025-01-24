@@ -39,3 +39,10 @@ export const useEnabler = () => {
         createElement,
     };
 }
+
+export const useCheckout = () => {
+    const enablerContext = useContext(EnablerContext);
+    return {
+        sessionId : enablerContext.sessionId,
+    };
+}

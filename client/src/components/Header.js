@@ -5,6 +5,7 @@ import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import {DEV_REQUEST_HEADERS} from "../utils"
 import logo from "../images/logo.svg"
+import SwitchSelector from "react-switch-selector";
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -23,7 +24,7 @@ export default function Header(props) {
     },
     cart: {
       color: props.brandColor,
-      textAlign: "right",
+      textAlign: "center",
       fontSize: "2em",
       marginTop: 30,
     },
@@ -77,37 +78,53 @@ export default function Header(props) {
           <title>{shopName}</title>
         </Helmet>
         <div className="row" style={styles.top}>
-          <div className="col-8">
+          <div className="col-3">
             <a href="/">
               <img src={shopIcon ? shopIcon : logo} style={styles.icon} alt="icon" />
             </a>
           </div>
           {props.showCart && (
             <>
-            <div className="col-2 align-text-bottom" style={styles.cart}>
-              <span>Create Order from Page</span>
-              <Link
-                to="/checkoutOrderPage"
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <FontAwesomeIcon icon={faShoppingCart} />{" "}
-                {props.totalQuantity}
-              </Link>
-            </div>
-            <div className="col-2 align-text-bottom" style={styles.cart}>
-              <span>Create Order from connector</span>
-              <Link
-                to="/checkoutOrderConnector"
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <FontAwesomeIcon icon={faShoppingCart} />{" "}
-                {props.totalQuantity}
-              </Link>
-            </div>
+              <div className="col-6" style={{height:50, marginTop:30}}>
+                <SwitchSelector
+                  onChange={() => props.setCtCheckoutToggled(!props.ctCheckoutToggled)}
+                  options={[
+                    {
+                      label: "Checkout Connector",
+                      selectedBackgroundColor: "#0bbfbf",
+                    },
+                    {
+                      label: "Composable Connector",
+                      selectedBackgroundColor: "#6359ff",
+                    },
+                  ]}
+                  initialSelectedIndex={0}
+                  fontSize={20}
+                />
+              </div>
+          {/**<div className="col-2 align-text-bottom" style={styles.cart}>
+           <span>Create Order from Page</span>
+           <Link
+           to="/checkoutOrderPage"
+           style={{ textDecoration: "none", color: "inherit" }}
+           >
+           <FontAwesomeIcon icon={faShoppingCart} />{" "}
+           {props.totalQuantity}
+           </Link>
+               </div>**/}
+              <div className="col-3 align-text-bottom" style={styles.cart}>
+                {/**<span>Create Order from connector</span-->**/}
+                <Link
+                  to={`${props.ctCheckoutToggled ? "/checkoutCtConnector": "/checkoutOrderConnector"}`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <FontAwesomeIcon icon={faShoppingCart} color={`${props.ctCheckoutToggled ? "#0d7575": "#37309c"}`} />{" "}
+                  {props.totalQuantity}
+                </Link>
+              </div>
             </>
-
-        )}
-      </div>
+          )}
+        </div>
       </>
     );
   } else {
