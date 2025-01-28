@@ -13,19 +13,12 @@ export default function CheckoutCtConnector(props) {
 
   return (
     <>
-    {props.cart && (
       <EnablerContextProvider cartId={props.cart?.id} connector={'ctConnector'}>
         <div className="flex flex-row justify-between gap-5">
-          <StripeCommercetoolsCheckoutConnector cart={props.cart} />
+          <StripeCommercetoolsCheckoutConnector cart={props.cart} setCart={props.setCart} />
         </div>
       </EnablerContextProvider>
-    )}
-    {
-      !props.cart &&
-      <p>
-        Your cart is empty, add products <a href="/" className="text-[#635bff] underline">here</a>
-      </p>
-    }
+
     </>
   );
 }
