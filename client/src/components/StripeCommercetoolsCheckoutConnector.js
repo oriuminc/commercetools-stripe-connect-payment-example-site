@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useCheckout } from "../hooks/useEnabler";
 import { checkoutFlow } from "@commercetools/checkout-browser-sdk";
 import { useLocation } from "react-router-dom/cjs/react-router-dom";
-import { DEV_REQUEST_HEADERS } from "../utils";
+import { DEV_REQUEST_HEADERS, getCartById } from "../utils";
 
 const BACKEND_URL = process.env.REACT_APP_BASE_URL;
 
@@ -15,7 +15,7 @@ function useQuery() {
 const StripeCommercetoolsCheckoutConnector = ({cart, setCart}) => {
     const { sessionId } = useCheckout();
     const query = useQuery();
-    const paymentReference = useRef('')
+    const paymentReferenceRef = useRef('')
 
     const getPaymentInformation = async (payment_intent_id) => {
         let response = await fetch(`${BACKEND_URL}/payment-intent/${payment_intent_id}`,
@@ -26,25 +26,31 @@ const StripeCommercetoolsCheckoutConnector = ({cart, setCart}) => {
           }
         )
         const payment_intent = await response.json()
-        paymentReference.current = payment_intent.metadata.ct_payment_id;
-        fetch(`${BACKEND_URL}/cart/${payment_intent.metadata.cart_id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                ...DEV_REQUEST_HEADERS
-            },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-              setCart(data);
-          })
-          .catch(e => console.log(e));
+        paymentReferenceRef.current = payment_intent.metadata.ct_payment_id;
+        const cart = await getCartById(payment_intent.metadata.cart_id);
+        if(cart)
+            setCart(cart)
     };
+
+    const getCart = async (cartId) => {
+        const cart = await getCartById(cartId)
+        console.log(JSON.stringify(cartId))
+        console.log(JSON.stringify(cart))
+        if(cart)
+            setCart(cart)
+    }
 
     useEffect(() => {
         const payment_intent_id = query.get("payment_intent")
-        if(payment_intent_id)
+        const paymentReference = query.get("paymentReference")
+        const cartId = query.get("cartId")
+        if(paymentReference && cartId){
+            paymentReferenceRef.current= paymentReference;
+            getCart(cartId)
+        }else if(payment_intent_id){
             getPaymentInformation(payment_intent_id);
+        }
+
     }, []);
 
     useEffect(() => {
@@ -56,7 +62,7 @@ const StripeCommercetoolsCheckoutConnector = ({cart, setCart}) => {
         checkoutFlow({
             projectKey: 'stripe-subscription',
             region: 'us-central1.gcp',
-            paymentReference: paymentReference.current,
+            paymentReference: paymentReferenceRef.current,
             sessionId: `${sessionId}`,
             logInfo: true,
             logWarn: true,

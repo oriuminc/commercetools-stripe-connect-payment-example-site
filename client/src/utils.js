@@ -134,6 +134,17 @@ export const getAddressFromPaymentIntent = async (payment_intent_id) => {
   return billingAlias
 }
 
+export const getCartById = async (cartId) => {
+  const cart = await fetch(`${BACKEND_URL}/cart/${cartId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...DEV_REQUEST_HEADERS
+    },
+  })
+  return await cart.json()
+}
+
 const MODE = process.env.REACT_APP_MODE;
 console.log({MODE})
 export const DEV_REQUEST_HEADERS = MODE === "dev" ? {
