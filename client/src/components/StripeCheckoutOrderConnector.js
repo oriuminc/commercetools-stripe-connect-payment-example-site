@@ -21,7 +21,7 @@ const StripeCheckoutOrderConnector = ({cart, paymentSuccess}) => {
         if (!enabler) return;
 
         createElement({
-            type: 'payment',
+            type: 'paymentElement',
             selector : "#payment",
             onComplete,
             onError,
