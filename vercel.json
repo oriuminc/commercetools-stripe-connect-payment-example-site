@@ -5,81 +5,24 @@
       "src": "client/api/index.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["client/api/**"]
+        "includeFiles": ["client/api/**/*.js"]
       }
     },
     {
-      "src": "client/build/**",
-      "use": "@vercel/static"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "client/build"
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/health",
+      "src": "/api/(.*)",
       "dest": "/client/api/index.js"
     },
     {
-      "src": "/settings",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/products/(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/customer/(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/cart/(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/cart",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/create-checkout-session",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/session/(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/create-payment-intent",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/create-order",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/capture-payment",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/cancel-payment",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/request-refund",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/payment-intent/(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/charge/(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/events",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/confirm",
+      "src": "/(settings|products|customer|cart|create-checkout-session|session|create-payment-intent|create-order|capture-payment|cancel-payment|request-refund|payment-intent|charge|events|confirm)(.*)",
       "dest": "/client/api/index.js"
     },
     {
