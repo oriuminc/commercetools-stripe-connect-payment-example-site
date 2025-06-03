@@ -8,7 +8,9 @@ import logo from "../images/logo.svg";
 import SwitchSelector from "react-switch-selector";
 
 
-const BACKEND_URL = process.env.CURRENT_ENB === 'production' ? process.env.NEXT_PUBLIC_VERCEL_URL : "http://localhost:3000";
+const BACKEND_URL =
+  process.env.CURRENT_ENV === "production" ? process.env.NEXT_PUBLIC_VERCEL_URL : "http://localhost:3000";
+
 
 export default function Header(props) {
   const [isLoaded, setIsLoaded] = useState(false);
