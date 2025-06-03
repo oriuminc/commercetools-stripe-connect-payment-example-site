@@ -4,7 +4,9 @@ import { checkoutFlow } from "@commercetools/checkout-browser-sdk";
 import { useLocation } from "react-router-dom/cjs/react-router-dom";
 import { DEV_REQUEST_HEADERS, getCartById } from "../utils";
 
-const BACKEND_URL = process.env.VERCEL_URL || "http://localhost:3000";
+const BACKEND_URL = process.env.NODE_ENV === "production"
+  ? process.env.REACT_APP_PRODUCTION_URL || ''
+  : "http://localhost:3000";
 
 function useQuery() {
   const { search } = useLocation();

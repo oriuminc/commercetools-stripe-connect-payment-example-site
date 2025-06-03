@@ -1,6 +1,7 @@
 const projectKey = process.env.REACT_APP_PROJECT_KEY;
-const BACKEND_URL =
-  process.env.CURRENT_ENV === "production" ? process.env.VERCEL_URL : "http://localhost:3000";
+const BACKEND_URL = process.env.NODE_ENV === "production"
+  ? process.env.REACT_APP_PRODUCTION_URL || ''
+  : "http://localhost:3000";
 
 export const loadEnabler = async (enablerUrl) => {
   try {

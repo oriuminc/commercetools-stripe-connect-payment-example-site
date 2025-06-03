@@ -11,7 +11,9 @@ import WellKnowApplePay from "./components/WellKnowApplePay";
 import CheckoutComposableConnector from "./components/CheckoutOrderConnector";
 import CommercetoolsCheckoutConnector from "./components/CheckoutCtConnector";
 
-const BACKEND_URL = process.env.VERCEL_URL || "http://localhost:3000";
+const BACKEND_URL = process.env.NODE_ENV === "production"
+  ? process.env.REACT_APP_PRODUCTION_URL || ''
+  : "http://localhost:3000";
 
 export default function App() {
   const [cart, setCart] = useState();

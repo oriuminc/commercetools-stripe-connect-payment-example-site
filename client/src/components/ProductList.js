@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard.js";
 import { DEV_REQUEST_HEADERS } from "../utils";
-const BACKEND_URL = process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000";
+const BACKEND_URL = process.env.NODE_ENV === "production"
+  ? process.env.REACT_APP_PRODUCTION_URL || ''
+  : "http://localhost:3000";
 
 export default function ProductList(props) {
   const [isLoaded, setIsLoaded] = useState(false);
