@@ -10,13 +10,16 @@ import Stripe from "stripe";
 import { version } from "os";
 
 const app = express();
+const buildPath = process.env.NODE_ENV === 'production'
+  ? path.join(__dirname, "../../build")  // Vercel serverless function path
+  : path.join(__dirname, "../build");    // Local development path
+app.use(express.static(buildPath));
+app.use("/confirm", express.static(buildPath));
+
 app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-app.use(express.static(path.join(__dirname, "client/build")));
-app.use("/confirm", express.static(path.join(__dirname, "client/build")));
 
 const corsOptions = {
   origin: '*',
@@ -481,5 +484,6 @@ app.post("/events", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", environment: "vercel" });
 });
+
 
 export default app;
