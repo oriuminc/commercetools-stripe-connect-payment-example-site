@@ -432,55 +432,6 @@ app.get("/charge/:charge_id", async (req, res) => {
   res.send(charge)
 })
 
-/* ------ WEBHOOK ENDPOINT ------ */
-app.post("/events", async (req, res) => {
-
-  // console.log('====================================');
-  // console.log('webhook event : ', req.body.type);
-  // console.log('====================================');
-
-  if (req.body.type == "payment_intent.succeeded") {
-
-    const paymentIntent = await stripe.paymentIntents.retrieve(
-      req.body.data.object.id
-    );
-    const orderstatus = await commerceTools.updateOrder(
-      paymentIntent.metadata.commerceToolsOrderId,
-      "Paid",
-      paymentIntent
-    );
-
-    const paymentstatus = await commerceTools.updatePaymentState("Charge", paymentIntent);
-
-  }
-
-  if (req.body.type == "payment_intent.payment_failed") {
-    const paymentIntent = await stripe.paymentIntents.retrieve(
-      req.body.data.object.id
-    );
-    commerceTools.updateOrder(
-      paymentIntent.metadata.commerceToolsOrderId,
-      "Failed",
-      paymentIntent
-    );
-    commerceTools.updatePaymentState("CancelAuthorization", paymentIntent);
-  }
-  if (req.body.type == "charge.refunded") {
-    const paymentIntent = await stripe.paymentIntents.retrieve(
-      req.body.data.object.payment_intent
-    );
-    paymentIntent.amount = req.body.data.object.amount_refunded;
-    commerceTools.updatePaymentState("Refund", paymentIntent);
-  }
-  if (req.body.type == "charge.dispute.created") {
-    const paymentIntent = await stripe.paymentIntents.retrieve(
-      req.body.data.object.payment_intent
-    );
-    commerceTools.updatePaymentState("Chargeback", paymentIntent);
-  }
-  res.sendStatus(200);
-});
-
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", environment: "vercel" });
 });
