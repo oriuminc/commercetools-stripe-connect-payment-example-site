@@ -1,0 +1,87 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "client/build/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/health",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/settings",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/products/(.*)",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/customer/(.*)",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/cart/(.*)",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/cart",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/create-checkout-session",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/session/(.*)",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/create-payment-intent",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/create-order",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/capture-payment",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/cancel-payment",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/request-refund",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/payment-intent/(.*)",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/charge/(.*)",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/events",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/confirm",
+      "dest": "/client/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/build/$1"
+    }
+  ]
+}
