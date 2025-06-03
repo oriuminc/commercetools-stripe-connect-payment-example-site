@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Carousel from "./Carousel";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,13 +8,13 @@ import getSymbolFromCurrency from "currency-symbol-map";
 export default function ProductCard(props) {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const [quantityValue, setQuantityValue] = React.useState('1');
+  const [quantityValue, setQuantityValue] = React.useState("1");
   const handleQuantityChange = (event) => setQuantityValue(event.target.value);
 
   const handleShow = () => {
     setShow(true);
     setQuantityValue(1);
-  }
+  };
 
   const styles = {
     boxCard: {
@@ -46,11 +46,11 @@ export default function ProductCard(props) {
   };
 
   const quantitySelectOptions = [
-    { value: '1', label: '1' },
-    { value: '2', label: '2' },
-    { value: '3', label: '3' },
-    { value: '4', label: '4' },
-    { value: '5', label: '5' }
+    { value: "1", label: "1" },
+    { value: "2", label: "2" },
+    { value: "3", label: "3" },
+    { value: "4", label: "4" },
+    { value: "5", label: "5" },
   ];
 
   const addToCart = (e) => {
@@ -58,25 +58,6 @@ export default function ProductCard(props) {
     setShow(false);
   };
 
-  const getMetadata = (metadata, type) => {
-    const output = [];
-    if (Object.keys(metadata).indexOf(type + "1") > -1) {
-      output.push(
-        Object.entries(metadata).map(([key, value]) => {
-          if (key.indexOf(type) !== -1) {
-            return type === "Features" ? (
-              <li key={key}>{value}</li>
-            ) : (
-              <p key={key}>{value}</p>
-            );
-          }
-          return "";
-        })
-      );
-      if (type === "Features") output.push(<br key={"spacer" + type} />);
-    }
-    return output;
-  };
 
   const displayPrice = (value) => {
     if (!value) {
@@ -94,7 +75,9 @@ export default function ProductCard(props) {
           <div className="card-image" style={styles.boxCard}>
             <img
               alt="product"
-              src={props.product.masterData.current.masterVariant.images[0]?.url}
+              src={
+                props.product.masterData.current.masterVariant.images[0]?.url
+              }
               style={styles.img}
             />
           </div>
@@ -140,7 +123,9 @@ export default function ProductCard(props) {
               Quantity
               <select value={quantityValue} onChange={handleQuantityChange}>
                 {quantitySelectOptions.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </label>

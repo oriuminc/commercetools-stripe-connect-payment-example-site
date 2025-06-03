@@ -1,24 +1,21 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { EnablerContextProvider } from "../context/enablerContext";
-import StripeCommercetoolsCheckoutConnector from "./StripeCommercetoolsCheckoutConnector";
-
+import StripeCommercetoolsConnectorCheckout from "./StripeCommercetoolsCheckoutConnector";
 
 export default function CheckoutCtConnector(props) {
-  const stripe = useRef()
-
-  useEffect(() => {
-    if(!stripe) return;
-
-  },[stripe])
 
   return (
     <>
-      <EnablerContextProvider cartId={props.cart?.id} connector={'ctConnector'}>
+      <EnablerContextProvider
+        cartId={props.cart?.id}
+        connector={"commercetoolsCheckoutConnectorProcessor"}
+      >
         <div className="flex flex-row justify-between gap-5">
-          <StripeCommercetoolsCheckoutConnector cart={props.cart} setCart={props.setCart} />
+          <StripeCommercetoolsConnectorCheckout
+            setCart={props.setCart}
+          />
         </div>
       </EnablerContextProvider>
-
     </>
   );
 }

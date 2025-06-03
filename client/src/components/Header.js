@@ -3,12 +3,11 @@ import Helmet from "react-helmet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import {DEV_REQUEST_HEADERS} from "../utils"
-import logo from "../images/logo.svg"
+import { DEV_REQUEST_HEADERS } from "../utils";
+import logo from "../images/logo.svg";
 import SwitchSelector from "react-switch-selector";
 
-const BACKEND_URL = process.env.REACT_APP_BASE_URL;
-
+const BACKEND_URL = process.env.VERCEL_URL || "http://localhost:3000";
 
 export default function Header(props) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -51,11 +50,10 @@ export default function Header(props) {
 
   // On intitial load only, retrieve branding details
   useEffect(() => {
-    fetch(`${BACKEND_URL}/settings/`,{
+    fetch(`${BACKEND_URL}/api/settings/`, {
       headers: {
-
-        ...DEV_REQUEST_HEADERS
-      }
+        ...DEV_REQUEST_HEADERS,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
@@ -80,14 +78,20 @@ export default function Header(props) {
         <div className="row" style={styles.top}>
           <div className="col-3">
             <a href="/">
-              <img src={shopIcon ? shopIcon : logo} style={styles.icon} alt="icon" />
+              <img
+                src={shopIcon ? shopIcon : logo}
+                style={styles.icon}
+                alt="icon"
+              />
             </a>
           </div>
           {props.showCart && (
             <>
-              <div className="col-6" style={{height:50, marginTop:30}}>
+              <div className="col-6" style={{ height: 50, marginTop: 30 }}>
                 <SwitchSelector
-                  onChange={() => props.setCtCheckoutToggled(!props.ctCheckoutToggled)}
+                  onChange={() =>
+                    props.setCtCheckoutToggled(!props.ctCheckoutToggled)
+                  }
                   options={[
                     {
                       label: "Checkout Connector",
@@ -102,23 +106,20 @@ export default function Header(props) {
                   fontSize={20}
                 />
               </div>
-          {/**<div className="col-2 align-text-bottom" style={styles.cart}>
-           <span>Create Order from Page</span>
-           <Link
-           to="/checkoutOrderPage"
-           style={{ textDecoration: "none", color: "inherit" }}
-           >
-           <FontAwesomeIcon icon={faShoppingCart} />{" "}
-           {props.totalQuantity}
-           </Link>
-               </div>**/}
               <div className="col-3 align-text-bottom" style={styles.cart}>
                 {/**<span>Create Order from connector</span-->**/}
                 <Link
-                  to={`${props.ctCheckoutToggled ? "/checkoutCtConnector": "/checkoutOrderConnector"}`}
+                  to={`${
+                    props.ctCheckoutToggled
+                      ? "/checkoutCtConnector"
+                      : "/checkoutOrderConnector"
+                  }`}
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
-                  <FontAwesomeIcon icon={faShoppingCart} color={`${props.ctCheckoutToggled ? "#0d7575": "#37309c"}`} />{" "}
+                  <FontAwesomeIcon
+                    icon={faShoppingCart}
+                    color={`${props.ctCheckoutToggled ? "#0d7575" : "#37309c"}`}
+                  />{" "}
                   {props.totalQuantity}
                 </Link>
               </div>

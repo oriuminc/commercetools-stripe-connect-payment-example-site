@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-export default function Confirmation(props) {
+export default function Confirmation() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [id, setID] = useState();
   const [pm, setPM] = useState();
@@ -17,12 +17,10 @@ export default function Confirmation(props) {
   };
 
   const query = new URLSearchParams(useLocation().search);
- 
 
   useEffect(() => {
     setID(query.get("payment_intent") || query.get("checkout_session"));
   }, []);
-
 
   useEffect(() => {
     if (id) {

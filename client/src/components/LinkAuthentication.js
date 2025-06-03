@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
 
-const LinkAuthentication = ({elements}) => {
-    const [stripeAuthElement, setStripeAuthElement] = useState(null)
+const LinkAuthentication = ({ elements }) => {
+  const [stripeAuthElement, setStripeAuthElement] = useState(null);
 
-    useEffect(() => {
-        if (!elements || stripeAuthElement) return;
+  useEffect(() => {
+    if (!elements || stripeAuthElement) return;
 
-        const element = elements.create("linkAuthentication");
-        setStripeAuthElement(element)
-        element.mount("#link-auth-element")
+    const element = elements.create("linkAuthentication");
+    setStripeAuthElement(element);
+    element.mount("#link-auth-element");
+  }, [elements]);
 
-    },[elements])
+  return <div id="link-auth-element"></div>;
+};
 
-    return (
-        <div id='link-auth-element'>
-        </div>
-    )
-}
-
-export default LinkAuthentication
+export default LinkAuthentication;

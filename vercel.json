@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "outputDirectory": "client/build",
   "builds": [
     {
       "src": "client/api/index.js",
@@ -16,18 +17,11 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/client/api/index.js" },
     {
-      "src": "/api/(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/(settings|products|customer|cart|create-checkout-session|session|create-payment-intent|create-order|capture-payment|cancel-payment|request-refund|payment-intent|charge|events|confirm)(.*)",
-      "dest": "/client/api/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/build/$1"
+      "source": "/(settings|products|customer|cart|create-checkout-session|session|create-payment-intent|create-order|capture-payment|cancel-payment|request-refund|payment-intent|charge|events|confirm)(.*)",
+      "destination": "/client/api/index.js"
     }
   ]
 }

@@ -2,46 +2,51 @@ import React, { createContext, useEffect, useState } from "react";
 import { getCTSessionId } from "../utils";
 
 export const EnablerContext = createContext({
-    processorUrl: null,
-    sessionId: null,
+  processorUrl: null,
+  sessionId: null,
+  enablerUrl: null,
 });
 
-const processorConfig ={
-    'pageConnector' : process.env.REACT_APP_PROCESOR_URL,
-    'orderConnector' : process.env.REACT_APP_PROCESOR_ORDER_CONNECTOR_URL,
-    'ctConnector': process.env.REACT_APP_PROCESOR_CHECKOUT_CONNECTOR_URL,
-  }
+const processorConfig = {
+  composableConnectorProcessor:
+    process.env.REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL,
+  commercetoolsCheckoutConnectorProcessor:
+    process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_PROCESSOR_URL,
+};
+const enablerConfig = {
+  composableConnectorEnabler:
+    process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL,
+  commercetoolsCheckoutConnectorEnabler:
+    process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL,
+};
 
+export const EnablerContextProvider = ({ children, cartId, connector }) => {
+  const [sessionId, setSessionId] = useState(null);
 
-export const EnablerContextProvider = ({children, cartId, connector}) => {
+  useEffect(() => {
+    if (!cartId) return;
 
-    const [sessionId, setSessionId ] = useState(null)
+    const asyncCall = async () => {
+      try {
+        let sessionId = await getCTSessionId(cartId);
+        setSessionId(sessionId);
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
+    };
+    asyncCall();
+  }, [cartId]);
 
-    useEffect(() => {
-        if(!cartId) return;
-
-        const asyncCall = async () => {
-            try{
-
-                let sessionId = await getCTSessionId(cartId);
-                setSessionId(sessionId);
-
-            } catch (e) {
-                console.error(e);
-                return null;
-            }
-        };
-        asyncCall()
-    },[cartId])
-
-    return (
-        <EnablerContext.Provider value={
-            {
-                processorUrl: processorConfig[connector],
-                sessionId: sessionId,
-            }
-        }>
-            {children}
-        </EnablerContext.Provider>
-    )
-}
+  return (
+    <EnablerContext.Provider
+      value={{
+        processorUrl: processorConfig[connector],
+        sessionId: sessionId,
+        enablerUrl: enablerConfig[connector],
+      }}
+    >
+      {children}
+    </EnablerContext.Provider>
+  );
+};

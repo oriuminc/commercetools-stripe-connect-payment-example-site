@@ -1,72 +1,77 @@
 const projectKey = process.env.REACT_APP_PROJECT_KEY;
-const BACKEND_URL = process.env.NODE_ENV === 'production' ? '' : process.env.REACT_APP_BASE_URL;
+const BACKEND_URL =
+  process.env.NODE_ENV === "production" ? process.env.VERCEL : "http://localhost:3000";
 
+export const loadEnabler = async (enablerUrl) => {
+  try {
+    return await import(enablerUrl);
+  } catch (error) {
+    console.error("Error while loading Enabler module", error);
+  }
+};
 
-export const loadEnabler = async() => {
-    try {
-        const enablerModule = await
-        import (process.env.REACT_APP_ENABLER_BUILD_URL);
+export const fetchAdminToken = async () => {
+  const headers = new Headers();
 
-        return enablerModule
-    } catch (error) {
-        console.error("Error while loading Enabler module", error);
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(
+      `${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`
+    )}`
+  );
+  headers.append("Content-Type", "application/x-www-form-urlencoded");
+
+  var urlencoded = new URLSearchParams();
+  urlencoded.append("grant_type", "client_credentials");
+
+  const response = await fetch(
+    `${process.env.REACT_APP_AUTH_URL}/oauth/token`,
+    {
+      body: urlencoded,
+      headers: headers,
+      method: "POST",
+      redirect: "follow",
     }
-}
+  );
 
-export const fetchAdminToken = async() => {
-        const headers = new Headers();
+  const token = await response.json();
 
-    headers.append('Authorization', `Basic ${btoa(`${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`)}`);
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
-
-    var urlencoded = new URLSearchParams();
-    urlencoded.append('grant_type', 'client_credentials');
-
-    const response = await fetch(`${process.env.REACT_APP_AUTH_URL}/oauth/token`, {
-        body: urlencoded,
-        headers: headers,
-        method: 'POST',
-        redirect: 'follow',
+  if (response.status !== 200) {
+    console.log({
+      title: "Token fetch failed",
+      message: `Error ${response.status} while fetching token`,
     });
-
-    const token = await response.json();
-
-    if (response.status !== 200) {
-      console.log({
-          title: 'Token fetch failed',
-          message: `Error ${response.status} while fetching token`,
-      });
     return;
-    } else {
-      console.log({
-          title: 'Token fetched',
-          message: `Token fetched: ${token.access_token}`,
-      });
-    }
-    console.log("Token fetched:", token)
-    return token.access_token;
-}
+  } else {
+    console.log({
+      title: "Token fetched",
+      message: `Token fetched: ${token.access_token}`,
+    });
+  }
+  console.log("Token fetched:", token);
+  return token.access_token;
+};
 
 export const getCTSessionId = async (cartId) => {
   const accessToken = await fetchAdminToken();
 
   const sessionMetadata = {
-    applicationKey: 'checkout-test-subscription'
+    applicationKey: "checkout-test-subscription",
   };
 
-  const url = `${process.env.REACT_APP_SESSION_URL}/${projectKey}/sessions`
+  const url = `${process.env.REACT_APP_SESSION_URL}/${projectKey}/sessions`;
 
   const res = await fetch(url, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
       cart: {
         cartRef: {
           id: cartId,
-        }
+        },
       },
       metadata: sessionMetadata,
     }),
@@ -74,56 +79,56 @@ export const getCTSessionId = async (cartId) => {
   const data = await res.json();
 
   if (!res.ok) {
-    console.error("Not able to create session:", url, data)
-    throw new Error("Not able to create session")
+    console.error("Not able to create session:", url, data);
+    throw new Error("Not able to create session");
   }
 
-  console.log("Session created:", data)
+  console.log("Session created:", data);
   return data.id;
-}
+};
 
 export const updateCartShippingAddress = async (cart, address) => {
   const bodyConst = JSON.stringify({
     cartId: cart.id,
-    address:{
+    address: {
       addressName: address.name,
       addressLine1: address.address.line1,
       addressCity: address.address.city,
       addressCountry: address.address.country,
       addressPostalCode: address.address.postal_code,
       addressState: address.address.state,
-    }
-  })
+    },
+  });
 
-  return fetch(`${BACKEND_URL}/cart/address`, {
+  return fetch(`${BACKEND_URL}/api/cart/address`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...DEV_REQUEST_HEADERS
+      ...DEV_REQUEST_HEADERS,
     },
     body: bodyConst,
-  }).then((response)=> console.log(response)
-  ).catch((err)=> console.log(err));
+  })
+    .then((response) => console.log(response))
+    .catch((err) => console.log(err));
 };
 
 export const getAddressFromPaymentIntent = async (payment_intent_id) => {
-  let response = await fetch(`${BACKEND_URL}/payment-intent/${payment_intent_id}`,
+  let response = await fetch(
+    `${BACKEND_URL}/payment-intent/${payment_intent_id}`,
     {
-      headers:{
-        ...DEV_REQUEST_HEADERS
-      }
+      headers: {
+        ...DEV_REQUEST_HEADERS,
+      },
     }
-  )
-  const payment_intent = await response.json()
+  );
+  const payment_intent = await response.json();
   const { latest_charge } = payment_intent;
-  let responseCharge = await fetch(`${BACKEND_URL}/charge/${latest_charge}`,
-    {
-      headers:{
-        ...DEV_REQUEST_HEADERS
-      }
-    }
-  )
-  const charge = await responseCharge.json()
+  let responseCharge = await fetch(`${BACKEND_URL}/charge/${latest_charge}`, {
+    headers: {
+      ...DEV_REQUEST_HEADERS,
+    },
+  });
+  const charge = await responseCharge.json();
   const { billing_details, shipping } = charge;
   let billingAlias = shipping;
 
@@ -131,24 +136,27 @@ export const getAddressFromPaymentIntent = async (payment_intent_id) => {
     billingAlias = billing_details;
   }
 
-  return billingAlias
-}
+  return billingAlias;
+};
 
 export const getCartById = async (cartId) => {
-  const cart = await fetch(`${BACKEND_URL}/cart/${cartId}`, {
+  const cart = await fetch(`${BACKEND_URL}/api/cart/${cartId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...DEV_REQUEST_HEADERS
+      ...DEV_REQUEST_HEADERS,
     },
-  })
-  return await cart.json()
-}
+  });
+  return await cart.json();
+};
 
 const MODE = process.env.REACT_APP_MODE;
-console.log({MODE})
-export const DEV_REQUEST_HEADERS = MODE === "dev" ? {
-  "ngrok-skip-browser-warning": "6024"
-} : {}
+console.log({ MODE });
+export const DEV_REQUEST_HEADERS =
+  MODE === "dev"
+    ? {
+        "ngrok-skip-browser-warning": "6024",
+      }
+    : {};
 
-console.log({DEV_REQUEST_HEADERS})
+console.log({ DEV_REQUEST_HEADERS });

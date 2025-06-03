@@ -2,7 +2,7 @@ import { createClient } from "@commercetools/sdk-client";
 import { createAuthMiddlewareForClientCredentialsFlow } from "@commercetools/sdk-middleware-auth";
 import { createHttpMiddleware } from "@commercetools/sdk-middleware-http";
 import { createRequestBuilder } from "@commercetools/api-request-builder";
-import crypto from 'crypto';
+import crypto from "crypto";
 
 import fetch from "node-fetch";
 
@@ -10,6 +10,8 @@ let requestBuilder;
 let client;
 
 async function createCtClient() {
+  console.log("Creating CommerceTools Client...");
+  console.log("projectKey: ", process.env.REACT_APP_CT_PROJECT_KEY);
   if (!requestBuilder) {
     const options = {
       projectKey: process.env.REACT_APP_CT_PROJECT_KEY,
@@ -17,7 +19,7 @@ async function createCtClient() {
     requestBuilder = createRequestBuilder(options);
   }
 
-  const client = createClient({
+  return createClient({
     middlewares: [
       createAuthMiddlewareForClientCredentialsFlow({
         host: process.env.REACT_APP_CT_AUTH_URL,
@@ -47,7 +49,6 @@ async function createCtClient() {
       }),
     ],
   });
-  return client;
 }
 
 async function getProducts() {
@@ -118,7 +119,13 @@ async function getCustomer(custId) {
   return await rsp.body;
 }
 
-async function cartAddLineItem(cartId, productId, variantId, quantity, version) {
+async function cartAddLineItem(
+  cartId,
+  productId,
+  variantId,
+  quantity,
+  version
+) {
   if (!client) {
     client = await createCtClient();
   }
@@ -262,16 +269,15 @@ async function createOrder(cart) {
   let orderBody = {
     cart: {
       id: cart.id,
-      typeId: "cart"
+      typeId: "cart",
     },
     version: cart.version,
     orderState: "Open",
     paymentState: "Pending",
-    shipmentState: 'Pending',
-    purchaseOrderNumber : `order-${crypto.randomUUID().split('-')[0]}`
-
+    shipmentState: "Pending",
+    purchaseOrderNumber: `order-${crypto.randomUUID().split("-")[0]}`,
   };
-  
+
   const rsp = await client.execute({
     uri: uri,
     method: "POST",
@@ -346,7 +352,6 @@ async function addPaymentToOrder(orderId, payment) {
 }
 
 async function updatePaymentState(paymentType, paymentIntent) {
-
   if (!client) {
     client = await createCtClient();
   }
@@ -356,12 +361,11 @@ async function updatePaymentState(paymentType, paymentIntent) {
 
   let paymentState = "Pending";
 
-  if (paymentType == "Charge" || paymentType == "Refund") {
+  if (paymentType === "Charge" || paymentType === "Refund") {
     paymentState = "Success";
   }
 
   try {
-
     const rsp = await client.execute({
       uri: uri,
       method: "POST",
@@ -388,13 +392,11 @@ async function updatePaymentState(paymentType, paymentIntent) {
     });
 
     return await rsp.body;
-
   } catch (e) {
-    console.log('====================================');
-    console.log('commercetools error msg: ', e);
-    console.log('====================================');
+    console.log("====================================");
+    console.log("commercetools error msg: ", e);
+    console.log("====================================");
   }
-
 }
 
 async function updateOrder(orderId, paymentState) {
@@ -444,8 +446,7 @@ async function cartAddShippingAddres(cartId, address, version) {
             postalCode: address.addressPostalCode,
             state: address.addressState,
             city: address.addressCity,
-
-          }
+          },
         },
       ],
     },
@@ -457,7 +458,7 @@ async function cartAddShippingAddres(cartId, address, version) {
   return await rsp.body;
 }
 
-export default {
+const commerceToolsHelper = {
   getProducts,
   createCart,
   getPayment,
@@ -472,5 +473,7 @@ export default {
   addPaymentToOrder,
   updateOrder,
   updatePaymentState,
-  cartAddShippingAddres
+  cartAddShippingAddres,
 };
+
+export default commerceToolsHelper;
