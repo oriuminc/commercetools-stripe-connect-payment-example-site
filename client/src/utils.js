@@ -5,9 +5,17 @@ const BACKEND_URL = process.env.NODE_ENV === "production"
 
 export const loadEnabler = async (enablerUrl) => {
   try {
-    return await import(enablerUrl);
+    if (!enablerUrl || typeof enablerUrl !== 'string') {
+      console.error("Invalid enabler URL:", enablerUrl);
+      return null;
+    }
+
+    console.log("Attempting to load enabler from:", enablerUrl);
+    const module = await import(enablerUrl);
+    return module;
   } catch (error) {
     console.error("Error while loading Enabler module", error);
+    return null;
   }
 };
 
