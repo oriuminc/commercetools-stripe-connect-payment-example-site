@@ -33,7 +33,7 @@ export const fetchAdminToken = async () => {
   urlencoded.append("grant_type", "client_credentials");
 
   const response = await fetch(
-    `${process.env.REACT_APP_AUTH_URL}/oauth/token`,
+    `${process.env.REACT_APP_CT_AUTH_URL}/oauth/token`,
     {
       body: urlencoded,
       headers: headers,
