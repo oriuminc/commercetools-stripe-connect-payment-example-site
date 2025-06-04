@@ -12,6 +12,7 @@ export const loadEnabler = async (enablerUrl) => {
 
     console.log("Attempting to load enabler from:", enablerUrl);
     const module = await import(enablerUrl);
+    console.log(JSON.stringify(module, null, 2));
     return module;
   } catch (error) {
     console.error("Error while loading Enabler module", error);
