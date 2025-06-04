@@ -95,7 +95,9 @@ app.get("/api/cart/:cartId?", async (req, res) => {
 
 /* ------ CREATE CART ------ */
 app.post("/api/cart", async (req, res) => {
-  res.send(await commerceTools.createCart());
+  const customerId = req.body.customerId || null;
+  console.log(`Creating cart for customerId: ${customerId}`);
+  res.send(await commerceTools.createCart(customerId));
 });
 
 /* ------ ADD CART LINE ITEM ------ */

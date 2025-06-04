@@ -21,6 +21,7 @@ export default function App() {
   const [currency, setCurrency] = useState("usd");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
+  const [customerId, setCustomerId] = useState(null);
 
   const addToCart = async (obj, quantity) => {
     setTotalQuantity(parseInt(totalQuantity) + quantity);
@@ -31,6 +32,9 @@ export default function App() {
           "Content-Type": "application/json",
           ...DEV_REQUEST_HEADERS,
         },
+        body: JSON.stringify({
+          customerId: customerId,
+        }),
       })
         .then((res) => res.json())
         .then((data) => {
@@ -164,6 +168,7 @@ export default function App() {
             totalQuantity={totalQuantity}
             ctCheckoutToggled={ctCheckoutToggled}
             setCtCheckoutToggled={setCtCheckoutToggled}
+            setCustomerId={setCustomerId}
           />
           <ProductList
             addToCart={addToCart}

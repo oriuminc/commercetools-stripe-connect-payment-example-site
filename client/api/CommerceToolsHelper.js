@@ -67,7 +67,7 @@ async function getProducts() {
   return rsp.body;
 }
 
-async function createCart() {
+async function createCart(customerId) {
   if (!client) {
     client = await createCtClient();
   }
@@ -78,6 +78,19 @@ async function createCart() {
     body: {
       currency: "USD",
       country: "US",
+      ...(customerId &&  {customerId}),
+      shippingAddress: {
+        key: "address1",
+        firstName: "Jane",
+        lastName: "Doe",
+        streetName: "First Street",
+        streetNumber: "12",
+        postalCode: "12345",
+        city: "Example City",
+        country: "US",
+        phone: "+312345678",
+        email: "jane.doe@example.com",
+      },
     },
     headers: {
       Accept: "application/json",

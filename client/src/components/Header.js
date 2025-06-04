@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Helmet from "react-helmet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { DEV_REQUEST_HEADERS } from "../utils";
 import logo from "../images/logo.svg";
 import SwitchSelector from "react-switch-selector";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 
 const BACKEND_URL = process.env.NODE_ENV === "production"
@@ -16,6 +19,8 @@ export default function Header(props) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [shopName, setShopName] = useState();
   const [shopIcon, setShopIcon] = useState();
+  const [showModal, setShowModal] = useState(false);
+  const [userInput, setUserInput] = useState("");
 
   const styles = {
     top: {
@@ -109,8 +114,50 @@ export default function Header(props) {
                   fontSize={20}
                 />
               </div>
-              <div className="col-3 align-text-bottom" style={styles.cart}>
-                {/**<span>Create Order from connector</span-->**/}
+              <div className="col-1 align-text-bottom" style={styles.cart}>
+                <div
+                  onClick={() => setShowModal(true)}
+                  style={{ cursor: 'pointer', textDecoration: "none", color: "inherit" }}
+                >
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    color={`${props.ctCheckoutToggled ? "#0d7575" : "#37309c"}`}
+                  />
+                </div>
+
+                <Modal show={showModal} onHide={() => setShowModal(false)}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>User Information</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form.Group>
+                      <Form.Label>Enter value e.g. 8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={userInput}
+                        onChange={(e) => setUserInput(e.target.value)}
+                        placeholder="Enter your value here"
+                      />
+                    </Form.Group>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                      Close
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        console.log("User input:", userInput);
+                        props.setCustomerId(userInput);
+                        setShowModal(false);
+                      }}
+                    >
+                      Submit
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+              </div>
+              <div className="col-2 align-text-bottom" style={styles.cart}>
                 <Link
                   to={`${
                     props.ctCheckoutToggled
