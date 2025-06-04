@@ -15,9 +15,9 @@ const processorConfig = {
 };
 const enablerConfig = {
   composableConnectorConfig:
-    process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL,
+    'composable',
   commercetoolsCheckoutConnectorConfig:
-    process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL,
+    'commercetoolsCheckout',
 };
 
 export const EnablerContextProvider = ({ children, cartId, connector }) => {

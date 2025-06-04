@@ -11,7 +11,9 @@ export const loadEnabler = async (enablerUrl) => {
     }
 
     console.log("Attempting to load enabler from:", enablerUrl);
-    const module = await loadcomposable();
+    const module = enablerUrl === 'composable'
+      ? await import(process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL)
+      : await import(process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL);
     console.log(JSON.stringify(module, null, 2));
     return module;
   } catch (error) {
@@ -19,11 +21,6 @@ export const loadEnabler = async (enablerUrl) => {
   }
 };
 
-const loadcomposable = async () => {
-  const module = await import(process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL);
-  console.log(JSON.stringify(module, null, 2));
-  return module;
-}
 
 export const fetchAdminToken = async () => {
   const headers = new Headers();
