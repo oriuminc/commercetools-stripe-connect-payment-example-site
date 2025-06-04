@@ -8,15 +8,15 @@ export const EnablerContext = createContext({
 });
 
 const processorConfig = {
-  composableConnectorProcessor:
+  composableConnectorConfig:
     process.env.REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL,
-  commercetoolsCheckoutConnectorProcessor:
+  commercetoolsCheckoutConnectorConfig:
     process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_PROCESSOR_URL,
 };
 const enablerConfig = {
-  composableConnectorEnabler:
+  composableConnectorConfig:
     process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL,
-  commercetoolsCheckoutConnectorEnabler:
+  commercetoolsCheckoutConnectorConfig:
     process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL,
 };
 

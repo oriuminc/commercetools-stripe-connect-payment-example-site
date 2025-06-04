@@ -8,7 +8,7 @@ export default function CheckoutCtConnector(props) {
     <>
       <EnablerContextProvider
         cartId={props.cart?.id}
-        connector={"commercetoolsCheckoutConnectorProcessor"}
+        connector={"commercetoolsCheckoutConnectorConfig"}
       >
         <div className="flex flex-row justify-between gap-5">
           <StripeCommercetoolsConnectorCheckout

@@ -11,7 +11,7 @@ export default function CheckoutOrderConnector(props) {
       {props.cart && (
         <EnablerContextProvider
           cartId={props.cart?.id}
-          connector={"composableConnectorProcessor"}
+          connector={"composableConnectorConfig"}
         >
           <div className="flex flex-row justify-between gap-5">
             <StripeComposableConnectorCheckout cart={props.cart} />
