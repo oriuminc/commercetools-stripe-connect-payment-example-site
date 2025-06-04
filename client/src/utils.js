@@ -24,7 +24,7 @@ export const fetchAdminToken = async () => {
   headers.append(
     "Authorization",
     `Basic ${btoa(
-      `${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`
+      `${process.env.REACT_APP_CT_CLIENT_ID}:${process.env.REACT_APP_CT_SECRET}`
     )}`
   );
   headers.append("Content-Type", "application/x-www-form-urlencoded");
@@ -158,7 +158,7 @@ export const getCartById = async (cartId) => {
   return await cart.json();
 };
 
-const MODE = process.env.REACT_APP_MODE;
+const MODE =  process.env.NODE_ENV;
 console.log({ MODE });
 export const DEV_REQUEST_HEADERS =
   MODE === "dev"
