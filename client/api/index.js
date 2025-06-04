@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const buildPath =
-  process.env.VERCEL_ENV === "production"
+  process.env.NODE_ENV === "production"
     ? path.join(__dirname, "../../build") // Vercel serverless function path
     : path.join(__dirname, "../build"); // Local development path
 app.use(express.static(buildPath));
@@ -189,7 +189,7 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 
 /* ------ ADD CART ADDRESS SHIPING ------ */
-app.post("api/cart/address", async (req, res) => {
+app.post("/api/cart/address", async (req, res) => {
   const cartId = req.body.cartId;
   const { version } = await commerceTools.getCart(cartId);
   const address = req.body.address;
