@@ -8,6 +8,9 @@ export const useEnabler = () => {
   const [elements, setElements] = useState(null);
 
   const createElement = async ({ type, selector, onComplete, onError }) => {
+    if(!enablerContext.enablerUrl)
+      return;
+
     const { Enabler } = await loadEnabler(enablerContext.enablerUrl);
     const enabler = new Enabler({
       processorUrl: enablerContext.processorUrl,

@@ -15,7 +15,6 @@ export const loadEnabler = async (enablerUrl) => {
     return module;
   } catch (error) {
     console.error("Error while loading Enabler module", error);
-    return null;
   }
 };
 
@@ -25,7 +24,7 @@ export const fetchAdminToken = async () => {
   headers.append(
     "Authorization",
     `Basic ${btoa(
-      `${process.env.REACT_APP_CT_CLIENT_ID}:${process.env.REACT_APP_CT_SECRET}`
+      `${process.env.REACT_APP_CTP_CLIENT_ID}:${process.env.REACT_APP_CLIENT_SECRET}`
     )}`
   );
   headers.append("Content-Type", "application/x-www-form-urlencoded");
@@ -34,7 +33,7 @@ export const fetchAdminToken = async () => {
   urlencoded.append("grant_type", "client_credentials");
 
   const response = await fetch(
-    `${process.env.REACT_APP_CT_AUTH_URL}/oauth/token`,
+    `${process.env.REACT_APP_AUTH_URL}/oauth/token`,
     {
       body: urlencoded,
       headers: headers,
