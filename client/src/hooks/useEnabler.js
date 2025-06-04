@@ -8,10 +8,15 @@ export const useEnabler = () => {
   const [elements, setElements] = useState(null);
 
   const createElement = async ({ type, selector, onComplete, onError }) => {
-    if(!enablerContext.enablerUrl)
+    if (!enablerContext.enablerUrl) {
+      console.error("Enabler URL is not set.");
       return;
-
+    }
     const { Enabler } = await loadEnabler(enablerContext.enablerUrl);
+    if (!Enabler) {
+      console.error("Enabler module could not be loaded.");
+      return;
+    }
     const enabler = new Enabler({
       processorUrl: enablerContext.processorUrl,
       sessionId: enablerContext.sessionId,
