@@ -1,0 +1,90 @@
+import { BACKEND_URL, DEV_REQUEST_HEADERS } from "../utils";
+
+export const useApi = () => {
+  const headers = {
+    "Content-Type": "application/json",
+    ...DEV_REQUEST_HEADERS,
+  };
+
+  const createCart = async (customerId) => {
+    const res = await fetch(`${BACKEND_URL}/api/cart`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ customerId }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to create cart.");
+    }
+    return await res.json();
+  };
+
+  const updateCart = async ({
+    cartId,
+    productId,
+    variantId,
+    quantity,
+    version,
+  }) => {
+    const res = await fetch(`${BACKEND_URL}/api/cart/line-item`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ cartId, productId, variantId, quantity, version }),
+    });
+    if (!res.ok) {
+      throw new Error("Failed to update cart.");
+    }
+    return await res.json();
+  };
+
+  const addCustomerToCart = async ({ cartId, customerId }) => {
+    const res = await fetch(`${BACKEND_URL}/api/cart/customer`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ cartId, customerId }),
+    });
+    if (!res.ok) {
+      throw new Error("Failed to add Customer ID to Cart.");
+    }
+    return await res.json();
+  };
+
+  const getConfig = async () => {
+    const res = await fetch(`${BACKEND_URL}/api/settings/`, {
+      headers,
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch configuration.");
+    }
+    return await res.json();
+  };
+
+  const getProducts = async (currency) => {
+    const res = await fetch(`${BACKEND_URL}/api/products/${currency}`, {
+      headers,
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch products.");
+    }
+    return await res.json();
+  };
+
+  const getSubscriptionProducts = async (currency) => {
+    const apiUrl = `${BACKEND_URL}/api/subscription/products/${currency}`;
+    const res = await fetch(apiUrl, { headers });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch products.");
+    }
+    return await res.json();
+  };
+
+  return {
+    createCart,
+    updateCart,
+    addCustomerToCart,
+    getConfig,
+    getProducts,
+    getSubscriptionProducts,
+  };
+};

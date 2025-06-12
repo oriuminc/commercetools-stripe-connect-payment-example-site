@@ -51,19 +51,43 @@ async function createCtClient() {
   });
 }
 
+async function getProductTypeId(name) {
+  if (!client) {
+    client = await createCtClient();
+  }
+  const uri = requestBuilder.productTypes.where(`key="${name}"`).build();
+  const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
+    console.log(e);
+  });
+  return String(rsp?.body?.results?.[0]?.id) || null;
+}
+
 async function getProducts() {
   if (!client) {
     client = await createCtClient();
   }
-  let uri = requestBuilder.products.build();
-  const rsp = await client
-    .execute({
-      uri: uri,
-      method: "GET",
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+  const productTypeId = await getProductTypeId("subscription-information");
+  const uri = requestBuilder.products
+    .where(`productType(id!="${productTypeId}")`)
+    .build();
+  const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
+    console.log(e);
+  });
+  return rsp.body;
+}
+
+async function getSubscriptionProducts() {
+  if (!client) {
+    client = await createCtClient();
+  }
+  const productTypeId = await getProductTypeId("subscription-information");
+  const uri = requestBuilder.products
+    .where(`productType(id="${productTypeId}")`)
+    .perPage(10)
+    .build();
+  const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
+    console.log(e);
+  });
   return rsp.body;
 }
 
@@ -78,7 +102,7 @@ async function createCart(customerId) {
     body: {
       currency: "USD",
       country: "US",
-      ...(customerId &&  {customerId}),
+      ...(customerId && { customerId }),
     },
     headers: {
       Accept: "application/json",
@@ -92,7 +116,10 @@ async function getCart(cartId) {
   if (!client) {
     client = await createCtClient();
   }
-  let uri = requestBuilder.carts.byId(cartId).build();
+  let uri = requestBuilder.carts
+    .byId(cartId)
+    .expand("lineItems[*].productType")
+    .build();
   const rsp = await client.execute({
     uri: uri,
     method: "GET",
@@ -130,7 +157,10 @@ async function cartAddLineItem(
   if (!client) {
     client = await createCtClient();
   }
-  let uri = requestBuilder.carts.byId(cartId).build();
+  let uri = requestBuilder.carts
+    .byId(cartId)
+    .expand("lineItems[*].productType")
+    .build();
   const rsp = await client.execute({
     uri: uri,
     method: "POST",
@@ -159,26 +189,25 @@ async function cartAddCustomer(cartId, customerId) {
   }
   const customer = await getCustomer(customerId);
   const cart = await getCart(cartId);
-  let uri = requestBuilder.carts.byId(cartId).build();
-  let rsp = await client.execute({
+  const uri = requestBuilder.carts.byId(cartId).build();
+  const actions = [{ action: "setCustomerId", customerId: customerId }];
+
+  if (customer.addresses?.length) {
+    actions.push({
+      action: "setShippingAddress",
+      address: {
+        firstName: customer.addresses[0].firstName,
+        lastName: customer.addresses[0].lastName,
+        country: customer.addresses[0].country,
+      },
+    });
+  }
+  const rsp = await client.execute({
     uri: uri,
     method: "POST",
     body: {
       version: cart.version,
-      actions: [
-        {
-          action: "setCustomerId",
-          customerId: customerId,
-        },
-        {
-          action: "setShippingAddress",
-          address: {
-            firstName: customer.addresses[0].firstName,
-            lastName: customer.addresses[0].lastName,
-            country: customer.addresses[0].country,
-          },
-        },
-      ],
+      actions,
     },
     headers: {
       Accept: "application/json",
@@ -461,6 +490,7 @@ async function cartAddShippingAddres(cartId, address, version) {
 
 const commerceToolsHelper = {
   getProducts,
+  getSubscriptionProducts,
   createCart,
   getPayment,
   cartAddLineItem,

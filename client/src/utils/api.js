@@ -1,7 +1,4 @@
-const projectKey = process.env.REACT_APP_CT_PROJECT_KEY;
-const BACKEND_URL = process.env.NODE_ENV === "production"
-  ? process.env.REACT_APP_PRODUCTION_URL || ''
-  : "http://localhost:3000";
+import { BACKEND_URL, projectKey } from "./constants";
 
 export const loadEnabler = async (enablerUrl) => {
   try {
@@ -20,7 +17,6 @@ export const loadEnabler = async (enablerUrl) => {
     console.error("Error while loading Enabler module", error);
   }
 };
-
 
 export const fetchAdminToken = async () => {
   const headers = new Headers();

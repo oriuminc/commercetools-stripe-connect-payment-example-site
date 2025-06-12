@@ -65,6 +65,13 @@ app.get("/api/products/:currency", async (req, res) => {
   res.send(ctProducts.results);
 });
 
+app.get("/api/subscription/products/:currency", async (req, res) => {
+  const currency = req.params.currency;
+  console.log(`Fetching subscription products for currency: ${currency}`);
+  const ctProducts = await commerceTools.getSubscriptionProducts();
+  res.send(ctProducts.results);
+});
+
 /* ------ GET CUSTOMER BY EMAIL ------ */
 app.get("/customer/:email?", async (req, res) => {
   const customers = await commerceTools.getCustomerByEmail(req.params.email);

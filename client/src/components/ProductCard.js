@@ -1,15 +1,29 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Carousel from "./Carousel";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import getSymbolFromCurrency from "currency-symbol-map";
+import { formatAttributeValue, formatText } from "../utils";
 
-export default function ProductCard(props) {
+export default function ProductCard({
+  product,
+  brandColor,
+  currency,
+  isSubscription = false,
+  addToCart = async ({ productId, quantity, variantId }) => {},
+}) {
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    parseInt(product.masterData?.current?.masterVariant?.id) || 1
+  );
   const [show, setShow] = useState(false);
+  const [quantityValue, setQuantityValue] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const handleClose = () => setShow(false);
-  const [quantityValue, setQuantityValue] = React.useState("1");
-  const handleQuantityChange = (event) => setQuantityValue(event.target.value);
+
+  const handleQuantityChange = (event) => {
+    setQuantityValue(parseInt(event.target.value));
+  };
 
   const handleShow = () => {
     setShow(true);
@@ -46,24 +60,53 @@ export default function ProductCard(props) {
   };
 
   const quantitySelectOptions = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-    { value: "3", label: "3" },
-    { value: "4", label: "4" },
-    { value: "5", label: "5" },
+    { value: 1, label: "1" },
+    { value: 2, label: "2" },
+    { value: 3, label: "3" },
+    { value: 4, label: "4" },
+    { value: 5, label: "5" },
   ];
 
-  const addToCart = (e) => {
-    props.addToCart(props.product, parseInt(quantityValue));
-    setShow(false);
-  };
+  const variants = useMemo(() => {
+    if (
+      !product.masterData?.current?.masterVariant ||
+      !product.masterData?.current?.variants
+    ) {
+      return [];
+    }
 
+    return [
+      product.masterData?.current?.masterVariant,
+      ...product.masterData?.current?.variants,
+    ];
+  }, [product]);
+
+  const selectedVariant = useMemo(() => {
+    return variants.find(({ id }) => id === selectedVariantId) || null;
+  }, [selectedVariantId]);
+
+  const handleAddToCart = async () => {
+    try {
+      setIsLoading(true);
+      await addToCart({
+        productId: product.id,
+        quantity: isSubscription ? 1 : parseInt(quantityValue),
+        variantId: selectedVariantId,
+      });
+      setShow(false);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Failed to add product to cart. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const displayPrice = (value) => {
     if (!value) {
-      return `${getSymbolFromCurrency(props.currency)} 100`;
+      return `${getSymbolFromCurrency(currency)} 100`;
     }
-    return `${getSymbolFromCurrency(props.currency)} ${(
+    return `${getSymbolFromCurrency(currency)} ${(
       value.centAmount / 100
     ).toFixed(value.fractionDigits)}`;
   };
@@ -75,19 +118,17 @@ export default function ProductCard(props) {
           <div className="card-image" style={styles.boxCard}>
             <img
               alt="product"
-              src={
-                props.product.masterData.current.masterVariant.images[0]?.url
-              }
+              src={product.masterData.current.masterVariant.images[0]?.url}
               style={styles.img}
             />
           </div>
           <div className="card-body" style={{ paddingBottom: 10 }}>
             <p styles={styles.name}>
-              {props.product.masterData.current.name["en-US"]}
+              {product.masterData.current.name["en-US"]}
             </p>
             <h3 style={styles.price}>
               {displayPrice(
-                props.product.masterData.current.masterVariant.prices[0]?.value
+                product.masterData.current.masterVariant.prices[0]?.value
               )}
             </h3>
           </div>
@@ -95,7 +136,7 @@ export default function ProductCard(props) {
       </div>
       <Modal show={show} centered onHide={handleClose} size="xl">
         <Modal.Header style={styles.nameModal}>
-          {props.product.masterData.current.name["en-US"]}
+          {product.masterData.current.name["en-US"]}
           <FontAwesomeIcon
             icon={faTimes}
             style={{ cursor: "pointer" }}
@@ -106,36 +147,77 @@ export default function ProductCard(props) {
           <div className="row">
             <div className="col-4">
               <Carousel
-                id={"modal_" + props.product.id}
+                id={"modal_" + product.id}
                 images={[
-                  props.product.masterData.current.masterVariant.images[0]?.url,
+                  product.masterData.current.masterVariant.images[0]?.url,
                 ]}
               />
             </div>
-            <div className="col-7">
-              <p>{props.product.masterData.current.description["en-US"]}</p>
+            <div className="col-7 flex flex-column gap-2">
+              <p>{product.masterData.current.description["en-US"]}</p>
+              <ul>
+                {selectedVariant.attributes.map(({ name, value }) => (
+                  <li key={name}>
+                    <strong className="font-medium">{formatText(name)}:</strong>{" "}
+                    {formatAttributeValue(value)}
+                  </li>
+                ))}
+              </ul>
+              {variants?.length > 1 ? (
+                <div className="flex flex-column gap-2">
+                  <h4 className="font-medium pt-4">Variants</h4>
+                  <div className="flex gap-2 flex-wrap">
+                    {variants?.map(({ id }) => (
+                      <label
+                        key={id}
+                        htmlFor={id}
+                        className={`border px-4 py-2 rounded-lg hover:bg-gray-light hover:cursor-pointer ${
+                          selectedVariantId === id ? "bg-gray-light" : ""
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="variant"
+                          value={id}
+                          id={id}
+                          className="hidden"
+                          onChange={() => setSelectedVariantId(id)}
+                        />
+                        <p>{id}</p>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <div className="col-1">
-            <label>
-              Quantity
-              <select value={quantityValue} onChange={handleQuantityChange}>
-                {quantitySelectOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+          {!isSubscription ? (
+            <div className="col-2">
+              <label className="flex gap-2 justify-end">
+                Quantity
+                <select
+                  value={quantityValue}
+                  onChange={handleQuantityChange}
+                  disabled={isLoading}
+                >
+                  {quantitySelectOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          ) : null}
           <div className="col-2">
             <button
               className="btn"
-              style={{ backgroundColor: props.brandColor, color: "blue" }}
-              id={props.product.id}
-              onClick={addToCart}
+              style={{ backgroundColor: brandColor, color: "blue" }}
+              id={product.id}
+              onClick={handleAddToCart}
+              disabled={isLoading}
             >
               Add to Cart
             </button>

@@ -1,49 +1,44 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard.js";
-import { DEV_REQUEST_HEADERS } from "../utils";
-const BACKEND_URL = process.env.NODE_ENV === "production"
-  ? process.env.REACT_APP_PRODUCTION_URL || ''
-  : "http://localhost:3000";
+import { useApi } from "../hooks/useApi.js";
 
-export default function ProductList(props) {
+export default function ProductList({
+  currency,
+  brandColor,
+  addToCart = async () => {},
+}) {
+  const { getProducts } = useApi();
   const [isLoaded, setIsLoaded] = useState(false);
   const [products, setProducts] = useState([]);
 
   // Fetch all products whenever currency is switched, or on initial load
   useEffect(() => {
-    setIsLoaded(false);
-    setProducts([]);
-    fetch(`${BACKEND_URL}/api/products/` + props.currency, {
-      headers: new Headers({
-        ...DEV_REQUEST_HEADERS,
-      }),
-    })
-      .then((res) => res.json())
-      .then((obj) => {
-        setProducts(obj);
-        setIsLoaded(true);
-      });
-  }, [props.currency]);
+    fetchProducts();
+  }, []);
 
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  } else {
-    return (
-      <>
-        <div>
-          <div className="row row-cols-1 row-cols-lg-5 g-4">
-            {products.map((product, key) => (
-              <ProductCard
-                product={product}
-                addToCart={props.addToCart}
-                key={key}
-                brandColor={props.brandColor}
-                currency={props.currency}
-              />
-            ))}
-          </div>
-        </div>
-      </>
-    );
-  }
+  const fetchProducts = async () => {
+    try {
+      setIsLoaded(false);
+      const products = await getProducts(currency);
+      setProducts(products);
+    } finally {
+      setIsLoaded(true);
+    }
+  };
+
+  return !isLoaded ? (
+    <div>Loading...</div>
+  ) : (
+    <div className="row row-cols-1 row-cols-lg-5 g-4">
+      {products.map((product, key) => (
+        <ProductCard
+          product={product}
+          addToCart={addToCart}
+          key={key}
+          brandColor={brandColor}
+          currency={currency}
+        />
+      ))}
+    </div>
+  );
 }
