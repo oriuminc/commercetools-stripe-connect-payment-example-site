@@ -80,7 +80,7 @@ async function getSubscriptionProducts() {
   if (!client) {
     client = await createCtClient();
   }
-  const productTypeId = await getProductTypeId("subscription-information");
+  const productTypeId = await getProductTypeId("payment-connector-subscription-information");
   const uri = requestBuilder.products
     .where(`productType(id="${productTypeId}")`)
     .perPage(10)

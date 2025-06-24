@@ -32,10 +32,12 @@ export default function Header({
     {
       label: "Checkout Connector",
       selectedBackgroundColor: "#0bbfbf",
+      value: true,
     },
     {
       label: "Composable Connector",
       selectedBackgroundColor: "#6359ff",
+      value: false,
     },
   ];
 
@@ -118,10 +120,12 @@ export default function Header({
           <>
             <div className="col-6" style={{ height: 50, marginTop: 30 }}>
               <SwitchSelector
-                onChange={() => setCtCheckoutToggled((prev) => !prev)}
+                name="checkout-switch"
+                onChange={(value) => setCtCheckoutToggled(value)}
                 options={switchSelectorOptions}
                 initialSelectedIndex={0}
                 fontSize={20}
+
               />
             </div>
             <div className="col-1 align-text-bottom" style={styles.cart}>

@@ -12,6 +12,7 @@ export default function ProductCard({
   currency,
   isSubscription = false,
   addToCart = async ({ productId, quantity, variantId }) => {},
+  subscriptionInterval , // 1 for monthly, 0 for yearly
 }) {
   const [selectedVariantId, setSelectedVariantId] = useState(
     parseInt(product.masterData?.current?.masterVariant?.id) || 1
@@ -114,25 +115,96 @@ export default function ProductCard({
   return (
     <>
       <div className="col">
-        <div style={styles.card} className="h-100" onClick={handleShow}>
-          <div className="card-image" style={styles.boxCard}>
-            <img
-              alt="product"
-              src={product.masterData.current.masterVariant.images[0]?.url}
-              style={styles.img}
-            />
+        {isSubscription && (
+          <div style={styles.card} className="h-100">
+            <div className="card-image" style={styles.boxCard}>
+              <img
+                alt="product"
+                src={product.masterData.current.masterVariant.images[0]?.url}
+                style={styles.img}
+              />
+            </div>
+            <div className="card-body" style={{ paddingBottom: 10 }}>
+              <p styles={styles.name}>
+                {product.masterData.current.name["en-US"]}
+              </p>
+              <h3 style={styles.price}>
+                { subscriptionInterval === 1 ?
+                  (displayPrice(
+                    product.masterData.current.variants[0].prices[0]?.value
+                  ))
+                  :
+                  (displayPrice(
+                    product.masterData.current.masterVariant.prices[0]?.value
+                  ))
+                }
+              </h3>
+              <button
+                className="btn btn-primary"
+                style={{ backgroundColor: brandColor, color: "white" }}
+                onClick={()=> {
+                  if(subscriptionInterval === 1) {
+                    setSelectedVariantId(product.masterData.current.variants[0].id);
+                  } else {
+                    setSelectedVariantId(product.masterData.current.masterVariant.id);
+                  }
+                  handleAddToCart()
+                }}
+              >
+                Subscribe
+              </button>
+              <div className="col-7 flex flex-column gap-2">
+                <p>{product.masterData.current.description["en-US"]}</p>
+                { subscriptionInterval === 1 ?
+                  <ul>
+                    {product.masterData.current.variants[0].attributes.map(({ name, value }) => {
+                      if(name === "trial_period_days")
+                        return (<li key={name}>
+                          <strong className="font-medium">{formatText(name)}:</strong>{" "}
+                          {formatAttributeValue(value)}
+                        </li>)
+                    })}
+                  </ul>
+                  :
+                  <ul>
+                    {product.masterData.current.masterVariant.attributes.map(({ name, value }) => {
+                      if(name === "trial_period_days")
+                        return (<li key={name}>
+                          <strong className="font-medium">{formatText(name)}:</strong>{" "}
+                          {formatAttributeValue(value)}
+                        </li>)
+                    })}
+                  </ul>
+                }
+
+              </div>
+            </div>
           </div>
-          <div className="card-body" style={{ paddingBottom: 10 }}>
-            <p styles={styles.name}>
-              {product.masterData.current.name["en-US"]}
-            </p>
-            <h3 style={styles.price}>
-              {displayPrice(
-                product.masterData.current.masterVariant.prices[0]?.value
-              )}
-            </h3>
+        )}
+
+        {!isSubscription && (
+          <div style={styles.card} className="h-100" onClick={handleShow}>
+            <div className="card-image" style={styles.boxCard}>
+              <img
+                alt="product"
+                src={product.masterData.current.masterVariant.images[0]?.url}
+                style={styles.img}
+              />
+            </div>
+            <div className="card-body" style={{ paddingBottom: 10 }}>
+              <p styles={styles.name}>
+                {product.masterData.current.name["en-US"]}
+              </p>
+              <h3 style={styles.price}>
+                {
+                  displayPrice(
+                    product.masterData.current.masterVariant.prices[0]?.value
+                  )
+                }
+              </h3>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <Modal show={show} centered onHide={handleClose} size="xl">
         <Modal.Header style={styles.nameModal}>
