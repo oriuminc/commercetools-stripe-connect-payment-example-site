@@ -13,7 +13,7 @@ export const parseAttributeValue = (value) => {
   if (Array.isArray(value)) {
     return value.join(", ");
   }
-  return value["en-US"] || value.label;
+  return value["de-DE"] || value.label;
 };
 
 export const formatText = (text) => {

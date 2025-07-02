@@ -126,7 +126,7 @@ export default function ProductCard({
             </div>
             <div className="card-body" style={{ paddingBottom: 10 }}>
               <p styles={styles.name}>
-                {product.masterData.current.name["en-US"]}
+                {product.masterData.current.name["de-DE"]}
               </p>
               <h3 style={styles.price}>
                 { subscriptionInterval === 1 ?
@@ -154,7 +154,7 @@ export default function ProductCard({
                 Subscribe
               </button>
               <div className="col-7 flex flex-column gap-2">
-                <p>{product.masterData.current.description["en-US"]}</p>
+                <p>{product.masterData.current.description["de-DE"]}</p>
                 { subscriptionInterval === 1 ?
                   <ul>
                     {product.masterData.current.variants[0].attributes.map(({ name, value }) => {
@@ -193,7 +193,7 @@ export default function ProductCard({
             </div>
             <div className="card-body" style={{ paddingBottom: 10 }}>
               <p styles={styles.name}>
-                {product.masterData.current.name["en-US"]}
+                {product.masterData.current.name["de-DE"]}
               </p>
               <h3 style={styles.price}>
                 {
@@ -208,7 +208,7 @@ export default function ProductCard({
       </div>
       <Modal show={show} centered onHide={handleClose} size="xl">
         <Modal.Header style={styles.nameModal}>
-          {product.masterData.current.name["en-US"]}
+          {product.masterData.current.name["de-DE"]}
           <FontAwesomeIcon
             icon={faTimes}
             style={{ cursor: "pointer" }}
@@ -226,7 +226,7 @@ export default function ProductCard({
               />
             </div>
             <div className="col-7 flex flex-column gap-2">
-              <p>{product.masterData.current.description["en-US"]}</p>
+              <p>{product.masterData.current.description["de-DE"]}</p>
               <ul>
                 {selectedVariant.attributes.map(({ name, value }) => (
                   <li key={name}>

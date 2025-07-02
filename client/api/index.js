@@ -156,7 +156,7 @@ app.post("/create-payment-intent", async (req, res) => {
   let total = cart.totalPrice.centAmount;
   let summary = "";
   cart.lineItems.forEach((item) => {
-    summary += item.id + "  [" + item.name["en-US"] + "] ";
+    summary += item.id + "  [" + item.name["de-DE"] + "] ";
   });
 
   const payload = {
