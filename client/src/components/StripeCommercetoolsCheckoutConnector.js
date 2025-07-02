@@ -62,6 +62,8 @@ const StripeCommercetoolsCheckoutConnector = ({ setCart }) => {
     checkoutFlow({
       projectKey: "stripe-subscription",
       region: "us-central1.gcp",
+      locale: "de-DE",
+      currencyLocale: "de-DE",
       paymentReference: paymentReferenceRef.current,
       sessionId: `${sessionId}`,
       logInfo: true,
