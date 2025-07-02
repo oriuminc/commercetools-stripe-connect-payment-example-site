@@ -20,7 +20,7 @@ export const useEnabler = () => {
     const enabler = new Enabler({
       processorUrl: enablerContext.processorUrl,
       sessionId: enablerContext.sessionId,
-      currency: "US",
+      currency: "EUR",
       onComplete: ({ isSuccess, paymentReference, paymentIntent }) => {
         onComplete(paymentIntent,isSuccess, paymentReference);
       },

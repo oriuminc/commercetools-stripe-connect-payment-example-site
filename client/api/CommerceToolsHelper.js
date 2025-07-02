@@ -100,8 +100,8 @@ async function createCart(customerId) {
     uri: uri,
     method: "POST",
     body: {
-      currency: "USD",
-      country: "US",
+      currency: "EUR",
+      country: "DE",
       ...(customerId && { customerId }),
     },
     headers: {
