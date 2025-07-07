@@ -64,18 +64,21 @@ export default function App() {
   const resetCart = () => {
     setCart(undefined);
   };
+ const handleCtCheckoutToggled = (value) => {
+  setCtCheckoutToggled(value);
 
-  useEffect(() => {
-    if(!cart){
-      testingCart();
-    }
+  console.log("CT Checkout Toggled:", value);
 
-  }, []);
-
-const testingCart = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+   if(!cart && !value) {
+     loginUserToCart();
+   }
+  if (value) {
+    setCustomerId(null);
+    setCart(undefined);
+  }
+ }
+const loginUserToCart = async () => {
   const newCart = await createCart('f1307a84-2890-437b-9213-2231a8e43413');
-
   setCart(newCart);
   setCustomerId('f1307a84-2890-437b-9213-2231a8e43413');
 }
@@ -154,7 +157,7 @@ const testingCart = async () => {
             showCart={true}
             totalQuantity={totalQuantity}
             ctCheckoutToggled={ctCheckoutToggled}
-            setCtCheckoutToggled={setCtCheckoutToggled}
+            setCtCheckoutToggled={handleCtCheckoutToggled}
             setCustomerToCart={handleAddCustomerToCart}
           />
           {cart?.customerId && customerId === cart?.customerId ? (

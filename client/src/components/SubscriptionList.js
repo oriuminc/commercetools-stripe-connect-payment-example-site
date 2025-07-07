@@ -33,8 +33,6 @@ const SubscriptionList = ({
     try {
       setIsLoaded(false);
       const products = await getSubscriptionProducts(currency);
-      console.log("Fetched Subscription Products:", products);
-      console.log(JSON.stringify(products, null, 2));
       setSubscriptionProducts(products);
     } finally {
       setIsLoaded(true);

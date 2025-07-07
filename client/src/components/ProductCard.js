@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Carousel from "./Carousel";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { formatAttributeValue, formatText } from "../utils";
+import {useHistory} from "react-router";
 
 export default function ProductCard({
   product,
@@ -14,13 +15,13 @@ export default function ProductCard({
   addToCart = async ({ productId, quantity, variantId }) => {},
   subscriptionInterval , // 1 for monthly, 0 for yearly
 }) {
-  const [selectedVariantId, setSelectedVariantId] = useState(
-    parseInt(product.masterData?.current?.masterVariant?.id) || 1
-  );
+  const [selectedVariantId, setSelectedVariantId] = useState(1);
   const [show, setShow] = useState(false);
   const [quantityValue, setQuantityValue] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const handleClose = () => setShow(false);
+  const [buySubscription, setBuySubscription] = useState(false);
+  const history = useHistory();
 
   const handleQuantityChange = (event) => {
     setQuantityValue(parseInt(event.target.value));
@@ -86,7 +87,7 @@ export default function ProductCard({
     return variants.find(({ id }) => id === selectedVariantId) || null;
   }, [selectedVariantId]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (id) => {
     try {
       setIsLoading(true);
       await addToCart({
@@ -111,6 +112,18 @@ export default function ProductCard({
       value.centAmount / 100
     ).toFixed(value.fractionDigits)}`;
   };
+
+  useEffect(() => {
+
+    const asyncCall = async () => {
+      await handleAddToCart();
+      history.push('/checkoutOrderConnector');
+
+    }
+    if(buySubscription){
+      asyncCall();
+    }
+  },[buySubscription])
 
   return (
     <>
@@ -145,10 +158,11 @@ export default function ProductCard({
                 onClick={()=> {
                   if(subscriptionInterval === 1) {
                     setSelectedVariantId(product.masterData.current.variants[0].id);
+                    setBuySubscription(true)
                   } else {
                     setSelectedVariantId(product.masterData.current.masterVariant.id);
+                    setBuySubscription(true)
                   }
-                  handleAddToCart()
                 }}
               >
                 Subscribe

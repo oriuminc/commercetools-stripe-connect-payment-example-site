@@ -82,7 +82,7 @@ async function getSubscriptionProducts() {
   }
   const productTypeId = await getProductTypeId("payment-connector-subscription-information");
   const uri = requestBuilder.products
-    .where(`productType(id="${productTypeId}")`)
+    .where(`productType(id="${productTypeId}") and masterData(published=true) `)
     .perPage(10)
     .build();
   const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
