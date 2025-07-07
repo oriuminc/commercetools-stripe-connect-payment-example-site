@@ -74,10 +74,10 @@ export default function App() {
 
 const testingCart = async () => {
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  const newCart = await createCart('8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd');
+  const newCart = await createCart('f1307a84-2890-437b-9213-2231a8e43413');
 
   setCart(newCart);
-  setCustomerId('8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd');
+  setCustomerId('f1307a84-2890-437b-9213-2231a8e43413');
 }
 
   useEffect(() => {
