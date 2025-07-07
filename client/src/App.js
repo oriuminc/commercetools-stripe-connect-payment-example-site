@@ -1,5 +1,5 @@
 // Modules
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
@@ -64,6 +64,26 @@ export default function App() {
   const resetCart = () => {
     setCart(undefined);
   };
+
+  useEffect(() => {
+    if(!cart){
+      testingCart();
+    }
+
+  }, []);
+
+const testingCart = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  const newCart = await createCart('8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd');
+
+  setCart(newCart);
+  setCustomerId('8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd');
+}
+
+  useEffect(() => {
+    console.log("Cart updated:", cart);
+    console.log("Customer ID:", customerId);
+  }, [cart, customerId]);
 
   return (
     <BrowserRouter>
