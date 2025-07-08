@@ -58,6 +58,12 @@ app.get("/api/settings", async (req, res) => {
   });
 });
 
+app.get("/api/project/languages", async (_, res) => {
+  console.log("Fetching available languages");
+  const languages = await commerceTools.getLanguages();
+  res.send(languages);
+});
+
 app.get("/api/products/:currency", async (req, res) => {
   const currency = req.params.currency;
   console.log(`Fetching products for currency: ${currency}`);

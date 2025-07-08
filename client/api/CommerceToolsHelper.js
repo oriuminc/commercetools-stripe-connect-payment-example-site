@@ -51,6 +51,17 @@ async function createCtClient() {
   });
 }
 
+async function getLanguages() {
+  if (!client) {
+    client = await createCtClient();
+  }
+  const uri = requestBuilder.project.build();
+  const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
+    console.log(e);
+  });
+  return rsp.body?.languages || [];
+}
+
 async function getProductTypeId(name) {
   if (!client) {
     client = await createCtClient();
@@ -80,7 +91,9 @@ async function getSubscriptionProducts() {
   if (!client) {
     client = await createCtClient();
   }
-  const productTypeId = await getProductTypeId("payment-connector-subscription-information");
+  const productTypeId = await getProductTypeId(
+    "payment-connector-subscription-information"
+  );
   const uri = requestBuilder.products
     .where(`productType(id="${productTypeId}") and masterData(published=true) `)
     .perPage(10)
@@ -489,6 +502,7 @@ async function cartAddShippingAddres(cartId, address, version) {
 }
 
 const commerceToolsHelper = {
+  getLanguages,
   getProducts,
   getSubscriptionProducts,
   createCart,

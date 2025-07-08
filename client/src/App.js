@@ -18,7 +18,8 @@ export default function App() {
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
   const [customerId, setCustomerId] = useState(null);
-  const { createCart, updateCart, addCustomerToCart } = useApi();
+  const [languages, setLanguages] = useState([]); 
+  const { createCart, updateCart, addCustomerToCart, getLanguages } = useApi();
   const currency = "eur";
 
   const addToCart = async ({ productId, quantity, variantId }) => {
@@ -83,13 +84,22 @@ const loginUserToCart = async () => {
   setCustomerId('f1307a84-2890-437b-9213-2231a8e43413');
 }
 
-  useEffect(() => {
-    console.log("Cart updated:", cart);
-    console.log("Customer ID:", customerId);
-  }, [cart, customerId]);
+const setAvailableLanguages = async () => {
+  const languages = await getLanguages();
+  setLanguages(languages);
+}
 
-  return (
-    <BrowserRouter>
+useEffect(() => {
+  console.log("Cart updated:", cart);
+  console.log("Customer ID:", customerId);
+}, [cart, customerId]);
+
+useEffect(() => {
+  setAvailableLanguages();
+}, []);
+
+return (
+  <BrowserRouter>
       <Switch>
         <Route path="/checkoutOrderConnector">
           <Header
