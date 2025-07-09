@@ -15,18 +15,10 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// const buildPath =
-//   process.env.NODE_ENV === "production"
-//     ? path.join(__dirname, "../../build") // Vercel serverless function path
-//     : path.join(__dirname, "../build"); // Local development path
-// app.use(express.static(buildPath));
 if (process.env.NODE_ENV === "production") {
   const buildPath = path.join(__dirname, "../../build"); // Vercel serverless function path
   app.use("/confirm", express.static(buildPath));
-} else {
-  console.log('DEV env')
 }
-// app.use("/confirm", express.static(buildPath));
 
 const corsOptions = {
   origin: "*",
@@ -41,8 +33,8 @@ app.options("*", cors(corsOptions));
 
 dotenv.config();
 
-const STRIPE_KEY = process.env.REACT_APP_SK;
-const STRIPE_ADMIN = process.env.REACT_APP_ADMIN;
+const STRIPE_KEY = process.env.STRIPE_KEY;
+const STRIPE_ADMIN = process.env.STRIPE_ADMIN;
 
 const stripe = new Stripe(STRIPE_KEY);
 

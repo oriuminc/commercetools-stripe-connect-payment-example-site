@@ -11,10 +11,10 @@ let client;
 dotenv.config();
 async function createCtClient() {
   console.log("Creating CommerceTools Client...");
-  console.log("projectKey: ", process.env.REACT_APP_CT_PROJECT_KEY);
+  console.log("projectKey: ", process.env.CT_PROJECT_KEY);
   if (!requestBuilder) {
     const options = {
-      projectKey: process.env.REACT_APP_CT_PROJECT_KEY,
+      projectKey: process.env.CT_PROJECT_KEY,
     };
     requestBuilder = createRequestBuilder(options);
   }
@@ -22,18 +22,18 @@ async function createCtClient() {
   return createClient({
     middlewares: [
       createAuthMiddlewareForClientCredentialsFlow({
-        host: process.env.REACT_APP_CT_AUTH_URL,
-        projectKey: process.env.REACT_APP_CT_PROJECT_KEY,
+        host: process.env.CT_AUTH_URL,
+        projectKey: process.env.CT_PROJECT_KEY,
         credentials: {
-          clientId: process.env.REACT_APP_CT_CLIENT_ID,
-          clientSecret: process.env.REACT_APP_CT_SECRET,
+          clientId: process.env.CT_CLIENT_ID,
+          clientSecret: process.env.CT_SECRET,
         },
 
         // Optional if not globally available
         fetch,
       }),
       createHttpMiddleware({
-        host: process.env.REACT_APP_CT_API_URL,
+        host: process.env.CT_API_URL,
         includeResponseHeaders: true,
         includeOriginalRequest: true,
         maskSensitiveHeaderData: true,
