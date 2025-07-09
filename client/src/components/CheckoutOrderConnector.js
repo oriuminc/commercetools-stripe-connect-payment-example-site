@@ -5,7 +5,7 @@ import StripeComposableConnectorCheckout from "./StripeComposableConnectorChecko
 import { SUBSCRIPTION_PRODUCT_TYPE_NAME } from "../utils";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
-export default function CheckoutOrderConnector({ cart, currency }) {
+export default function CheckoutOrderConnector({ cart, currency, language }) {
   const hasInvalidSubscriptionItem =
     cart?.totalLineItemQuantity > 1 &&
     cart?.lineItems?.some(
@@ -28,6 +28,7 @@ export default function CheckoutOrderConnector({ cart, currency }) {
     <EnablerContextProvider
       cartId={cart?.id}
       connector={"composableConnectorConfig"}
+      language={language}
     >
       <div className="flex flex-row justify-between gap-5">
         <StripeComposableConnectorCheckout cart={cart} />

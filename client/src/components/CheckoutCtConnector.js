@@ -4,7 +4,7 @@ import StripeCommercetoolsConnectorCheckout from "./StripeCommercetoolsCheckoutC
 import { SUBSCRIPTION_PRODUCT_TYPE_NAME } from "../utils";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
-export default function CheckoutCtConnector({ cart, setCart }) {
+export default function CheckoutCtConnector({ cart, setCart, language }) {
   const hasSubscriptionItem = cart?.lineItems.some(
     ({ productType }) => productType.obj.name === SUBSCRIPTION_PRODUCT_TYPE_NAME
   );
@@ -22,6 +22,7 @@ export default function CheckoutCtConnector({ cart, setCart }) {
       <EnablerContextProvider
         cartId={cart?.id}
         connector={"commercetoolsCheckoutConnectorConfig"}
+        language={language}
       >
         <div className="flex flex-row justify-between gap-5">
           <StripeCommercetoolsConnectorCheckout setCart={setCart} />

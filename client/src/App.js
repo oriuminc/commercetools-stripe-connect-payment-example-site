@@ -19,19 +19,22 @@ export default function App() {
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
   const [customerId, setCustomerId] = useState(null);
   const { createCart, updateCart, addCustomerToCart } = useApi();
-  const currency = "eur";
+  //const currency = "eur";
+  //const language = "de-DE"
+  const currency = "usd";
+  const language = "us-US"
 
   const addToCart = async ({ productId, quantity, variantId }) => {
     if (cart) {
       await handleUpdateCart({ cart, productId, quantity, variantId });
     } else {
-      await handleCreateCart({ productId, quantity, variantId });
+      await handleCreateCart({ productId, quantity, variantId, language:language });
     }
     setTotalQuantity((prev) => parseInt(prev) + quantity);
   };
 
-  const handleCreateCart = async ({ productId, quantity, variantId }) => {
-    const newCart = await createCart(customerId);
+  const handleCreateCart = async ({ productId, quantity, variantId, language }) => {
+    const newCart = await createCart(customerId, language);
     const updatedCart = await updateCart({
       cartId: newCart.id,
       quantity,
@@ -56,7 +59,7 @@ export default function App() {
   const handleAddCustomerToCart = async (customerId) => {
     const newCart = cart
       ? await addCustomerToCart({ cartId: cart.id, customerId })
-      : await createCart(customerId);
+      : await createCart(customerId, language);
     setCart(newCart);
     setCustomerId(customerId);
   };
@@ -78,9 +81,9 @@ export default function App() {
   }
  }
 const loginUserToCart = async () => {
-  const newCart = await createCart('f1307a84-2890-437b-9213-2231a8e43413');
+  const newCart = await createCart('8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd', language);
   setCart(newCart);
-  setCustomerId('f1307a84-2890-437b-9213-2231a8e43413');
+  setCustomerId('8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd');
 }
 
   useEffect(() => {
@@ -106,6 +109,7 @@ const loginUserToCart = async () => {
             brandColor={brandColor}
             currency={currency}
             setCart={setCart}
+            language={language}
           />
         </Route>
         <Route path="/checkoutCtConnector">
@@ -118,7 +122,7 @@ const loginUserToCart = async () => {
             showCart={false}
             totalQuantity={totalQuantity}
           />
-          <CommercetoolsCheckoutConnector cart={cart} setCart={setCart} />
+          <CommercetoolsCheckoutConnector cart={cart} setCart={setCart} language={language} />
         </Route>
         <Route path="/success/:capture_method">
           <Header

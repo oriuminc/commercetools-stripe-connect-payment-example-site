@@ -15,7 +15,7 @@ function useQuery() {
 }
 
 const StripeCommercetoolsCheckoutConnector = ({ setCart }) => {
-  const { sessionId } = useCheckout();
+  const { sessionId, language } = useCheckout();
   const query = useQuery();
   const paymentReferenceRef = useRef("");
 
@@ -62,8 +62,8 @@ const StripeCommercetoolsCheckoutConnector = ({ setCart }) => {
     checkoutFlow({
       projectKey: "stripe-subscription",
       region: "us-central1.gcp",
-      locale: "de-DE",
-      currencyLocale: "de-DE",
+      locale: language,
+      currencyLocale: language,
       paymentReference: paymentReferenceRef.current,
       sessionId: `${sessionId}`,
       logInfo: true,

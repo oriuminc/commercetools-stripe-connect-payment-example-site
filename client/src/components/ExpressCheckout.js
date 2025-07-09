@@ -5,8 +5,8 @@ import {
   updateCartShippingAddress,
 } from "../utils";
 
-const ExpressCheckout = ({ cart }) => {
-  const { enabler, createElement } = useEnabler();
+const ExpressCheckout = ({ cart, language }) => {
+  const { enabler, createElement } = useEnabler({language});
 
   const onError = () => {};
 

@@ -9,6 +9,13 @@ import fetch from "node-fetch";
 let requestBuilder;
 let client;
 
+const CURRENCY_MAP = {
+  "us-US": "USD",
+  "en-GB": "GBP",
+  "de-DE": "EUR",
+  "fr-FR": "EUR",
+};
+
 async function createCtClient() {
   console.log("Creating CommerceTools Client...");
   console.log("projectKey: ", process.env.REACT_APP_CT_PROJECT_KEY);
@@ -91,17 +98,19 @@ async function getSubscriptionProducts() {
   return rsp.body;
 }
 
-async function createCart(customerId) {
+async function createCart(customerId, language ) {
   if (!client) {
     client = await createCtClient();
   }
+  const [country, lang] = language.split("-");
+
   let uri = requestBuilder.carts.build();
   const rsp = await client.execute({
     uri: uri,
     method: "POST",
     body: {
-      currency: "EUR",
-      country: "DE",
+      currency: CURRENCY_MAP[language],
+      country: country.toUpperCase(),
       ...(customerId && { customerId }),
     },
     headers: {

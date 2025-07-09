@@ -103,8 +103,9 @@ app.get("/api/cart/:cartId?", async (req, res) => {
 /* ------ CREATE CART ------ */
 app.post("/api/cart", async (req, res) => {
   const customerId = req.body.customerId || null;
+  const language = req.body.language;
   console.log(`Creating cart for customerId: ${customerId}`);
-  res.send(await commerceTools.createCart(customerId));
+  res.send(await commerceTools.createCart(customerId, language));
 });
 
 /* ------ ADD CART LINE ITEM ------ */

@@ -4,6 +4,12 @@ import { loadEnabler } from "../utils";
 
 export const useEnabler = () => {
   const enablerContext = useContext(EnablerContext);
+  const CURRENCY_MAP = {
+    "us-US": "USD",
+    "en-GB": "GBP",
+    "de-DE": "EUR",
+    "fr-FR": "EUR",
+  };
 
   const [elements, setElements] = useState(null);
 
@@ -20,7 +26,7 @@ export const useEnabler = () => {
     const enabler = new Enabler({
       processorUrl: enablerContext.processorUrl,
       sessionId: enablerContext.sessionId,
-      currency: "EUR",
+      currency: CURRENCY_MAP[enablerContext.language],
       onComplete: ({ isSuccess, paymentReference, paymentIntent }) => {
         onComplete(paymentIntent,isSuccess, paymentReference);
       },
@@ -52,5 +58,6 @@ export const useCheckout = () => {
   const enablerContext = useContext(EnablerContext);
   return {
     sessionId: enablerContext.sessionId,
+    language: enablerContext.language,
   };
 };
