@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ProductCard from "./ProductCard.js";
+import ProductCard from "./ProductCard";
 import { useApi } from "../hooks/useApi.js";
 
 export default function ProductList({
