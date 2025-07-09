@@ -171,7 +171,7 @@ export default function ProductCard({
                 <p>{product.masterData.current.description["de-DE"]}</p>
                 { subscriptionInterval === 1 ?
                   <ul>
-                    {product.masterData.current.variants[0].attributes.map(({ name, value }) => {
+                    {product.masterData.current.variants[0].attributes.forEach(({ name, value }) => {
                       if(name === "trial_period_days")
                         return (<li key={name}>
                           <strong className="font-medium">{formatText(name)}:</strong>{" "}
@@ -181,7 +181,7 @@ export default function ProductCard({
                   </ul>
                   :
                   <ul>
-                    {product.masterData.current.masterVariant.attributes.map(({ name, value }) => {
+                    {product.masterData.current.masterVariant.attributes.forEach(({ name, value }) => {
                       if(name === "trial_period_days")
                         return (<li key={name}>
                           <strong className="font-medium">{formatText(name)}:</strong>{" "}

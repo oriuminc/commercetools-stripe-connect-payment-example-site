@@ -3,12 +3,12 @@ import { createAuthMiddlewareForClientCredentialsFlow } from "@commercetools/sdk
 import { createHttpMiddleware } from "@commercetools/sdk-middleware-http";
 import { createRequestBuilder } from "@commercetools/api-request-builder";
 import crypto from "crypto";
-
+import dotenv from "dotenv";
 import fetch from "node-fetch";
 
 let requestBuilder;
 let client;
-
+dotenv.config();
 async function createCtClient() {
   console.log("Creating CommerceTools Client...");
   console.log("projectKey: ", process.env.REACT_APP_CT_PROJECT_KEY);

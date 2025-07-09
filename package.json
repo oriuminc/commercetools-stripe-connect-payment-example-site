@@ -5,7 +5,6 @@
   "type": "module",
   "dependencies": {
     "@commercetools/api-request-builder": "^5.6.3",
-    "@commercetools/checkout-browser-sdk": "^0.9.0",
     "@commercetools/sdk-client": "^2.1.2",
     "@commercetools/sdk-middleware-auth": "^6.2.0",
     "@commercetools/sdk-middleware-http": "^6.1.0",
@@ -37,7 +36,10 @@
   "scripts": {
     "start": "node Server.js",
     "local": "react-scripts start",
-    "build": "cd client && npm install && npm run build",
+    "build": "run-script-os",
+    "build:darwin:linux": "cd client && npm install && npm run build",
+    "build:win32": "cd client&&npm run build",
+    "build:default": "cd client && npm install && npm run build",
     "vercel-build": "run-script-os",
     "vercel-build:darwin:linux": "CI=false npm run build",
     "vercel-build:win32": "set CI=false&&npm run build",
@@ -45,7 +47,13 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "npx prettier --write .",
-    "dev": "VERCEL_DEV_CACHE=0 vercel dev"
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix api\"",
+    "prepare:dev": "run-script-os",
+    "prepare:dev:darwin:linux": "cp vercel.dev.json vercel.json set VERCEL_DEV_CACHE=0",
+    "prepare:dev:win32": "copy vercel.dev.json vercel.json&&set VERCEL_DEV_CACHE=0",
+    "prepare:prod": "run-script-os",
+    "prepare:prod:darwin:linux": "cp vercel.prod.json vercel.json",
+    "prepare:prod:win32": "copy vercel.prod.json vercel.json"
   },
   "eslintConfig": {
     "extends": [
@@ -71,6 +79,7 @@
   },
   "proxy": "http://localhost:8081",
   "devDependencies": {
+    "concurrently": "^8.2.0",
     "prettier": "2.8.4",
     "run-script-os": "^1.1.6"
   }

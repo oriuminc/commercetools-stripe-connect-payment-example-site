@@ -15,12 +15,18 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const buildPath =
-  process.env.NODE_ENV === "production"
-    ? path.join(__dirname, "../../build") // Vercel serverless function path
-    : path.join(__dirname, "../build"); // Local development path
-app.use(express.static(buildPath));
-app.use("/confirm", express.static(buildPath));
+// const buildPath =
+//   process.env.NODE_ENV === "production"
+//     ? path.join(__dirname, "../../build") // Vercel serverless function path
+//     : path.join(__dirname, "../build"); // Local development path
+// app.use(express.static(buildPath));
+if (process.env.NODE_ENV === "production") {
+  const buildPath = path.join(__dirname, "../../build"); // Vercel serverless function path
+  app.use("/confirm", express.static(buildPath));
+} else {
+  console.log('DEV env')
+}
+// app.use("/confirm", express.static(buildPath));
 
 const corsOptions = {
   origin: "*",
@@ -268,5 +274,8 @@ app.get("/charge/:charge_id", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", environment: "vercel" });
 });
+
+if (process.env.NODE_ENV === "dev") 
+  app.listen(5000);
 
 export default app;
