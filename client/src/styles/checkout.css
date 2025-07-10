@@ -152,8 +152,8 @@
   }
 }
 
-#payment-form > @media only screen and (max-width: 600px) {
-  form {
+#payment-form > form {
+  @media only screen and (max-width: 600px) {
     width: 80vw;
   }
 }

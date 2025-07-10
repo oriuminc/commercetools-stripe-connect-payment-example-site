@@ -1,16 +1,18 @@
 // Modules
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
 import Confirmation from "./components/Confirmation";
-import "./styles/index.css";
 import Success from "./components/Success";
 import WellKnowApplePay from "./components/WellKnowApplePay";
 import CheckoutComposableConnector from "./components/CheckoutOrderConnector";
 import CommercetoolsCheckoutConnector from "./components/CheckoutCtConnector";
-import { useApi } from "./hooks/useApi";
 import SubscriptionList from "./components/SubscriptionList";
+import { useApi } from "./hooks/useApi";
+import { fetchLanguages } from "./store/languageSlice";
+import "./styles/index.css";
 
 export default function App() {
   const [cart, setCart] = useState();
@@ -18,8 +20,8 @@ export default function App() {
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
   const [customerId, setCustomerId] = useState(null);
-  const [languages, setLanguages] = useState([]); 
-  const { createCart, updateCart, addCustomerToCart, getLanguages } = useApi();
+  const dispatch = useDispatch();
+  const { createCart, updateCart, addCustomerToCart } = useApi();
   const currency = "eur";
 
   const addToCart = async ({ productId, quantity, variantId }) => {
@@ -65,41 +67,36 @@ export default function App() {
   const resetCart = () => {
     setCart(undefined);
   };
- const handleCtCheckoutToggled = (value) => {
-  setCtCheckoutToggled(value);
+  const handleCtCheckoutToggled = (value) => {
+    setCtCheckoutToggled(value);
 
-  console.log("CT Checkout Toggled:", value);
+    console.log("CT Checkout Toggled:", value);
 
-   if(!cart && !value) {
-     loginUserToCart();
-   }
-  if (value) {
-    setCustomerId(null);
-    setCart(undefined);
-  }
- }
-const loginUserToCart = async () => {
-  const newCart = await createCart('f1307a84-2890-437b-9213-2231a8e43413');
-  setCart(newCart);
-  setCustomerId('f1307a84-2890-437b-9213-2231a8e43413');
-}
+    if (!cart && !value) {
+      loginUserToCart();
+    }
+    if (value) {
+      setCustomerId(null);
+      setCart(undefined);
+    }
+  };
+  const loginUserToCart = async () => {
+    const newCart = await createCart("f1307a84-2890-437b-9213-2231a8e43413");
+    setCart(newCart);
+    setCustomerId("f1307a84-2890-437b-9213-2231a8e43413");
+  };
 
-const setAvailableLanguages = async () => {
-  const languages = await getLanguages();
-  setLanguages(languages);
-}
+  useEffect(() => {
+    console.log("Cart updated:", cart);
+    console.log("Customer ID:", customerId);
+  }, [cart, customerId]);
 
-useEffect(() => {
-  console.log("Cart updated:", cart);
-  console.log("Customer ID:", customerId);
-}, [cart, customerId]);
+  useEffect(() => {
+    dispatch(fetchLanguages());
+  }, [dispatch]);
 
-useEffect(() => {
-  setAvailableLanguages();
-}, []);
-
-return (
-  <BrowserRouter>
+  return (
+    <BrowserRouter>
       <Switch>
         <Route path="/checkoutOrderConnector">
           <Header
