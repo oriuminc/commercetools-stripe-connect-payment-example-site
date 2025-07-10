@@ -49,7 +49,7 @@
     "format": "npx prettier --write .",
     "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix api\"",
     "prepare:dev": "run-script-os",
-    "prepare:dev:darwin:linux": "cp vercel.dev.json vercel.json set VERCEL_DEV_CACHE=0",
+    "prepare:dev:darwin:linux": "cp vercel.dev.json vercel.json && set VERCEL_DEV_CACHE=0",
     "prepare:dev:win32": "copy vercel.dev.json vercel.json&&set VERCEL_DEV_CACHE=0",
     "prepare:prod": "run-script-os",
     "prepare:prod:darwin:linux": "cp vercel.prod.json vercel.json",

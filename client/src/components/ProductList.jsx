@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
+import { Spinner } from "./Spinner.jsx";
 import { useApi } from "../hooks/useApi.js";
 
 export default function ProductList({
@@ -27,7 +28,9 @@ export default function ProductList({
   };
 
   return !isLoaded ? (
-    <div>Loading...</div>
+    <div className="w-100 h-100 d-flex justify-content-center align-items-start">
+      <Spinner width="16%" height="16%" />
+    </div>
   ) : (
     <div className="row row-cols-1 row-cols-lg-5 g-4">
       {products.map((product, key) => (

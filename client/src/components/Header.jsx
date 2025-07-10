@@ -8,6 +8,7 @@ import SwitchSelector from "react-switch-selector";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import LanguageSelector from "./LanguageSelector";
 import { useApi } from "../hooks/useApi";
 
 export default function Header({
@@ -52,7 +53,6 @@ export default function Header({
       color: brandColor,
       textAlign: "center",
       fontSize: "2em",
-      marginTop: 30,
     },
     title: {
       color: brandColor,
@@ -110,7 +110,7 @@ export default function Header({
       <Helmet>
         <title>{shopName}</title>
       </Helmet>
-      <div className="row" style={styles.top}>
+      <div className="row items-center" style={styles.top}>
         <div className="col-3">
           <a href="/">
             <img src={shopIcon ?? logo} style={styles.icon} alt="icon" />
@@ -118,74 +118,75 @@ export default function Header({
         </div>
         {showCart ? (
           <>
-            <div className="col-6" style={{ height: 50, marginTop: 30 }}>
+            <div className="col-6" style={{ height: 50 }}>
               <SwitchSelector
                 name="checkout-switch"
                 onChange={(value) => setCtCheckoutToggled(value)}
                 options={switchSelectorOptions}
                 initialSelectedIndex={0}
                 fontSize={20}
-
               />
             </div>
-            <div className="col-1 align-text-bottom" style={styles.cart}>
-              <div
-                onClick={() => setShowModal(true)}
-                style={{
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                <FontAwesomeIcon icon={faUser} color={iconColor} />
+            <div className="flex items-center justify-around col-3">
+              <div className="flex items-center leading-[0.9]" style={styles.cart}>
+                <div
+                  onClick={() => setShowModal(true)}
+                  className="cursor-pointer"
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  <FontAwesomeIcon icon={faUser} color={iconColor} />
+                </div>
+                <Modal show={showModal} onHide={() => setShowModal(false)}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>User Information</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form.Group>
+                      <Form.Label>
+                        Enter value e.g. 8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={userInput}
+                        onChange={(e) => setUserInput(e.target.value)}
+                        placeholder="Enter your value here"
+                      />
+                    </Form.Group>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={handleUserSubmit}
+                      disabled={!userInput.trim()}
+                    >
+                      Submit
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </div>
-
-              <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                  <Modal.Title>User Information</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Form.Group>
-                    <Form.Label>
-                      Enter value e.g. 8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={userInput}
-                      onChange={(e) => setUserInput(e.target.value)}
-                      placeholder="Enter your value here"
-                    />
-                  </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button
-                    variant="secondary"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handleUserSubmit}
-                    disabled={!userInput.trim()}
-                  >
-                    Submit
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-            </div>
-            <div className="col-2 align-text-bottom" style={styles.cart}>
-              <Link
-                to={
-                  ctCheckoutToggled
-                    ? "/checkoutCtConnector"
-                    : "/checkoutOrderConnector"
-                }
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <FontAwesomeIcon icon={faShoppingCart} color={iconColor} />
-                {" " + totalQuantity}
-              </Link>
+              <LanguageSelector brandColor={brandColor} iconColor={iconColor} />
+              <div className="flex items-center gap-2" style={{...styles.cart, fontSize: "1.8em"}}>
+                <Link
+                  to={
+                    ctCheckoutToggled
+                      ? "/checkoutCtConnector"
+                      : "/checkoutOrderConnector"
+                  }
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <FontAwesomeIcon icon={faShoppingCart} color={iconColor} />
+                </Link>
+                <span className="text-base">{totalQuantity}</span>
+              </div>
             </div>
           </>
         ) : null}

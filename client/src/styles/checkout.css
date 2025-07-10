@@ -157,3 +157,11 @@
     width: 80vw;
   }
 }
+
+.dropdown-toggle::after {
+  transition: transform 300ms cubic-bezier(0.62, 0.07, 0.5, 1.05); /* Smooth transition */
+}
+
+.dropdown-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg); /* Rotate 180 degrees when expanded */
+}
