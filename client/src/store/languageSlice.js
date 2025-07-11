@@ -15,7 +15,7 @@ const languageSlice = createSlice({
   initialState: {
     locale: "en-US",
     currency: "USD",
-    availableLanguages: [{ code: "en-US", name: "English" }],
+    availableLanguages: [{ locale: "en-US", name: "English" }],
     availableCurrencies: [{ USD: ["en-US"] }],
   },
   reducers: {
@@ -26,11 +26,11 @@ const languageSlice = createSlice({
       const languageName = new Intl.DisplayNames(state.locale, {
         type: "language",
       });
-      const availableLanguages = state.availableLanguages.map((lang) => lang.code);
+      const availableLanguages = state.availableLanguages.map((lang) => lang.locale);
       state.availableLanguages = [];
       for (const lang of availableLanguages) {
         state.availableLanguages.push({
-          code: lang,
+          locale: lang,
           name: languageName.of(lang),
         });
       }
@@ -44,7 +44,7 @@ const languageSlice = createSlice({
       state.availableLanguages = [];
       for (const lang of action.payload) {
         state.availableLanguages.push({
-          code: lang,
+          locale: lang,
           name: languageName.of(lang),
         });
       }

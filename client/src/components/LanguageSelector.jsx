@@ -39,10 +39,10 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
           <Dropdown.Menu className="mt-2 w-auto p-1 bg-white shadow-2xl text-base">
             {availableLanguages.map((language) => (
               <Dropdown.Item
-                key={language.code}
-                onClick={() => dispatch(setLocale(language.code))}
+                key={language.locale}
+                onClick={() => dispatch(setLocale(language.locale))}
                 className={`flex items-center justify-between px-3 py-2 hover:bg-gray-100 rounded ${
-                  currentLanguage === language.code
+                  currentLanguage === language.locale
                     ? "bg-[rgb(209,213,219)] font-semibold"
                     : ""
                 }`}
