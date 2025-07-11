@@ -22,6 +22,19 @@ const languageSlice = createSlice({
     setLanguage: (state, action) => {
       state.language = action.payload;
     },
+    updateAvailableLanguages: (state) => {
+      const languageName = new Intl.DisplayNames(state.language, {
+        type: "language",
+      });
+      const availableLanguages = state.availableLanguages.map((lang) => lang.code);
+      state.availableLanguages = [];
+      for (const lang of availableLanguages) {
+        state.availableLanguages.push({
+          code: lang,
+          name: languageName.of(lang),
+        });
+      }
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLanguages.fulfilled, (state, action) => {
@@ -39,5 +52,5 @@ const languageSlice = createSlice({
   },
 });
 
-export const { setLanguage } = languageSlice.actions;
+export const { setLanguage, updateAvailableLanguages } = languageSlice.actions;
 export default languageSlice.reducer;

@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
+import {useHistory} from "react-router";
 import Carousel from "./Carousel";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useLocalizedString } from "../hooks/useLocalizedString";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { formatAttributeValue, formatText } from "../utils";
-import {useHistory} from "react-router";
 
 export default function ProductCard({
   product,
@@ -22,6 +23,7 @@ export default function ProductCard({
   const handleClose = () => setShow(false);
   const [buySubscription, setBuySubscription] = useState(false);
   const history = useHistory();
+  const getLocalizedString = useLocalizedString();
 
   const handleQuantityChange = (event) => {
     setQuantityValue(parseInt(event.target.value));
@@ -207,7 +209,8 @@ export default function ProductCard({
             </div>
             <div className="card-body" style={{ paddingBottom: 10 }}>
               <p styles={styles.name}>
-                {product.masterData.current.name["de-DE"]}
+                {getLocalizedString(product.masterData.current.name)}
+                {/* {product.masterData.current.name["de-DE"]} */}
               </p>
               <h3 style={styles.price}>
                 {

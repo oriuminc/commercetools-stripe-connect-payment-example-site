@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { setLanguage } from "../store/languageSlice";
+import { setLanguage, updateAvailableLanguages } from "../store/languageSlice";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
@@ -20,6 +20,11 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
       cursor: "pointer",
     },
   };
+
+  useEffect(
+    () => dispatch(updateAvailableLanguages()),
+    [dispatch, currentLanguage]
+  );
   return (
     <>
       <div className="" style={styles.language}>

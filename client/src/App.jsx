@@ -12,6 +12,7 @@ import CommercetoolsCheckoutConnector from "./components/CheckoutCtConnector";
 import SubscriptionList from "./components/SubscriptionList";
 import { useApi } from "./hooks/useApi";
 import { fetchLanguages } from "./store/languageSlice";
+import I18nProvider from "./i18n";
 import "./styles/index.css";
 
 export default function App() {
@@ -96,91 +97,93 @@ export default function App() {
   }, [dispatch]);
 
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route path="/checkoutOrderConnector">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            showCart={false}
-            totalQuantity={totalQuantity}
-          />
-          <CheckoutComposableConnector
-            cart={cart}
-            brandColor={brandColor}
-            currency={currency}
-            setCart={setCart}
-          />
-        </Route>
-        <Route path="/checkoutCtConnector">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            showCart={false}
-            totalQuantity={totalQuantity}
-          />
-          <CommercetoolsCheckoutConnector cart={cart} setCart={setCart} />
-        </Route>
-        <Route path="/success/:capture_method">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            showCart={false}
-            totalQuantity={totalQuantity}
-          />
-          <Success />
-        </Route>
-        <Route path="/confirm">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            showCart={false}
-            totalQuantity={totalQuantity}
-          />
-          <Confirmation />
-        </Route>
-        <Route path="/.well-known/apple-developer-merchantid-domain-association">
-          <WellKnowApplePay />
-        </Route>
-        <Route path="/">
-          <Header
-            cart={cart}
-            resetCart={resetCart}
-            brandColor={brandColor}
-            setBrandColor={setBrandColor}
-            currency={currency}
-            showCart={true}
-            totalQuantity={totalQuantity}
-            ctCheckoutToggled={ctCheckoutToggled}
-            setCtCheckoutToggled={handleCtCheckoutToggled}
-            setCustomerToCart={handleAddCustomerToCart}
-          />
-          {cart?.customerId && customerId === cart?.customerId ? (
-            <SubscriptionList
+    <I18nProvider>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/checkoutOrderConnector">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              showCart={false}
+              totalQuantity={totalQuantity}
+            />
+            <CheckoutComposableConnector
+              cart={cart}
+              brandColor={brandColor}
+              currency={currency}
+              setCart={setCart}
+            />
+          </Route>
+          <Route path="/checkoutCtConnector">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              showCart={false}
+              totalQuantity={totalQuantity}
+            />
+            <CommercetoolsCheckoutConnector cart={cart} setCart={setCart} />
+          </Route>
+          <Route path="/success/:capture_method">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              showCart={false}
+              totalQuantity={totalQuantity}
+            />
+            <Success />
+          </Route>
+          <Route path="/confirm">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              showCart={false}
+              totalQuantity={totalQuantity}
+            />
+            <Confirmation />
+          </Route>
+          <Route path="/.well-known/apple-developer-merchantid-domain-association">
+            <WellKnowApplePay />
+          </Route>
+          <Route path="/">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              showCart={true}
+              totalQuantity={totalQuantity}
+              ctCheckoutToggled={ctCheckoutToggled}
+              setCtCheckoutToggled={handleCtCheckoutToggled}
+              setCustomerToCart={handleAddCustomerToCart}
+            />
+            {cart?.customerId && customerId === cart?.customerId ? (
+              <SubscriptionList
+                addToCart={addToCart}
+                brandColor={brandColor}
+                currency={currency}
+              />
+            ) : null}
+            <ProductList
               addToCart={addToCart}
               brandColor={brandColor}
               currency={currency}
             />
-          ) : null}
-          <ProductList
-            addToCart={addToCart}
-            brandColor={brandColor}
-            currency={currency}
-          />
-        </Route>
-      </Switch>
-    </BrowserRouter>
+          </Route>
+        </Switch>
+      </BrowserRouter>
+    </I18nProvider>
   );
 }
