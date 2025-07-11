@@ -13,17 +13,17 @@ export const fetchLanguages = createAsyncThunk(
 const languageSlice = createSlice({
   name: "language",
   initialState: {
-    language: "en-US",
+    locale: "en-US",
     currency: "USD",
     availableLanguages: [{ code: "en-US", name: "English" }],
     availableCurrencies: [{ USD: ["en-US"] }],
   },
   reducers: {
-    setLanguage: (state, action) => {
-      state.language = action.payload;
+    setLocale: (state, action) => {
+      state.locale = action.payload;
     },
     updateAvailableLanguages: (state) => {
-      const languageName = new Intl.DisplayNames(state.language, {
+      const languageName = new Intl.DisplayNames(state.locale, {
         type: "language",
       });
       const availableLanguages = state.availableLanguages.map((lang) => lang.code);
@@ -38,7 +38,7 @@ const languageSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLanguages.fulfilled, (state, action) => {
-      const languageName = new Intl.DisplayNames(state.language, {
+      const languageName = new Intl.DisplayNames(state.locale, {
         type: "language",
       });
       state.availableLanguages = [];
@@ -52,5 +52,5 @@ const languageSlice = createSlice({
   },
 });
 
-export const { setLanguage, updateAvailableLanguages } = languageSlice.actions;
+export const { setLocale, updateAvailableLanguages } = languageSlice.actions;
 export default languageSlice.reducer;

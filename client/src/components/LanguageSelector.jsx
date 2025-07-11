@@ -3,11 +3,11 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { setLanguage, updateAvailableLanguages } from "../store/languageSlice";
+import { setLocale, updateAvailableLanguages } from "../store/languageSlice";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
-  const currentLanguage = useSelector((state) => state.language.language);
+  const currentLanguage = useSelector((state) => state.language.locale);
   const availableLanguages = useSelector(
     (state) => state.language.availableLanguages
   );
@@ -40,7 +40,7 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
             {availableLanguages.map((language) => (
               <Dropdown.Item
                 key={language.code}
-                onClick={() => dispatch(setLanguage(language.code))}
+                onClick={() => dispatch(setLocale(language.code))}
                 className={`flex items-center justify-between px-3 py-2 hover:bg-gray-100 rounded ${
                   currentLanguage === language.code
                     ? "bg-[rgb(209,213,219)] font-semibold"

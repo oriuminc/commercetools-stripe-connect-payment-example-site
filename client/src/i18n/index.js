@@ -3,10 +3,10 @@ import { useSelector } from "react-redux";
 import { IntlProvider } from "react-intl";
 
 const I18nProvider = ({ children }) => {
-  const currentLanguage = useSelector((state) => state.language.language);
+  const currentLocale = useSelector((state) => state.language.locale);
 
   return (
-    <IntlProvider locale={currentLanguage} defaultLocale="en-US">
+    <IntlProvider locale={currentLocale} defaultLocale="en-US">
       {children}
     </IntlProvider>
   );
