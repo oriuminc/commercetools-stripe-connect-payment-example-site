@@ -107,8 +107,10 @@ app.get("/api/cart/:cartId?", async (req, res) => {
 /* ------ CREATE CART ------ */
 app.post("/api/cart", async (req, res) => {
   const customerId = req.body.customerId || null;
+  const currency = req.body.currency || "USD";
+  const country = req.body.country || "US";
   console.log(`Creating cart for customerId: ${customerId}`);
-  res.send(await commerceTools.createCart(customerId));
+  res.send(await commerceTools.createCart(customerId, currency, country));
 });
 
 /* ------ ADD CART LINE ITEM ------ */
@@ -165,7 +167,7 @@ app.post("/create-payment-intent", async (req, res) => {
 
   const payload = {
     amount: total,
-    currency: currency,
+    currency,
     metadata: {
       summary: summary,
       commerceToolsCartId: cart.id,
@@ -175,13 +177,13 @@ app.post("/create-payment-intent", async (req, res) => {
     customer: ctCustomer.externalId,
   };
 
-  if (currency === "usd") {
+  if (currency === "USD") {
     payload.payment_method_types = ["card", "afterpay_clearpay"];
   }
-  if (currency === "eur") {
+  if (currency === "EUR") {
     payload.payment_method_types = ["card", "sofort", "giropay"];
   }
-  if (currency === "gbp") {
+  if (currency === "GBP") {
     payload.payment_method_types = ["card", "bacs_debit"];
   }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useEnabler } from "../hooks/useEnabler";
 import LinkAuthentication from "./LinkAuthentication";
 import Address from "./Address";
@@ -7,10 +8,10 @@ import ExpressCheckout from "./ExpressCheckout";
 
 const StripeComposableConnectorCheckout = ({ cart, paymentSuccess }) => {
   const { elements, enabler, createElement } = useEnabler();
-
   const [isLoading, setIsLoading] = useState(false);
   const [paymentError, setPaymentError] = useState("");
   const [paymentElement, setPaymentElement] = useState(null);
+  const currency = useSelector((state) => state.locale.currency);
 
   useEffect(() => {
 
@@ -24,6 +25,7 @@ const StripeComposableConnectorCheckout = ({ cart, paymentSuccess }) => {
       selector: "#payment",
       onComplete,
       onError,
+      currency
     })
       .then((element) => {
         if (!element) return;

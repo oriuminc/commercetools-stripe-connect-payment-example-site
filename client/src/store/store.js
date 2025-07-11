@@ -3,7 +3,7 @@ import localeSlice from "./localeSlice";
 
 const store = configureStore({
   reducer: {
-    language: localeSlice,
+    locale: localeSlice,
   },
 });
 

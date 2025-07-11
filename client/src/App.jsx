@@ -1,7 +1,7 @@
 // Modules
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
 import Confirmation from "./components/Confirmation";
@@ -22,8 +22,10 @@ export default function App() {
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
   const [customerId, setCustomerId] = useState(null);
   const dispatch = useDispatch();
+  const currency = useSelector((state) => state.locale.currency);
+  const locale = useSelector((state) => state.locale.locale);
   const { createCart, updateCart, addCustomerToCart } = useApi();
-  const currency = "eur";
+  // const currency = "eur";
 
   const addToCart = async ({ productId, quantity, variantId }) => {
     if (cart) {
@@ -35,7 +37,7 @@ export default function App() {
   };
 
   const handleCreateCart = async ({ productId, quantity, variantId }) => {
-    const newCart = await createCart(customerId);
+    const newCart = await createCart(customerId, currency, locale.split("-")[1]);
     const updatedCart = await updateCart({
       cartId: newCart.id,
       quantity,
@@ -60,7 +62,7 @@ export default function App() {
   const handleAddCustomerToCart = async (customerId) => {
     const newCart = cart
       ? await addCustomerToCart({ cartId: cart.id, customerId })
-      : await createCart(customerId);
+      : await createCart(customerId, currency, locale.split("-")[1]);
     setCart(newCart);
     setCustomerId(customerId);
   };
@@ -82,7 +84,8 @@ export default function App() {
     }
   };
   const loginUserToCart = async () => {
-    const newCart = await createCart("f1307a84-2890-437b-9213-2231a8e43413");
+    console.log("Toggle new cart" + currency, locale);
+    const newCart = await createCart("f1307a84-2890-437b-9213-2231a8e43413", currency, locale.split("-")[1]);
     setCart(newCart);
     setCustomerId("f1307a84-2890-437b-9213-2231a8e43413");
   };
@@ -179,7 +182,6 @@ export default function App() {
             <ProductList
               addToCart={addToCart}
               brandColor={brandColor}
-              currency={currency}
             />
           </Route>
         </Switch>

@@ -6,11 +6,12 @@ export const useApi = () => {
     ...DEV_REQUEST_HEADERS,
   };
 
-  const createCart = async (customerId) => {
+  const createCart = async (customerId, currency, country) => {
+    console.log(`Creating cart for customerId: ${customerId}, currency: ${currency}, country: ${country}`);
     const res = await fetch(`${BACKEND_URL}/api/cart`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ customerId }),
+      body: JSON.stringify({ customerId, currency, country }),
     });
 
     if (!res.ok) {

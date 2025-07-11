@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useEnabler } from "../hooks/useEnabler";
 import {
   getAddressFromPaymentIntent,
@@ -7,6 +8,7 @@ import {
 
 const ExpressCheckout = ({ cart }) => {
   const { enabler, createElement } = useEnabler();
+  const currency = useSelector((state) => state.locale.currency);
 
   const onError = () => {};
 
@@ -24,6 +26,7 @@ const ExpressCheckout = ({ cart }) => {
       selector: "#express",
       onComplete,
       onError,
+      currency
     }).then((element) => {
       if (!element) return;
       console.log({element})

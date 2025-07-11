@@ -7,9 +7,9 @@ import { setCurrency, setLocale, updateAvailableLanguages } from "../store/local
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
-  const currentLanguage = useSelector((state) => state.language.locale);
+  const currentLanguage = useSelector((state) => state.locale.locale);
   const availableLanguages = useSelector(
-    (state) => state.language.availableLanguages
+    (state) => state.locale.availableLanguages
   );
   const dispatch = useDispatch();
   const styles = {

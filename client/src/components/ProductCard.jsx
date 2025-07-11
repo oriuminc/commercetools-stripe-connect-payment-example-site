@@ -25,7 +25,8 @@ export default function ProductCard({
   const handleClose = () => setShow(false);
   const [buySubscription, setBuySubscription] = useState(false);
   const history = useHistory();
-  const currentCurrency = useSelector((state => state.language.currency));
+  const currentLocale = useSelector((state) => state.locale.locale);
+  const currentCurrency = useSelector((state) => state.locale.currency);
   const getLocalizedString = useLocalizedString();
   const getFormattedPrice = useFormattedPrice();
 
@@ -111,11 +112,11 @@ export default function ProductCard({
   };
 
   const displayPrice = (value) => {
-    console.log(currentCurrency, value)
+    console.log(currentCurrency, value);
     if (!value) {
-      return `${getSymbolFromCurrency(currency)} 100`;
+      return `${getSymbolFromCurrency(currentCurrency)} 100`;
     }
-    return `${getSymbolFromCurrency(currency)} ${(
+    return `${getSymbolFromCurrency(currentCurrency)} ${(
       value.centAmount / 100
     ).toFixed(value.fractionDigits)}`;
   };
@@ -151,8 +152,11 @@ export default function ProductCard({
                   ? displayPrice(
                       product.masterData.current.variants[0].prices[0]?.value
                     )
-                  : displayPrice(
-                      product.masterData.current.masterVariant.prices[0]?.value
+                  : getFormattedPrice(
+                      product.masterData.current.masterVariant.prices,
+                      currentLocale.split("-")[1],
+                      currentCurrency,
+                      true
                     )}
               </h3>
               <button
@@ -230,12 +234,14 @@ export default function ProductCard({
               </p>
               <h3 style={styles.price}>
                 {
-                  // getFormattedPrice(
-                  //   product.masterData.current.masterVariant.prices[0]?.value, currentCurrency
-                  // )
-                  displayPrice(
-                    product.masterData.current.masterVariant.prices[0]?.value
+                  getFormattedPrice(
+                    product.masterData.current.masterVariant.prices,
+                    currentLocale.split("-")[1],
+                    currentCurrency
                   )
+                  // displayPrice(
+                  //   product.masterData.current.masterVariant.prices[0]?.value
+                  // )
                 }
               </h3>
             </div>
@@ -244,7 +250,8 @@ export default function ProductCard({
       </div>
       <Modal show={show} centered onHide={handleClose} size="xl">
         <Modal.Header style={styles.nameModal}>
-          {product.masterData.current.name["de-DE"]}
+          {getLocalizedString(product.masterData.current.name)}
+          {/* {product.masterData.current.name["de-DE"]} */}
           <FontAwesomeIcon
             icon={faTimes}
             style={{ cursor: "pointer" }}
@@ -262,7 +269,10 @@ export default function ProductCard({
               />
             </div>
             <div className="col-7 flex flex-column gap-2">
-              <p>{product.masterData.current.description["de-DE"]}</p>
+              <p>
+                {getLocalizedString(product.masterData.current.description)}
+              </p>
+              {/* <p>{product.masterData.current.description["de-DE"]}</p> */}
               <ul>
                 {selectedVariant.attributes.map(({ name, value }) => (
                   <li key={name}>

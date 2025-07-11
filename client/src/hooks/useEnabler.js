@@ -7,7 +7,7 @@ export const useEnabler = () => {
 
   const [elements, setElements] = useState(null);
 
-  const createElement = async ({ type, selector, onComplete, onError }) => {
+  const createElement = async ({ type, selector, onComplete, onError, currency }) => {
     if (!enablerContext.enablerUrl) {
       console.error("Enabler URL is not set.");
       return;
@@ -20,7 +20,7 @@ export const useEnabler = () => {
     const enabler = new Enabler({
       processorUrl: enablerContext.processorUrl,
       sessionId: enablerContext.sessionId,
-      currency: "EUR",
+      currency,
       onComplete: ({ isSuccess, paymentReference, paymentIntent }) => {
         onComplete(paymentIntent,isSuccess, paymentReference);
       },
