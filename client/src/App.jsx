@@ -11,7 +11,7 @@ import CheckoutComposableConnector from "./components/CheckoutOrderConnector";
 import CommercetoolsCheckoutConnector from "./components/CheckoutCtConnector";
 import SubscriptionList from "./components/SubscriptionList";
 import { useApi } from "./hooks/useApi";
-import { fetchLanguages } from "./store/languageSlice";
+import { fetchLanguages } from "./store/localeSlice";
 import I18nProvider from "./i18n";
 import "./styles/index.css";
 

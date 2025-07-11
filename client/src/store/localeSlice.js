@@ -3,15 +3,15 @@ import { useApi } from "../hooks/useApi";
 import { CURRENCIES } from "../utils";
 
 export const fetchLanguages = createAsyncThunk(
-  "language/fetchLanguages",
+  "locale/fetchLanguages",
   async () => {
     const { getLanguages } = useApi();
     return await getLanguages();
   }
 );
 
-const languageSlice = createSlice({
-  name: "language",
+const localeSlice = createSlice({
+  name: "locale",
   initialState: {
     locale: "en-US",
     currency: "USD",
@@ -62,5 +62,5 @@ const languageSlice = createSlice({
 });
 
 export const { setCurrency, setLocale, updateAvailableLanguages } =
-  languageSlice.actions;
-export default languageSlice.reducer;
+  localeSlice.actions;
+export default localeSlice.reducer;

@@ -3,7 +3,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { setCurrency, setLocale, updateAvailableLanguages } from "../store/languageSlice";
+import { setCurrency, setLocale, updateAvailableLanguages } from "../store/localeSlice";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
