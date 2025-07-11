@@ -104,7 +104,7 @@ async function getSubscriptionProducts() {
   return rsp.body;
 }
 
-async function createCart(customerId) {
+async function createCart(customerId, currency, country) {
   if (!client) {
     client = await createCtClient();
   }

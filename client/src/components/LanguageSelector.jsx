@@ -3,7 +3,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { setLocale, updateAvailableLanguages } from "../store/languageSlice";
+import { setCurrency, setLocale, updateAvailableLanguages } from "../store/languageSlice";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
@@ -20,6 +20,11 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
       cursor: "pointer",
     },
   };
+
+  const onClickLanguageHandler = (locale) => {
+    dispatch(setLocale(locale));
+    dispatch(setCurrency(locale.split("-")[1]));
+  }
 
   useEffect(
     () => dispatch(updateAvailableLanguages()),
@@ -40,7 +45,7 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
             {availableLanguages.map((language) => (
               <Dropdown.Item
                 key={language.locale}
-                onClick={() => dispatch(setLocale(language.locale))}
+                onClick={onClickLanguageHandler.bind(null, language.locale)}
                 className={`flex items-center justify-between px-3 py-2 hover:bg-gray-100 rounded ${
                   currentLanguage === language.locale
                     ? "bg-[rgb(209,213,219)] font-semibold"

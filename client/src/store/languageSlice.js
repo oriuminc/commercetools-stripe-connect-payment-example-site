@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { useApi } from "../hooks/useApi";
+import { CURRENCIES } from "../utils";
 
 export const fetchLanguages = createAsyncThunk(
   "language/fetchLanguages",
   async () => {
     const { getLanguages } = useApi();
-    console.log("Fetching languages from API...");
     return await getLanguages();
   }
 );
@@ -15,8 +15,7 @@ const languageSlice = createSlice({
   initialState: {
     locale: "en-US",
     currency: "USD",
-    availableLanguages: [{ locale: "en-US", name: "English" }],
-    availableCurrencies: [{ USD: ["en-US"] }],
+    availableLanguages: [{ locale: "en-US", name: "English (United States)" }],
   },
   reducers: {
     setLocale: (state, action) => {
@@ -26,15 +25,24 @@ const languageSlice = createSlice({
       const languageName = new Intl.DisplayNames(state.locale, {
         type: "language",
       });
-      const availableLanguages = state.availableLanguages.map((lang) => lang.locale);
+      const availableLanguages = state.availableLanguages.map(
+        (lang) => lang.locale
+      );
       state.availableLanguages = [];
+
       for (const lang of availableLanguages) {
         state.availableLanguages.push({
           locale: lang,
           name: languageName.of(lang),
         });
       }
-    }
+    },
+    setCurrency: (state, action) => {
+      const updatedCurrency = CURRENCIES[action.payload];
+
+      if (updatedCurrency !== undefined) state.currency = updatedCurrency;
+      else state.currency = CURRENCIES["US"];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLanguages.fulfilled, (state, action) => {
@@ -42,6 +50,7 @@ const languageSlice = createSlice({
         type: "language",
       });
       state.availableLanguages = [];
+
       for (const lang of action.payload) {
         state.availableLanguages.push({
           locale: lang,
@@ -52,5 +61,6 @@ const languageSlice = createSlice({
   },
 });
 
-export const { setLocale, updateAvailableLanguages } = languageSlice.actions;
+export const { setCurrency, setLocale, updateAvailableLanguages } =
+  languageSlice.actions;
 export default languageSlice.reducer;

@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {useHistory} from "react-router";
+import { useHistory } from "react-router";
 import Carousel from "./Carousel";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
 import { useLocalizedString } from "../hooks/useLocalizedString";
+import { useFormattedPrice } from "../hooks/useFormattedPrice";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { formatAttributeValue, formatText } from "../utils";
 
@@ -14,7 +16,7 @@ export default function ProductCard({
   currency,
   isSubscription = false,
   addToCart = async ({ productId, quantity, variantId }) => {},
-  subscriptionInterval , // 1 for monthly, 0 for yearly
+  subscriptionInterval, // 1 for monthly, 0 for yearly
 }) {
   const [selectedVariantId, setSelectedVariantId] = useState(1);
   const [show, setShow] = useState(false);
@@ -23,7 +25,9 @@ export default function ProductCard({
   const handleClose = () => setShow(false);
   const [buySubscription, setBuySubscription] = useState(false);
   const history = useHistory();
+  const currentCurrency = useSelector((state => state.language.currency));
   const getLocalizedString = useLocalizedString();
+  const getFormattedPrice = useFormattedPrice();
 
   const handleQuantityChange = (event) => {
     setQuantityValue(parseInt(event.target.value));
@@ -107,6 +111,7 @@ export default function ProductCard({
   };
 
   const displayPrice = (value) => {
+    console.log(currentCurrency, value)
     if (!value) {
       return `${getSymbolFromCurrency(currency)} 100`;
     }
@@ -116,16 +121,14 @@ export default function ProductCard({
   };
 
   useEffect(() => {
-
     const asyncCall = async () => {
       await handleAddToCart();
-      history.push('/checkoutOrderConnector');
-
-    }
-    if(buySubscription){
+      history.push("/checkoutOrderConnector");
+    };
+    if (buySubscription) {
       asyncCall();
     }
-  },[buySubscription])
+  }, [buySubscription]);
 
   return (
     <>
@@ -144,26 +147,28 @@ export default function ProductCard({
                 {product.masterData.current.name["de-DE"]}
               </p>
               <h3 style={styles.price}>
-                { subscriptionInterval === 1 ?
-                  (displayPrice(
-                    product.masterData.current.variants[0].prices[0]?.value
-                  ))
-                  :
-                  (displayPrice(
-                    product.masterData.current.masterVariant.prices[0]?.value
-                  ))
-                }
+                {subscriptionInterval === 1
+                  ? displayPrice(
+                      product.masterData.current.variants[0].prices[0]?.value
+                    )
+                  : displayPrice(
+                      product.masterData.current.masterVariant.prices[0]?.value
+                    )}
               </h3>
               <button
                 className="btn btn-primary"
                 style={{ backgroundColor: brandColor, color: "white" }}
-                onClick={()=> {
-                  if(subscriptionInterval === 1) {
-                    setSelectedVariantId(product.masterData.current.variants[0].id);
-                    setBuySubscription(true)
+                onClick={() => {
+                  if (subscriptionInterval === 1) {
+                    setSelectedVariantId(
+                      product.masterData.current.variants[0].id
+                    );
+                    setBuySubscription(true);
                   } else {
-                    setSelectedVariantId(product.masterData.current.masterVariant.id);
-                    setBuySubscription(true)
+                    setSelectedVariantId(
+                      product.masterData.current.masterVariant.id
+                    );
+                    setBuySubscription(true);
                   }
                 }}
               >
@@ -171,28 +176,39 @@ export default function ProductCard({
               </button>
               <div className="col-7 flex flex-column gap-2">
                 <p>{product.masterData.current.description["de-DE"]}</p>
-                { subscriptionInterval === 1 ?
+                {subscriptionInterval === 1 ? (
                   <ul>
-                    {product.masterData.current.variants[0].attributes.forEach(({ name, value }) => {
-                      if(name === "trial_period_days")
-                        return (<li key={name}>
-                          <strong className="font-medium">{formatText(name)}:</strong>{" "}
-                          {formatAttributeValue(value)}
-                        </li>)
-                    })}
+                    {product.masterData.current.variants[0].attributes.forEach(
+                      ({ name, value }) => {
+                        if (name === "trial_period_days")
+                          return (
+                            <li key={name}>
+                              <strong className="font-medium">
+                                {formatText(name)}:
+                              </strong>{" "}
+                              {formatAttributeValue(value)}
+                            </li>
+                          );
+                      }
+                    )}
                   </ul>
-                  :
+                ) : (
                   <ul>
-                    {product.masterData.current.masterVariant.attributes.forEach(({ name, value }) => {
-                      if(name === "trial_period_days")
-                        return (<li key={name}>
-                          <strong className="font-medium">{formatText(name)}:</strong>{" "}
-                          {formatAttributeValue(value)}
-                        </li>)
-                    })}
+                    {product.masterData.current.masterVariant.attributes.forEach(
+                      ({ name, value }) => {
+                        if (name === "trial_period_days")
+                          return (
+                            <li key={name}>
+                              <strong className="font-medium">
+                                {formatText(name)}:
+                              </strong>{" "}
+                              {formatAttributeValue(value)}
+                            </li>
+                          );
+                      }
+                    )}
                   </ul>
-                }
-
+                )}
               </div>
             </div>
           </div>
@@ -214,6 +230,9 @@ export default function ProductCard({
               </p>
               <h3 style={styles.price}>
                 {
+                  // getFormattedPrice(
+                  //   product.masterData.current.masterVariant.prices[0]?.value, currentCurrency
+                  // )
                   displayPrice(
                     product.masterData.current.masterVariant.prices[0]?.value
                   )
