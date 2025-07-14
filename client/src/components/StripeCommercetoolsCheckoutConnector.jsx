@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from "react";
-import { useCheckout } from "../hooks/useEnabler";
-import { checkoutFlow } from "@commercetools/checkout-browser-sdk";
+import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom/cjs/react-router-dom";
+import { checkoutFlow } from "@commercetools/checkout-browser-sdk";
+import { useCheckout } from "../hooks/useEnabler";
 import { DEV_REQUEST_HEADERS, getCartById } from "../utils";
 
-const BACKEND_URL = process.env.NODE_ENV === "production"
-  ? process.env.REACT_APP_PRODUCTION_URL || ''
-  : "http://localhost:3000";
+const BACKEND_URL =
+  process.env.NODE_ENV === "production"
+    ? process.env.REACT_APP_PRODUCTION_URL || ""
+    : "http://localhost:5000";
 
 function useQuery() {
   const { search } = useLocation();
@@ -18,6 +20,7 @@ const StripeCommercetoolsCheckoutConnector = ({ setCart }) => {
   const { sessionId } = useCheckout();
   const query = useQuery();
   const paymentReferenceRef = useRef("");
+  const currentLocale = useSelector((state) => state.locale.locale);
 
   const getPaymentInformation = async (payment_intent_id) => {
     let response = await fetch(
@@ -62,8 +65,8 @@ const StripeCommercetoolsCheckoutConnector = ({ setCart }) => {
     checkoutFlow({
       projectKey: "stripe-subscription",
       region: "us-central1.gcp",
-      locale: "de-DE",
-      currencyLocale: "de-DE",
+      locale: currentLocale,
+      currencyLocale: currentLocale,
       paymentReference: paymentReferenceRef.current,
       sessionId: `${sessionId}`,
       logInfo: true,

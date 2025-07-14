@@ -129,7 +129,10 @@ export default function Header({
               />
             </div>
             <div className="flex items-center justify-around col-3">
-              <div className="flex items-center leading-[0.9]" style={styles.cart}>
+              <div
+                className="flex items-center leading-[0.9]"
+                style={styles.cart}
+              >
                 <div
                   onClick={() => setShowModal(true)}
                   className="cursor-pointer"
@@ -175,18 +178,19 @@ export default function Header({
                 </Modal>
               </div>
               <LanguageSelector brandColor={brandColor} iconColor={iconColor} />
-              <div className="flex items-center gap-2" style={{...styles.cart, fontSize: "1.8em"}}>
+              <div style={{ ...styles.cart }}>
                 <Link
                   to={
                     ctCheckoutToggled
                       ? "/checkoutCtConnector"
                       : "/checkoutOrderConnector"
                   }
+                  className="flex items-center gap-2 cursor-pointer"
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <FontAwesomeIcon icon={faShoppingCart} color={iconColor} />
+                  <span className="text-base">{totalQuantity}</span>
                 </Link>
-                <span className="text-base">{totalQuantity}</span>
               </div>
             </div>
           </>
