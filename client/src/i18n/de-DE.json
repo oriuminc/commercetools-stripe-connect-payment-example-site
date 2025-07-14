@@ -1,0 +1,23 @@
+{
+  "button.buy": "Kaufen",
+  "button.addToCart": "In den Warenkorb",
+  "button.viewCart": "Warenkorb ansehen",
+  "button.checkout": "Zur Kasse",
+  "button.subscribe": "Abonnieren",
+  "button.yearlySubscription": "Jährlich",
+  "button.monthlySubscription": "Monatlich",
+  "label.quantity": "Menge",
+  "label.productName": "Produktname",
+  "label.productPrice": "Produktpreis",
+  "label.productDescription": "Produktbeschreibung",
+  "label.productCategory": "Produktkategorie",
+  "label.productImage": "Produktbild",
+  "label.productDetails": "Produktdetails",
+  "label.productQuantity": "Produktmenge",
+  "label.productTotal": "Gesamtpreis",
+  "label.productSpecifications": "Produktspezifikationen",
+  "label.productColor": "Farbe",
+  "label.productVariants": "Varianten",
+  "label.subscriptionProducts": "Abonnementprodukte",
+  "label.loadingSubscriptionProducts": "Abonnementprodukte werden geladen..."
+}

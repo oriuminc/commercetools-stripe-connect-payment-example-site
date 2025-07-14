@@ -1,0 +1,23 @@
+{
+  "button.buy": "Buy",
+  "button.addToCart": "Add to Cart",
+  "button.viewCart": "View Cart",
+  "button.checkout": "Checkout",
+  "button.subscribe": "Subscribe",
+  "button.yearlySubscription": "Yearly",
+  "button.monthlySubscription": "Monthly",
+  "label.quantity": "Quantity",
+  "label.productName": "Product Name",
+  "label.productPrice": "Product Price",
+  "label.productDescription": "Product Description",
+  "label.productCategory": "Product Category",
+  "label.productImage": "Product Image",
+  "label.productDetails": "Product Details",
+  "label.productQuantity": "Product Quantity",
+  "label.productTotal": "Total Price",
+  "label.productSpecifications": "Specifications",
+  "label.productColor": "Color",
+  "label.productVariants": "Variants",
+  "label.subscriptionProducts": "Subscription Products",
+  "label.loadingSubscriptionProducts": "Loading subscription products..."
+}

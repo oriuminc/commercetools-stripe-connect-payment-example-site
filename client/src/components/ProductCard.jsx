@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router";
-import Carousel from "./Carousel";
+import { useSelector } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import Modal from "react-bootstrap/Modal";
+import Carousel from "./Carousel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
 import { useLocalizedString } from "../hooks/useLocalizedString";
 import { useFormattedPrice } from "../hooks/useFormattedPrice";
 import getSymbolFromCurrency from "currency-symbol-map";
@@ -91,8 +92,6 @@ export default function ProductCard({
   }, [product]);
 
   const selectedVariant = useMemo(() => {
-    console.log("Variants");
-    console.log(variants);
     return variants.find(({ id }) => id === selectedVariantId) || null;
   }, [selectedVariantId]);
 
@@ -192,10 +191,15 @@ export default function ProductCard({
                   }
                 }}
               >
-                Subscribe
+                <FormattedMessage
+                  id="button.subscribe"
+                  defaultMessage={"Subscribe"}
+                />
               </button>
               <div className="col-7 flex flex-column gap-2">
-                <p>{getLocalizedString(product.masterData.current.description)}</p>
+                <p>
+                  {getLocalizedString(product.masterData.current.description)}
+                </p>
                 {/* <p>{product.masterData.current.description["de-DE"]}</p> */}
                 {subscriptionInterval === 1 ? (
                   <ul>
@@ -295,7 +299,39 @@ export default function ProductCard({
               <ul>
                 {selectedVariant.attributes.map(({ name, value }) => (
                   <li key={name}>
-                    <strong className="font-medium">{formatText(name)}:</strong>{" "}
+                    {/* <strong className="font-medium">{formatText(name)}:</strong>{" "} */}
+                    {(() => {
+                      console.log("Name:", name);
+                      switch (name) {
+                        case "productspec":
+                          return (
+                            <strong className="font-medium">
+                              <FormattedMessage
+                                id="label.productSpecifications"
+                                defaultMessage={"Product Specifications"}
+                              />
+                              {`: `}
+                            </strong>
+                          );
+                        case "color":
+                          return (
+                            <strong className="font-medium">
+                              <FormattedMessage
+                                id="label.productColor"
+                                defaultMessage={"Product Color"}
+                              />
+                              {`: `}
+                            </strong>
+                          );
+
+                        default:
+                          return (
+                            <strong className="font-medium">
+                              {`${formatText(name)}:`}
+                            </strong>
+                          );
+                      }
+                    })()}
                     {formatText(parseLocalizedAttributeValue(value))}
                     {/* {formatAttributeValue(value)} */}
                   </li>
@@ -303,7 +339,12 @@ export default function ProductCard({
               </ul>
               {variants?.length > 1 ? (
                 <div className="flex flex-column gap-2">
-                  <h4 className="font-medium pt-4">Variants</h4>
+                  <h4 className="font-medium pt-4">
+                    <FormattedMessage
+                      id="label.productVariants"
+                      defaultMessage={"Variants"}
+                    />
+                  </h4>
                   <div className="flex gap-2 flex-wrap">
                     {variants?.map(({ id }) => (
                       <label
@@ -334,7 +375,10 @@ export default function ProductCard({
           {!isSubscription ? (
             <div className="col-2">
               <label className="flex gap-2 justify-end">
-                Quantity
+                <FormattedMessage
+                  id="label.quantity"
+                  defaultMessage={"Quantity"}
+                />
                 <select
                   value={quantityValue}
                   onChange={handleQuantityChange}
@@ -352,12 +396,16 @@ export default function ProductCard({
           <div className="col-2">
             <button
               className="btn"
+              type="button"
               style={{ backgroundColor: brandColor, color: "blue" }}
               id={product.id}
               onClick={handleAddToCart}
               disabled={isLoading}
             >
-              Add to Cart
+              <FormattedMessage
+                id="button.addToCart"
+                defaultMessage={"Add to Cart"}
+              />
             </button>
           </div>
         </Modal.Footer>
