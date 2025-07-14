@@ -3,6 +3,22 @@ import { useIntl } from "react-intl";
 export const useFormattedPrice = () => {
   const { formatNumber } = useIntl();
 
+  const LOCALE_FORMAT_OPTIONS = {
+    style: "currency",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  };
+
+  const NEITHER_COUNTRY_NOR_CURRENCY_OPTIONS = {
+    currency: "USD",
+    ...LOCALE_FORMAT_OPTIONS,
+  };
+
+  const getFormattedPrice = (price, hasCurrencyOrCountry, currency) =>
+    hasCurrencyOrCountry
+      ? formatNumber(price, { ...LOCALE_FORMAT_OPTIONS, currency })
+      : formatNumber(price, { ...NEITHER_COUNTRY_NOR_CURRENCY_OPTIONS });
+
   return (
     localizedPrices,
     country,
@@ -17,47 +33,43 @@ export const useFormattedPrice = () => {
       return "";
     }
 
-    let price;
-    const LOCALE_FORMAT_OPTIONS = {
-      style: "currency",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    };
-
-    const NEITHER_COUNTRY_NOR_CURRENCY = formatNumber(0, {
-      currency: "USD",
-      ...LOCALE_FORMAT_OPTIONS,
-    });
+    let localizedPrice, amountType;
+    let hasCurrencyOrCountry = false;
 
     if (isSubscriptionProduct) {
-      console.log("Subscription product detected, using first price.");
-      console.log(localizedPrices);
-      price = localizedPrices.find(
+      localizedPrice = localizedPrices.find(
         (element) => element.value.currencyCode === currency
       );
-      if (price) {
-        if (price.value.type === "centPrecision") {
-        price = price.value.centAmount / 100; // Convert cents to dollars
+
+      if (localizedPrice) {
+        hasCurrencyOrCountry = true;
+      } else {
+        localizedPrice = localizedPrices.find(
+          (element) => element.value.currencyCode === "USD"
+        );
       }
-        return formatNumber(price, {
-          currency,
-          ...LOCALE_FORMAT_OPTIONS,
-        });
+    } else {
+      localizedPrice = localizedPrices.find((element) => element.country === country);
+
+      if (localizedPrice) {
+        hasCurrencyOrCountry = true;
+      } else {
+        localizedPrice = localizedPrices.find((element) => element.country === "US");
       }
-      return NEITHER_COUNTRY_NOR_CURRENCY;
     }
 
-    price = localizedPrices.find((element) => element.country === country);
-    if (price) {
-      if (price.value.type === "centPrecision") {
-        price = price.value.centAmount / 100; // Convert cents to dollars
-      }
-      return formatNumber(price, {
-        currency,
-        ...LOCALE_FORMAT_OPTIONS,
-      });
+    amountType = localizedPrice.value.type;
+    localizedPrice = localizedPrice.value.centAmount;
+
+    switch (amountType) {
+      case "centPrecision":
+        localizedPrice /= 100; // Convert cents to dollar
+        break;
+      default:
+        localizedPrice /= 1; // No conversion needed
+        break;
     }
 
-    return NEITHER_COUNTRY_NOR_CURRENCY
+    return getFormattedPrice(localizedPrice, hasCurrencyOrCountry, currency);
   };
 };

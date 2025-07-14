@@ -13,7 +13,6 @@ import { formatAttributeValue, formatText } from "../utils";
 export default function ProductCard({
   product,
   brandColor,
-  currency,
   isSubscription = false,
   addToCart = async ({ productId, quantity, variantId }) => {},
   subscriptionInterval, // 1 for monthly, 0 for yearly
@@ -27,7 +26,8 @@ export default function ProductCard({
   const history = useHistory();
   const currentLocale = useSelector((state) => state.locale.locale);
   const currentCurrency = useSelector((state) => state.locale.currency);
-  const getLocalizedString = useLocalizedString();
+  const { getLocalizedString, parseLocalizedAttributeValue } =
+    useLocalizedString();
   const getFormattedPrice = useFormattedPrice();
 
   const handleQuantityChange = (event) => {
@@ -91,6 +91,8 @@ export default function ProductCard({
   }, [product]);
 
   const selectedVariant = useMemo(() => {
+    console.log("Variants");
+    console.log(variants);
     return variants.find(({ id }) => id === selectedVariantId) || null;
   }, [selectedVariantId]);
 
@@ -143,14 +145,28 @@ export default function ProductCard({
                 style={styles.img}
               />
             </div>
-            <div className="card-body" style={{ paddingBottom: 10 }}>
+            <div className="card-body pb-[10px]">
               <p styles={styles.name}>
-                {product.masterData.current.name["de-DE"]}
+                {/* {product.masterData.current.name["de-DE"]} */}
+                {getLocalizedString(product.masterData.current.name)}
               </p>
               <h3 style={styles.price}>
-                {subscriptionInterval === 1
+                {/* {subscriptionInterval === 1
                   ? displayPrice(
                       product.masterData.current.variants[0].prices[0]?.value
+                    )
+                  : getFormattedPrice(
+                      product.masterData.current.masterVariant.prices,
+                      currentLocale.split("-")[1],
+                      currentCurrency,
+                      true
+                    )} */}
+                {subscriptionInterval === 1
+                  ? getFormattedPrice(
+                      product.masterData.current.variants[0].prices,
+                      currentLocale.split("-")[1],
+                      currentCurrency,
+                      true
                     )
                   : getFormattedPrice(
                       product.masterData.current.masterVariant.prices,
@@ -179,7 +195,8 @@ export default function ProductCard({
                 Subscribe
               </button>
               <div className="col-7 flex flex-column gap-2">
-                <p>{product.masterData.current.description["de-DE"]}</p>
+                <p>{getLocalizedString(product.masterData.current.description)}</p>
+                {/* <p>{product.masterData.current.description["de-DE"]}</p> */}
                 {subscriptionInterval === 1 ? (
                   <ul>
                     {product.masterData.current.variants[0].attributes.forEach(
@@ -190,7 +207,8 @@ export default function ProductCard({
                               <strong className="font-medium">
                                 {formatText(name)}:
                               </strong>{" "}
-                              {formatAttributeValue(value)}
+                              {formatText(parseLocalizedAttributeValue(value))}
+                              {/* {formatAttributeValue(value)} */}
                             </li>
                           );
                       }
@@ -206,7 +224,8 @@ export default function ProductCard({
                               <strong className="font-medium">
                                 {formatText(name)}:
                               </strong>{" "}
-                              {formatAttributeValue(value)}
+                              {formatText(parseLocalizedAttributeValue(value))}
+                              {/* {formatAttributeValue(value)} */}
                             </li>
                           );
                       }
@@ -227,7 +246,7 @@ export default function ProductCard({
                 style={styles.img}
               />
             </div>
-            <div className="card-body" style={{ paddingBottom: 10 }}>
+            <div className="card-body pb-[10px]">
               <p styles={styles.name}>
                 {getLocalizedString(product.masterData.current.name)}
                 {/* {product.masterData.current.name["de-DE"]} */}
@@ -254,7 +273,7 @@ export default function ProductCard({
           {/* {product.masterData.current.name["de-DE"]} */}
           <FontAwesomeIcon
             icon={faTimes}
-            style={{ cursor: "pointer" }}
+            className="cursor-pointer"
             onClick={handleClose}
           />
         </Modal.Header>
@@ -262,7 +281,7 @@ export default function ProductCard({
           <div className="row">
             <div className="col-4">
               <Carousel
-                id={"modal_" + product.id}
+                id={`modal_${product.id}`}
                 images={[
                   product.masterData.current.masterVariant.images[0]?.url,
                 ]}
@@ -277,7 +296,8 @@ export default function ProductCard({
                 {selectedVariant.attributes.map(({ name, value }) => (
                   <li key={name}>
                     <strong className="font-medium">{formatText(name)}:</strong>{" "}
-                    {formatAttributeValue(value)}
+                    {formatText(parseLocalizedAttributeValue(value))}
+                    {/* {formatAttributeValue(value)} */}
                   </li>
                 ))}
               </ul>
