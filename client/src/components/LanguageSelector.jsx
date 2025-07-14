@@ -3,7 +3,13 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import { setCurrency, setLocale, updateAvailableLanguages } from "../store/localeSlice";
+import {
+  setCurrency,
+  setLocale,
+  updateAvailableLanguages,
+} from "../store/localeSlice";
+import { CUSTOMERS } from "../utils";
+import { setCustomerId, setCustomerName } from "../store/customerSlice";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
@@ -24,7 +30,9 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
   const onClickLanguageHandler = (locale) => {
     dispatch(setLocale(locale));
     dispatch(setCurrency(locale.split("-")[1]));
-  }
+    dispatch(setCustomerId(CUSTOMERS[locale].id));
+    dispatch(setCustomerName(CUSTOMERS[locale].name));
+  };
 
   useEffect(
     () => dispatch(updateAvailableLanguages()),
@@ -45,7 +53,7 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
             {availableLanguages.map((language) => (
               <Dropdown.Item
                 key={language.locale}
-                onClick={onClickLanguageHandler.bind(null, language.locale)}
+                onClick={() => onClickLanguageHandler(language.locale)}
                 className={`flex items-center justify-between px-3 py-2 hover:bg-gray-100 rounded ${
                   currentLanguage === language.locale
                     ? "bg-[rgb(209,213,219)] font-semibold"

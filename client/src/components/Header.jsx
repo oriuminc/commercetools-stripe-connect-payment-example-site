@@ -80,10 +80,11 @@ export default function Header({
     loadInitialData();
   }, []);
 
+  // ToDo: Checkout this functionality
   // On changing the currency, empty the cart
-  useEffect(() => {
-    resetCart();
-  }, [currency]);
+  // useEffect(() => {
+  //   resetCart();
+  // }, [currency]);
 
   const loadInitialData = async () => {
     const data = await getConfig();

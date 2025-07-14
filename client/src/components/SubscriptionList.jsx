@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useIntl, FormattedMessage } from "react-intl";
 import SwitchSelector from "react-switch-selector";
 import ProductCard from "./ProductCard";
@@ -10,11 +11,12 @@ const SubscriptionList = ({
   brandColor,
   addToCart = async () => {},
 }) => {
+  const intl = useIntl();
+  const customerId = useSelector((state) => state.customer.customerId);
   const { getSubscriptionProducts } = useApi();
   const [isLoaded, setIsLoaded] = useState(false);
   const [subscriptionProducts, setSubscriptionProducts] = useState([]);
   const [subscriptionInterval, setSubscriptionInterval] = useState(0);
-  const intl = useIntl();
 
   const switchIntervalOptions = [
     {
@@ -33,10 +35,6 @@ const SubscriptionList = ({
     },
   ];
 
-  useEffect(() => {
-    fetchSubscriptionProducts();
-  }, []);
-
   const fetchSubscriptionProducts = async () => {
     try {
       setIsLoaded(false);
@@ -46,6 +44,10 @@ const SubscriptionList = ({
       setIsLoaded(true);
     }
   };
+
+  useEffect(() => {
+    fetchSubscriptionProducts();
+  }, [customerId]);
 
   return !isLoaded ? (
     <div className="w-100 h-40 mb-[5rem] d-flex flex-col align-items-center">

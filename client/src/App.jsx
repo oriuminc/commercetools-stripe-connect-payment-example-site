@@ -20,8 +20,9 @@ export default function App() {
   const [brandColor, setBrandColor] = useState("#425466");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
-  const [customerId, setCustomerId] = useState(null);
+  // const [customerId, setCustomerId] = useState(null);
   const dispatch = useDispatch();
+  const customerId = useSelector((state) => state.customer.customerId);
   const currency = useSelector((state) => state.locale.currency);
   const locale = useSelector((state) => state.locale.locale);
   const { createCart, updateCart, addCustomerToCart } = useApi();
@@ -59,17 +60,18 @@ export default function App() {
     setCart(updatedCart);
   };
 
-  const handleAddCustomerToCart = async (customerId) => {
+  const handleAddCustomerToCart = async () => {
     const newCart = cart
       ? await addCustomerToCart({ cartId: cart.id, customerId })
       : await createCart(customerId, currency, locale.split("-")[1]);
     setCart(newCart);
-    setCustomerId(customerId);
+    // setCustomerId(customerId);
   };
 
   const resetCart = () => {
     setCart(undefined);
   };
+
   const handleCtCheckoutToggled = (value) => {
     setCtCheckoutToggled(value);
 
@@ -79,21 +81,22 @@ export default function App() {
       loginUserToCart();
     }
     if (value) {
-      setCustomerId(null);
+      // setCustomerId(null);
       setCart(undefined);
-    }
+    } 
   };
+  
   const loginUserToCart = async () => {
-    console.log("Toggle new cart" + currency, locale);
-    const newCart = await createCart("f1307a84-2890-437b-9213-2231a8e43413", currency, locale.split("-")[1]);
+    console.log(`Toggle new. CURRENCY: ${currency} LOCALE: ${locale}`);
+    const newCart = await createCart(customerId, currency, locale.split("-")[1]);
     setCart(newCart);
-    setCustomerId("f1307a84-2890-437b-9213-2231a8e43413");
+    // setCustomerId("f1307a84-2890-437b-9213-2231a8e43413");
   };
 
   useEffect(() => {
     console.log("Cart updated:", cart);
     console.log("Customer ID:", customerId);
-  }, [cart, customerId]);
+  }, [cart]);
 
   useEffect(() => {
     dispatch(fetchLanguages());
@@ -172,13 +175,13 @@ export default function App() {
               setCtCheckoutToggled={handleCtCheckoutToggled}
               setCustomerToCart={handleAddCustomerToCart}
             />
-            {cart?.customerId && customerId === cart?.customerId ? (
+            {cart?.customerId && customerId === cart?.customerId && (
               <SubscriptionList
                 addToCart={addToCart}
                 brandColor={brandColor}
                 currency={currency}
               />
-            ) : null}
+            )}
             <ProductList
               addToCart={addToCart}
               brandColor={brandColor}
