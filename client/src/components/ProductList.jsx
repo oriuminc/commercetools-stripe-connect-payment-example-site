@@ -16,8 +16,6 @@ export default function ProductList({
     try {
       setIsLoaded(false);
       const products = await getProducts(currency);
-      console.log("Products fetched:");
-      console.log(products);
       setProducts(products);
     } finally {
       setIsLoaded(true);

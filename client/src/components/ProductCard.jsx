@@ -8,8 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useLocalizedString } from "../hooks/useLocalizedString";
 import { useFormattedPrice } from "../hooks/useFormattedPrice";
-import getSymbolFromCurrency from "currency-symbol-map";
-import { formatAttributeValue, formatText } from "../utils";
+import { formatText } from "../utils";
 
 export default function ProductCard({
   product,
@@ -112,16 +111,6 @@ export default function ProductCard({
     }
   };
 
-  const displayPrice = (value) => {
-    console.log(currentCurrency, value);
-    if (!value) {
-      return `${getSymbolFromCurrency(currentCurrency)} 100`;
-    }
-    return `${getSymbolFromCurrency(currentCurrency)} ${(
-      value.centAmount / 100
-    ).toFixed(value.fractionDigits)}`;
-  };
-
   useEffect(() => {
     const asyncCall = async () => {
       await handleAddToCart();
@@ -146,20 +135,9 @@ export default function ProductCard({
             </div>
             <div className="card-body pb-[10px]">
               <p styles={styles.name}>
-                {/* {product.masterData.current.name["de-DE"]} */}
                 {getLocalizedString(product.masterData.current.name)}
               </p>
               <h3 style={styles.price}>
-                {/* {subscriptionInterval === 1
-                  ? displayPrice(
-                      product.masterData.current.variants[0].prices[0]?.value
-                    )
-                  : getFormattedPrice(
-                      product.masterData.current.masterVariant.prices,
-                      currentLocale.split("-")[1],
-                      currentCurrency,
-                      true
-                    )} */}
                 {subscriptionInterval === 1
                   ? getFormattedPrice(
                       product.masterData.current.variants[0].prices,
@@ -200,7 +178,6 @@ export default function ProductCard({
                 <p>
                   {getLocalizedString(product.masterData.current.description)}
                 </p>
-                {/* <p>{product.masterData.current.description["de-DE"]}</p> */}
                 {subscriptionInterval === 1 ? (
                   <ul>
                     {product.masterData.current.variants[0].attributes.forEach(
@@ -212,7 +189,6 @@ export default function ProductCard({
                                 {formatText(name)}:
                               </strong>{" "}
                               {formatText(parseLocalizedAttributeValue(value))}
-                              {/* {formatAttributeValue(value)} */}
                             </li>
                           );
                       }
@@ -227,9 +203,8 @@ export default function ProductCard({
                             <li key={name}>
                               <strong className="font-medium">
                                 {formatText(name)}:
-                              </strong>{" "}
-                              {formatText(parseLocalizedAttributeValue(value))}
-                              {/* {formatAttributeValue(value)} */}
+                              </strong>
+                              {` ${formatText(parseLocalizedAttributeValue(value))}`}
                             </li>
                           );
                       }
@@ -253,7 +228,6 @@ export default function ProductCard({
             <div className="card-body pb-[10px]">
               <p styles={styles.name}>
                 {getLocalizedString(product.masterData.current.name)}
-                {/* {product.masterData.current.name["de-DE"]} */}
               </p>
               <h3 style={styles.price}>
                 {
@@ -262,9 +236,6 @@ export default function ProductCard({
                     currentLocale.split("-")[1],
                     currentCurrency
                   )
-                  // displayPrice(
-                  //   product.masterData.current.masterVariant.prices[0]?.value
-                  // )
                 }
               </h3>
             </div>
@@ -274,7 +245,6 @@ export default function ProductCard({
       <Modal show={show} centered onHide={handleClose} size="xl">
         <Modal.Header style={styles.nameModal}>
           {getLocalizedString(product.masterData.current.name)}
-          {/* {product.masterData.current.name["de-DE"]} */}
           <FontAwesomeIcon
             icon={faTimes}
             className="cursor-pointer"
@@ -295,13 +265,10 @@ export default function ProductCard({
               <p>
                 {getLocalizedString(product.masterData.current.description)}
               </p>
-              {/* <p>{product.masterData.current.description["de-DE"]}</p> */}
               <ul>
                 {selectedVariant.attributes.map(({ name, value }) => (
                   <li key={name}>
-                    {/* <strong className="font-medium">{formatText(name)}:</strong>{" "} */}
                     {(() => {
-                      console.log("Name:", name);
                       switch (name) {
                         case "productspec":
                           return (
@@ -333,7 +300,6 @@ export default function ProductCard({
                       }
                     })()}
                     {formatText(parseLocalizedAttributeValue(value))}
-                    {/* {formatAttributeValue(value)} */}
                   </li>
                 ))}
               </ul>
