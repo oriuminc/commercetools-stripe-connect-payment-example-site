@@ -1,12 +1,11 @@
-import express from "express";
-import { fileURLToPath } from "url";
-import path from "path";
-import { dirname } from "path";
 import cors from "cors";
 import dotenv from "dotenv";
+import express from "express";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
-import commerceTools from "./CommerceToolsHelper.js";
 import Stripe from "stripe";
+import commerceTools from "./CommerceToolsHelper.js";
 
 const app = express();
 

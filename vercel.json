@@ -1,10 +1,29 @@
 {
   "version": 2,
-  "devCommand": "npm run prepare:dev && npm run dev",
+  "builds": [
+    {
+      "src": "/api/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["/api/**/*.js"]
+      }
+    },
+    {
+      "src": "/client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "/client/build"
+      }
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "http://localhost:5000/api/$1"
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/(settings|products|customer|cart|create-checkout-session|session|create-payment-intent|create-order|capture-payment|cancel-payment|request-refund|payment-intent|charge|events|confirm)(.*)",
+      "destination": "/api/index.js"
     },
     {
       "source": "/(.*)",

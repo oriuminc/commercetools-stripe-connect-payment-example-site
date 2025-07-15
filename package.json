@@ -37,7 +37,7 @@
     "local": "react-scripts start",
     "build": "run-script-os",
     "build:darwin:linux": "cd client && npm install && npm run build",
-    "build:win32": "cd client&&npm run build",
+    "build:win32": "cd client&&npm install&&npm run build",
     "build:default": "cd client && npm install && npm run build",
     "vercel-build": "run-script-os",
     "vercel-build:darwin:linux": "CI=false npm run build",
@@ -46,13 +46,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "npx prettier --write .",
-    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix api\"",
-    "prepare:dev": "run-script-os",
-    "prepare:dev:darwin:linux": "cp vercel.dev.json vercel.json && set VERCEL_DEV_CACHE=0",
-    "prepare:dev:win32": "copy vercel.dev.json vercel.json&&set VERCEL_DEV_CACHE=0",
-    "prepare:prod": "run-script-os",
-    "prepare:prod:darwin:linux": "cp vercel.prod.json vercel.json",
-    "prepare:prod:win32": "copy vercel.prod.json vercel.json"
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix api\""
   },
   "eslintConfig": {
     "extends": [
