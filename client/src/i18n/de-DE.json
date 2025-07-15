@@ -1,4 +1,6 @@
 {
+  "button.close": "Schließen",
+  "button.submit": "Absenden",
   "button.buy": "Kaufen",
   "button.addToCart": "In den Warenkorb",
   "button.viewCart": "Warenkorb ansehen",
@@ -6,6 +8,10 @@
   "button.subscribe": "Abonnieren",
   "button.yearlySubscription": "Jährlich",
   "button.monthlySubscription": "Monatlich",
+  "label.userInformation": "Benutzerinformationen",
+  "label.loggedInUser": "Derzeit angemeldeter Benutzer",
+  "label.enterValue": "Geben Sie einen Wert ein, z. B.",
+  "label.enterValuePlaceholder": "Geben Sie hier Ihren Wert ein",
   "label.quantity": "Menge",
   "label.productName": "Produktname",
   "label.productPrice": "Produktpreis",

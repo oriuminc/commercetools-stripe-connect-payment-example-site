@@ -6,6 +6,7 @@ const customerSlice = createSlice({
   initialState: {
     customerId: CUSTOMERS["en-US"].id,
     customerName: CUSTOMERS["en-US"].name,
+    availableCustomers: { ...CUSTOMERS },
   },
   reducers: {
     setCustomerId: (state, action) => {

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { FormattedMessage, useIntl } from "react-intl";
 import Helmet from "react-helmet";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import logo from "../images/logo.svg";
 import SwitchSelector from "react-switch-selector";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import ListGroup from "react-bootstrap/ListGroup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart, faUser } from "@fortawesome/free-solid-svg-icons";
 import LanguageSelector from "./LanguageSelector";
 import { useApi } from "../hooks/useApi";
+import logo from "../images/logo.svg";
 
 export default function Header({
   brandColor,
@@ -22,6 +25,7 @@ export default function Header({
   resetCart = () => {},
   setCustomerToCart = async () => {},
 }) {
+  const intl = useIntl();
   const { getConfig } = useApi();
   const [isLoaded, setIsLoaded] = useState(false);
   const [shopName, setShopName] = useState();
@@ -29,6 +33,11 @@ export default function Header({
   const [showModal, setShowModal] = useState(false);
   const [userInput, setUserInput] = useState("");
   const iconColor = ctCheckoutToggled ? "#0d7575" : "#37309c";
+  const currentLocale = useSelector((state) => state.locale.locale);
+  const availableCustomers = useSelector(
+    (state) => state.customer.availableCustomers
+  );
+
   const switchSelectorOptions = [
     {
       label: "Checkout Connector",
@@ -144,35 +153,79 @@ export default function Header({
                   <FontAwesomeIcon icon={faUser} color={iconColor} />
                 </div>
                 <Modal show={showModal} onHide={() => setShowModal(false)}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>User Information</Modal.Title>
+                  <Modal.Header closeButton className="text-3xl">
+                    <Modal.Title>
+                      <FormattedMessage
+                        id="label.userInformation"
+                        defaultMessage={"User Information"}
+                      />
+                    </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <Form.Group>
+                    <Form.Group className="mb-8">
                       <Form.Label>
-                        Enter value e.g. 8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd
+                        <FormattedMessage
+                          id="label.enterValue"
+                          defaultMessage={"Enter a value"}
+                        />
+                        {" 8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd"}
                       </Form.Label>
                       <Form.Control
                         type="text"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        placeholder="Enter your value here"
+                        placeholder={intl.formatMessage({
+                          id: "label.enterValuePlaceholder",
+                        })}
                       />
                     </Form.Group>
+                    <ListGroup as="ul">
+                      <p className="text-3 mb-2">
+                        <FormattedMessage
+                          id="label.loggedInUser"
+                          defaultMessage={"Currently logged-in user"}
+                        />
+                      </p>
+                      {Object.entries(availableCustomers).map(
+                        ([locale, customer]) => (
+                          <ListGroup.Item
+                            as="li"
+                            key={locale}
+                            className={`transition-colors duration-200 ${
+                              currentLocale === locale
+                                ? `${
+                                    ctCheckoutToggled
+                                      ? `bg-[${switchSelectorOptions[0].selectedBackgroundColor}]`
+                                      : `bg-[${switchSelectorOptions[1].selectedBackgroundColor}]`
+                                  } text-white font-medium`
+                                : "bg-gray-100 hover:bg-[#f3f4f6]"
+                            }`}
+                          >
+                            {`${customer.name} - ${customer.id.slice(-4)}`}
+                          </ListGroup.Item>
+                        )
+                      )}
+                    </ListGroup>
                   </Modal.Body>
                   <Modal.Footer>
                     <Button
                       variant="secondary"
                       onClick={() => setShowModal(false)}
                     >
-                      Close
+                      <FormattedMessage
+                        id="button.close"
+                        defaultMessage="Close"
+                      />
                     </Button>
                     <Button
                       variant="primary"
                       onClick={handleUserSubmit}
                       disabled={!userInput.trim()}
                     >
-                      Submit
+                      <FormattedMessage
+                        id="button.submit"
+                        defaultMessage="Submit"
+                      />
                     </Button>
                   </Modal.Footer>
                 </Modal>
