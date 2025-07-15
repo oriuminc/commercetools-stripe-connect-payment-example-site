@@ -34,6 +34,17 @@ export const CURRENCIES = {
 
 export const CUSTOMERS = {
   "de-DE": { id: "f1307a84-2890-437b-9213-2231a8e43413", name: "German User" },
-  "en-US": { id: "8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd", name: "Default User US" },
-  "en-GB": { id: "8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd", name: "Default User GB" },
+  "en-US": {
+    id: "8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd",
+    name: "Default User US",
+  },
+  "en-GB": {
+    id: "8c9dc3e9-09a1-45a4-91d0-8bbc0129b3dd",
+    name: "Default User GB",
+  },
 };
+
+export const COMMON_COLOURS = [
+  { hexCode: "#0bbfbf", tailwindClass: "bg-custom-teal" },
+  { hexCode: "#6359ff", tailwindClass: "bg-custom-indigo" },
+];

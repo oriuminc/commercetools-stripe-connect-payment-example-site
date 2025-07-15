@@ -5,6 +5,7 @@ import SwitchSelector from "react-switch-selector";
 import ProductCard from "./ProductCard";
 import { Spinner } from "./Spinner";
 import { useApi } from "../hooks/useApi";
+import { COMMON_COLOURS } from "../utils/constants";
 
 const SubscriptionList = ({
   currency,
@@ -24,14 +25,14 @@ const SubscriptionList = ({
         id: "button.monthlySubscription",
       }),
       value: 0,
-      selectedBackgroundColor: "#0bbfbf",
+      selectedBackgroundColor: COMMON_COLOURS[0].hexCode,
     },
     {
       label: intl.formatMessage({
         id: "button.yearlySubscription",
       }),
       value: 1,
-      selectedBackgroundColor: "#6359ff",
+      selectedBackgroundColor: COMMON_COLOURS[1].hexCode,
     },
   ];
 

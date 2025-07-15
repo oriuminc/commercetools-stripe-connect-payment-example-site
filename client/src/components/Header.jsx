@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FormattedMessage, useIntl } from "react-intl";
 import Helmet from "react-helmet";
 import { Link } from "react-router-dom";
@@ -12,7 +12,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faUser } from "@fortawesome/free-solid-svg-icons";
 import LanguageSelector from "./LanguageSelector";
 import { useApi } from "../hooks/useApi";
+import {
+  setCurrency,
+  setLocale
+} from "../store/localeSlice";
+import { setCustomerId, setCustomerName } from "../store/customerSlice";
 import logo from "../images/logo.svg";
+import { COMMON_COLOURS, CUSTOMERS } from "../utils";
 
 export default function Header({
   brandColor,
@@ -33,6 +39,7 @@ export default function Header({
   const [showModal, setShowModal] = useState(false);
   const [userInput, setUserInput] = useState("");
   const iconColor = ctCheckoutToggled ? "#0d7575" : "#37309c";
+  const dispatch = useDispatch();
   const currentLocale = useSelector((state) => state.locale.locale);
   const availableCustomers = useSelector(
     (state) => state.customer.availableCustomers
@@ -41,12 +48,12 @@ export default function Header({
   const switchSelectorOptions = [
     {
       label: "Checkout Connector",
-      selectedBackgroundColor: "#0bbfbf",
+      selectedBackgroundColor: COMMON_COLOURS[0].hexCode,
       value: true,
     },
     {
       label: "Composable Connector",
-      selectedBackgroundColor: "#6359ff",
+      selectedBackgroundColor: COMMON_COLOURS[1].hexCode,
       value: false,
     },
   ];
@@ -113,6 +120,14 @@ export default function Header({
       console.error("Error setting customer to cart:", error);
       alert("Failed to set Customer ID.");
     }
+  };
+
+  const onClickUserHandler = (locale) => {
+    dispatch(setLocale(locale));
+    dispatch(setCurrency(locale.split("-")[1]));
+    dispatch(setCustomerId(CUSTOMERS[locale].id));
+    dispatch(setCustomerName(CUSTOMERS[locale].name));
+    setShowModal(false);
   };
 
   return isLoaded ? (
@@ -191,12 +206,13 @@ export default function Header({
                           <ListGroup.Item
                             as="li"
                             key={locale}
-                            className={`transition-colors duration-200 ${
+                            onClick={() => onClickUserHandler(locale)}
+                            className={`cursor-pointer transition-colors duration-200 ${
                               currentLocale === locale
                                 ? `${
                                     ctCheckoutToggled
-                                      ? `bg-[${switchSelectorOptions[0].selectedBackgroundColor}]`
-                                      : `bg-[${switchSelectorOptions[1].selectedBackgroundColor}]`
+                                      ? COMMON_COLOURS[0].tailwindClass
+                                      : COMMON_COLOURS[1].tailwindClass
                                   } text-white font-medium`
                                 : "bg-gray-100 hover:bg-[#f3f4f6]"
                             }`}

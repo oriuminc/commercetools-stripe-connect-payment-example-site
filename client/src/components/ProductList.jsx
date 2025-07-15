@@ -33,7 +33,7 @@ export default function ProductList({
       <Spinner width="16%" height="16%" />
     </div>
   ) : (
-    <div className="row row-cols-1 row-cols-lg-5 g-4">
+    <div className="row row-cols-1 row-cols-lg-5 g-4 pb-[2.5rem]">
       {products.map((product, key) => (
         <ProductCard
           product={product}

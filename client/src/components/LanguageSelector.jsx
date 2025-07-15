@@ -8,8 +8,8 @@ import {
   setLocale,
   updateAvailableLanguages,
 } from "../store/localeSlice";
-import { CUSTOMERS } from "../utils";
 import { setCustomerId, setCustomerName } from "../store/customerSlice";
+import { CUSTOMERS } from "../utils";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {

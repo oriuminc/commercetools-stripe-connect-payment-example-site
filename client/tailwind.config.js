@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{html,jsx}"],
+  safelist: ["bg-custom-teal", "bg-custom-indigo"],
   theme: {
     colors: {
       blue: "#1fb6ff",
@@ -24,6 +25,10 @@ module.exports = {
       },
       borderRadius: {
         "4xl": "2rem",
+      },
+      colors: {
+        "custom-teal": "#0bbfbf",
+        "custom-indigo": "#6359ff",
       },
     },
   },
