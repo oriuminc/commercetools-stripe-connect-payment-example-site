@@ -35,11 +35,8 @@
   "scripts": {
     "start": "node Server.js",
     "local": "react-scripts start",
-    "build": "run-script-os",
-    "build:darwin:linux": "npm install && npm run build",
-    "build:win32": "npm install&&npm run build",
-    "build:default": "npm install && npm run build",
-    "vercel-build": "CI=false npm run build --prefix client",
+    "build": "cd client && npm install --legacy-peer-deps && cross-env CI=false npm run build",
+    "vercel-build": "cd client && npm install --legacy-peer-deps && cross-env CI=false npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "npx prettier --write .",
@@ -70,7 +67,7 @@
   "proxy": "http://localhost:8081",
   "devDependencies": {
     "concurrently": "^8.2.0",
-    "prettier": "2.8.4",
-    "run-script-os": "^1.1.6"
+    "cross-env": "^7.0.3",
+    "prettier": "2.8.4"
   }
 }
