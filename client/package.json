@@ -5,6 +5,7 @@
   "homepage": "/",
   "dependencies": {
     "@commercetools/checkout-browser-sdk": "^0.20.0",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@reduxjs/toolkit": "^2.8.2",
     "@stripe/react-stripe-js": "^2.1.0",
     "@stripe/stripe-js": "^1.54.0",
