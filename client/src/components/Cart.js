@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Cart(props) {
   const displayPrice = (amount) => {
-    return amount.toLocaleString("de-DE", {
+    return amount.toLocaleString("us-US", {
       style: "currency",
       currency: props.currency,
     });
@@ -23,7 +23,7 @@ export default function Cart(props) {
                     src={item.variant.images[0]?.url}
                   />
                   <div className="flex flex-col gap-3">
-                    <span className="font-bold">{item.name["de-DE"]}</span>
+                    <span className="font-bold">{item.name["us-US"]}</span>
                     <span>
                       Unit price $
                       {displayPrice(
