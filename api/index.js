@@ -10,14 +10,10 @@ import commerceTools from "./CommerceToolsHelper.js";
 const app = express();
 
 app.use(express.json());
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-if (process.env.NODE_ENV === "production") {
-  const buildPath = path.join(__dirname, "../../build"); // Vercel serverless function path
-  app.use("/confirm", express.static(buildPath));
-}
 
 const corsOptions = {
   origin: "*",
@@ -29,8 +25,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 // app.use(cors());
-
-dotenv.config();
 
 const STRIPE_KEY = process.env.STRIPE_KEY;
 const STRIPE_ADMIN = process.env.STRIPE_ADMIN;
@@ -268,7 +262,14 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", environment: "vercel" });
 });
 
-if (process.env.NODE_ENV === "dev") 
-  app.listen(5000);
+if (process.env.NODE_ENV === "dev") app.listen(5000);
+else if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
+  console.log("Running in vercel or production mode");
+  const buildPath = path.join(__dirname, "../client/build"); // Vercel serverless function path
+  app.use(express.static(buildPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
+}
 
 export default app;
