@@ -20,13 +20,12 @@ export default function App() {
   const [brandColor, setBrandColor] = useState("#425466");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
-  // const [customerId, setCustomerId] = useState(null);
+  const [shouldDisplaySubscriptionList, setShouldDisplaySubscriptionList] = useState(false);
   const dispatch = useDispatch();
   const customerId = useSelector((state) => state.customer.customerId);
   const currency = useSelector((state) => state.locale.currency);
   const locale = useSelector((state) => state.locale.locale);
   const { createCart, updateCart, addCustomerToCart } = useApi();
-  // const currency = "eur";
 
   const addToCart = async ({ productId, quantity, variantId }) => {
     if (cart) {
@@ -102,6 +101,14 @@ export default function App() {
     dispatch(fetchLanguages());
   }, [dispatch]);
 
+  useEffect(() => {
+    if(!ctCheckoutToggled) {
+      setShouldDisplaySubscriptionList(true);
+    } else {  
+      setShouldDisplaySubscriptionList(false);
+    }
+  }, [ctCheckoutToggled]);
+
   return (
     <I18nProvider>
       <BrowserRouter>
@@ -175,7 +182,7 @@ export default function App() {
               setCtCheckoutToggled={handleCtCheckoutToggled}
               setCustomerToCart={handleAddCustomerToCart}
             />
-            {cart?.customerId && customerId === cart?.customerId && (
+            {shouldDisplaySubscriptionList && (
               <SubscriptionList
                 addToCart={addToCart}
                 brandColor={brandColor}
