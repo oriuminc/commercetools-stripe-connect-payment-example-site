@@ -1,13 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { FormattedMessage } from "react-intl";
+import { useLocalizedString } from "../hooks/useLocalizedString";
+import { useFormattedPrice } from "../hooks/useFormattedPrice";
 
 export default function Cart(props) {
-  const displayPrice = (amount) => {
-    return amount.toLocaleString("de-DE", {
-      style: "currency",
-      currency: props.currency,
-    });
-  };
-  console.log(props.cart);
+  const { getFormattedPrice } = useFormattedPrice();
+  const { getLocalizedString } = useLocalizedString();
+  const currentLocale = useSelector((state) => state.locale.locale);
+  const currentCurrency = useSelector((state) => state.locale.currency);
 
   return (
     <>
@@ -23,26 +24,36 @@ export default function Cart(props) {
                     src={item.variant.images[0]?.url}
                   />
                   <div className="flex flex-col gap-3">
-                    <span className="font-bold">{item.name["de-DE"]}</span>
+                    <span className="font-bold">
+                      {getLocalizedString(item.name)}
+                    </span>
                     <span>
-                      Unit price $
-                      {displayPrice(
-                        (
-                          item.price.value.centAmount /
-                          Math.pow(10, item.price.value.fractionDigits)
-                        ).toFixed(item.price.value.fractionDigits)
+                      <FormattedMessage
+                        id="label.productUnitPrice"
+                        defaultMessage={"Unit price"}
+                      />
+                      :&nbsp;
+                      {getFormattedPrice(
+                        item.price.value,
+                        currentLocale.split("-")[1],
+                        currentCurrency
                       )}
                     </span>
-                    <span>Qty: {item.quantity}</span>
+                    <span>
+                      <FormattedMessage
+                        id="label.quantityShort"
+                        defaultMessage={"Qty"}
+                      />
+                      :&nbsp;{item.quantity}
+                    </span>
                   </div>
                 </div>
                 <div>
-                  $
-                  {displayPrice(
-                    (
-                      item.totalPrice.centAmount /
-                      Math.pow(10, item.totalPrice.fractionDigits)
-                    ).toFixed(item.price.value.fractionDigits)
+                  {getFormattedPrice(
+                    item.price.value,
+                    currentLocale.split("-")[1],
+                    currentCurrency,
+                    item.quantity
                   )}
                 </div>
               </div>
@@ -50,13 +61,31 @@ export default function Cart(props) {
           </div>
           <div>
             <div className="flex flex-row justify-between">
-              <span>Subtotal</span>
-              <span>${props.cart.totalPrice.centAmount / Math.pow(10, 2)}</span>
+              <span>
+                <FormattedMessage
+                  id="label.subtotal"
+                  defaultMessage={"Subtotal"}
+                />
+              </span>
+              <span>
+                {getFormattedPrice(
+                  props.cart.totalPrice,
+                  currentLocale.split("-")[1],
+                  currentCurrency
+                )}
+              </span>
             </div>
           </div>
         </div>
       )}
-      {!props.cart && <div className="row">Your cart is empty</div>}
+      {!props.cart && (
+        <div className="row">
+          <FormattedMessage
+            id="label.emptyCart"
+            defaultMessage={"Your cart is empty"}
+          />
+        </div>
+      )}
     </>
   );
 }

@@ -78,18 +78,33 @@ const StripeComposableConnectorCheckout = ({ cart, paymentSuccess }) => {
         } flex-col gap-4 w-8/12 pb-[2.5rem]`}
       >
         <ExpressCheckout cart={cart} />
-        or
+        <hr className="my-3 rounded-full bg-gray opacity-50 !h-[1.5px]" />
         <form className="flex flex-col gap-4" id="test" onSubmit={onSubmit}>
           <div>
-            <h3>Account</h3>
+            <h3 className="text-base font-medium mb-2">
+              <FormattedMessage
+                id="label.checkoutAccount"
+                defaultMessage={"Account"}
+              />
+            </h3>
             <LinkAuthentication elements={elements} />
           </div>
           <div>
-            <h3>Address</h3>
+            <h3 className="text-base font-medium mb-2">
+              <FormattedMessage
+                id="label.checkoutAddress"
+                defaultMessage={"Address"}
+              />
+            </h3>
             <Address elements={elements} />
           </div>
           <div>
-            <h3>Payment</h3>
+            <h3 className="text-base font-medium mb-2">
+              <FormattedMessage
+                id="label.checkoutPayment"
+                defaultMessage={"Payment"}
+              />
+            </h3>
             <div id="payment"></div>
           </div>
           <span className="text-[#df1c41]">{paymentError}</span>
@@ -100,7 +115,11 @@ const StripeComposableConnectorCheckout = ({ cart, paymentSuccess }) => {
               !isLoading ? "bg-[#635bff]" : "bg-[#9d9dad]"
             } flex justify-center text-white text-lg font-medium p-3 rounded-md`}
           >
-            {isLoading ? <Spinner /> : "Pay"}
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <FormattedMessage id="button.pay" defaultMessage="Pay" />
+            )}
           </button>
         </form>
       </div>

@@ -14,12 +14,51 @@ export const useFormattedPrice = () => {
     ...LOCALE_FORMAT_OPTIONS,
   };
 
-  const getFormattedPrice = (price, hasCurrencyOrCountry, currency) =>
+  const getFormattedPriceValue = (amount, amountType) => {
+    switch (amountType) {
+      case "centPrecision":
+        return amount / 100; // Convert cents to dollars
+      default:
+        return amount / 1; // Default to no conversion
+    }
+  };
+
+  const getFormattedPriceUtil = (price, hasCurrencyOrCountry, currency) =>
     hasCurrencyOrCountry
       ? formatNumber(price, { ...LOCALE_FORMAT_OPTIONS, currency })
       : formatNumber(price, { ...NEITHER_COUNTRY_NOR_CURRENCY_OPTIONS });
 
-  return (
+  const getFormattedPrice = (
+    localizedPrice,
+    country,
+    currency,
+    quantity = undefined
+  ) => {
+    if (!localizedPrice || typeof localizedPrice !== "object") {
+      return "";
+    }
+    if (!country) {
+      console.warn("Country is required for formatting price.");
+      return "";
+    }
+
+    const hasCurrencyOrCountry =
+      localizedPrice.country === country ||
+      localizedPrice.currencyCode === currency;
+
+    localizedPrice = getFormattedPriceValue(
+      localizedPrice.centAmount,
+      localizedPrice.type
+    );
+
+    return getFormattedPriceUtil(
+      quantity !== undefined ? localizedPrice * quantity : localizedPrice,
+      hasCurrencyOrCountry,
+      currency
+    );
+  };
+
+  const getFormattedPriceForLocale = (
     localizedPrices,
     country,
     currency,
@@ -49,27 +88,30 @@ export const useFormattedPrice = () => {
         );
       }
     } else {
-      localizedPrice = localizedPrices.find((element) => element.country === country);
+      localizedPrice = localizedPrices.find(
+        (element) => element.country === country
+      );
 
       if (localizedPrice) {
         hasCurrencyOrCountry = true;
       } else {
-        localizedPrice = localizedPrices.find((element) => element.country === "US");
+        localizedPrice = localizedPrices.find(
+          (element) => element.country === "US"
+        );
       }
     }
 
     amountType = localizedPrice.value.type;
     localizedPrice = localizedPrice.value.centAmount;
 
-    switch (amountType) {
-      case "centPrecision":
-        localizedPrice /= 100; // Convert cents to dollar
-        break;
-      default:
-        localizedPrice /= 1; // No conversion needed
-        break;
-    }
+    localizedPrice = getFormattedPriceValue(localizedPrice, amountType);
 
-    return getFormattedPrice(localizedPrice, hasCurrencyOrCountry, currency);
+    return getFormattedPriceUtil(
+      localizedPrice,
+      hasCurrencyOrCountry,
+      currency
+    );
   };
+
+  return { getFormattedPrice, getFormattedPriceForLocale };
 };

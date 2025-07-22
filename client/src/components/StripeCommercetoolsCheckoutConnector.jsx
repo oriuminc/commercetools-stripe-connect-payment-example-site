@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { FormattedMessage } from "react-intl";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom/cjs/react-router-dom";
 import { checkoutFlow } from "@commercetools/checkout-browser-sdk";
@@ -100,9 +101,16 @@ const StripeCommercetoolsCheckoutConnector = ({ setCart }) => {
       <div data-ctc="" className="checkout-Container" />
       {!sessionId && (
         <p>
-          Your cart is empty, add products{" "}
+          <FormattedMessage
+            id="label.emptyCartDescription"
+            defaultMessage={"Your cart is empty, add products"}
+          />
+          &nbsp;
           <a href="/" className="text-[#635bff] underline">
-            here
+            <FormattedMessage
+              id="button.clickHere"
+              defaultMessage={"Click here"}
+            />
           </a>
         </p>
       )}

@@ -26,14 +26,18 @@ const ExpressCheckout = ({ cart }) => {
       selector: "#express",
       onComplete,
       onError,
-      currency
-    }).then((element) => {
-      if (!element) return;
-      console.log({element})
-    });
+      currency,
+    })
+      .then((element) => {
+        if (!element) return;
+        console.log({ element });
+      })
+      .catch((error) => {
+        console.error("Error creating Express Checkout element:", error);
+      });
   }, [enabler]);
 
-  return <div id="express"> </div>;
+  return <div id="express"></div>;
 };
 
 export default ExpressCheckout;

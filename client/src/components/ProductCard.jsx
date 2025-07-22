@@ -29,7 +29,7 @@ export default function ProductCard({
   const currentCurrency = useSelector((state) => state.locale.currency);
   const { getLocalizedString, parseLocalizedAttributeValue } =
     useLocalizedString();
-  const getFormattedPrice = useFormattedPrice();
+  const { getFormattedPriceForLocale } = useFormattedPrice();
 
   const handleQuantityChange = (event) => {
     setQuantityValue(parseInt(event.target.value));
@@ -140,13 +140,13 @@ export default function ProductCard({
               </p>
               <h3 style={styles.price}>
                 {subscriptionInterval === 1
-                  ? getFormattedPrice(
+                  ? getFormattedPriceForLocale(
                       product.masterData.current.variants[0].prices,
                       currentLocale.split("-")[1],
                       currentCurrency,
                       true
                     )
-                  : getFormattedPrice(
+                  : getFormattedPriceForLocale(
                       product.masterData.current.masterVariant.prices,
                       currentLocale.split("-")[1],
                       currentCurrency,
@@ -233,7 +233,7 @@ export default function ProductCard({
                 {getLocalizedString(product.masterData.current.name)}
               </p>
               <h3 style={styles.price}>
-                {getFormattedPrice(
+                {getFormattedPriceForLocale(
                   product.masterData.current.masterVariant.prices,
                   currentLocale.split("-")[1],
                   currentCurrency
@@ -360,7 +360,7 @@ export default function ProductCard({
               </label>
             </div>
           ) : null}
-          <div className="col-2">
+          <div className="col-md-auto">
             <button
               className={`btn ${isLoading && "cursor-not-allowed"}`}
               type="button"
