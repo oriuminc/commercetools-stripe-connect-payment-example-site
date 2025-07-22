@@ -262,12 +262,16 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", environment: "vercel" });
 });
 
-if (process.env.NODE_ENV === "dev") app.listen(5000);
-else if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
-  console.log("Running in vercel or production mode");
+if (process.env.NODE_ENV === "dev") {
+  app.listen(5000);
+} else if (
+  process.env.NODE_ENV === "production" ||
+  process.env.VERCEL === "1"
+) {
   const buildPath = path.join(__dirname, "../client/build"); // Vercel serverless function path
+
   app.use(express.static(buildPath));
-  app.get("*", (req, res) => {
+  app.get("*", (_, res) => {
     res.sendFile(path.join(buildPath, "index.html"));
   });
 }
