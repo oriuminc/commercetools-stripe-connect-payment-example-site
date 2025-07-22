@@ -51,11 +51,11 @@ const SubscriptionList = ({
   }, [customerId]);
 
   return !isLoaded ? (
-    <div className="w-100 h-40 mb-[5rem] d-flex flex-col align-items-center">
-      <p className="mb-8">
+    <div className="w-100 h-40 mb-[5rem] flex flex-col align-items-center">
+      <p className="text-lg mb-8">
         <FormattedMessage
           id="label.loadingSubscriptionProducts"
-          defaultMessage={"Loading subscription products..."}
+          defaultMessage={"Loading subscription products…"}
         />
       </p>
       <Spinner width="50%" height="50%" />

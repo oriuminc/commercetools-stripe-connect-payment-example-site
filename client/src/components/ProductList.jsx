@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import ProductCard from "./ProductCard";
 import { Spinner } from "./Spinner.jsx";
 import { useApi } from "../hooks/useApi.js";
@@ -27,9 +28,14 @@ export default function ProductList({
     fetchProducts();
   }, [currency]);
 
-
   return !isLoaded ? (
-    <div className="w-100 h-100 d-flex justify-content-center align-items-start">
+    <div className="w-100 h-100 flex flex-column justify-content-start align-items-center">
+      <p className="text-lg mb-8">
+        <FormattedMessage
+          id="label.loadingProducts"
+          defaultMessage={"Loading products…"}
+        />
+      </p>
       <Spinner width="16%" height="16%" />
     </div>
   ) : (

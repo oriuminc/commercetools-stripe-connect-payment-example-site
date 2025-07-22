@@ -3,6 +3,7 @@
   "button.submit": "Absenden",
   "button.buy": "Kaufen",
   "button.addToCart": "In den Warenkorb",
+  "button.addingToCart": "In den Warenkorb legen",
   "button.viewCart": "Warenkorb ansehen",
   "button.checkout": "Zur Kasse",
   "button.subscribe": "Abonnieren",
@@ -25,5 +26,7 @@
   "label.productColor": "Farbe",
   "label.productVariants": "Varianten",
   "label.subscriptionProducts": "Abonnementprodukte",
-  "label.loadingSubscriptionProducts": "Abonnementprodukte werden geladen..."
+  "label.loadingProducts": "Produkte werden geladen…",
+  "label.loadingSubscriptionProducts": "Abonnementprodukte werden geladen…",
+  "label.loadingFallback": "Laden, bitte warten…"
 }

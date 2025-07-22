@@ -9,6 +9,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useLocalizedString } from "../hooks/useLocalizedString";
 import { useFormattedPrice } from "../hooks/useFormattedPrice";
 import { formatText } from "../utils";
+import { Spinner } from "./Spinner";
 
 export default function ProductCard({
   product,
@@ -204,7 +205,9 @@ export default function ProductCard({
                               <strong className="font-medium">
                                 {formatText(name)}:
                               </strong>
-                              {` ${formatText(parseLocalizedAttributeValue(value))}`}
+                              {` ${formatText(
+                                parseLocalizedAttributeValue(value)
+                              )}`}
                             </li>
                           );
                       }
@@ -230,13 +233,11 @@ export default function ProductCard({
                 {getLocalizedString(product.masterData.current.name)}
               </p>
               <h3 style={styles.price}>
-                {
-                  getFormattedPrice(
-                    product.masterData.current.masterVariant.prices,
-                    currentLocale.split("-")[1],
-                    currentCurrency
-                  )
-                }
+                {getFormattedPrice(
+                  product.masterData.current.masterVariant.prices,
+                  currentLocale.split("-")[1],
+                  currentCurrency
+                )}
               </h3>
             </div>
           </div>
@@ -361,17 +362,27 @@ export default function ProductCard({
           ) : null}
           <div className="col-2">
             <button
-              className="btn"
+              className={`btn ${isLoading && "cursor-not-allowed"}`}
               type="button"
               style={{ backgroundColor: brandColor, color: "blue" }}
               id={product.id}
               onClick={handleAddToCart}
               disabled={isLoading}
             >
-              <FormattedMessage
-                id="button.addToCart"
-                defaultMessage={"Add to Cart"}
-              />
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <Spinner />
+                  <FormattedMessage
+                    id="button.addingToCart"
+                    defaultMessage={"Adding to cart"}
+                  />
+                </div>
+              ) : (
+                <FormattedMessage
+                  id="button.addToCart"
+                  defaultMessage={"Add to cart"}
+                />
+              )}
             </button>
           </div>
         </Modal.Footer>

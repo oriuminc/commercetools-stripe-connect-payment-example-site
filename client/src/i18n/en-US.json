@@ -2,7 +2,8 @@
   "button.close": "Close",
   "button.submit": "Submit",
   "button.buy": "Buy",
-  "button.addToCart": "Add to Cart",
+  "button.addToCart": "Add to cart",
+  "button.addingToCart": "Adding to Cart",
   "button.viewCart": "View Cart",
   "button.checkout": "Checkout",
   "button.subscribe": "Subscribe",
@@ -25,5 +26,7 @@
   "label.productColor": "Color",
   "label.productVariants": "Variants",
   "label.subscriptionProducts": "Subscription Products",
-  "label.loadingSubscriptionProducts": "Loading subscription products..."
+  "label.loadingProducts": "Loading products…",
+  "label.loadingSubscriptionProducts": "Loading subscription products…",
+  "label.loadingFallback": "Loading, please wait…"
 }
