@@ -12,6 +12,10 @@ dotenv.config();
 async function createCtClient() {
   console.log("Creating CommerceTools Client...");
   console.log("projectKey: ", process.env.REACT_APP_CT_PROJECT_KEY);
+  console.log("authUrl: ", process.env.REACT_APP_CT_AUTH_URL);
+  console.log("sessionUrl: ", process.env.REACT_APP_SESSION_URL);
+  console.log("clientId: ", process.env.REACT_APP_CT_CLIENT_ID);
+  console.log("clientSecret: ", process.env.REACT_APP_CT_SECRET);
   if (!requestBuilder) {
     const options = {
       projectKey: process.env.REACT_APP_CT_PROJECT_KEY,
@@ -57,6 +61,7 @@ async function getLanguages() {
     client = await createCtClient();
     console.log("CommerceTools Client created successfully.");
   }
+  console.log("Fetching available languages from CommerceTools123...");
   const uri = requestBuilder.project.build();
   console.log("Fetching available languages from CommerceTools");
   console.log("uri: ", uri);
