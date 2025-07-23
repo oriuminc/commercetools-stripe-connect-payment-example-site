@@ -5,6 +5,7 @@ export const EnablerContext = createContext({
   processorUrl: null,
   sessionId: null,
   enablerUrl: null,
+  language: null,
 });
 
 const processorConfig = {
@@ -20,7 +21,7 @@ const enablerConfig = {
     'commercetoolsCheckout',
 };
 
-export const EnablerContextProvider = ({ children, cartId, connector }) => {
+export const EnablerContextProvider = ({ children, cartId, connector, language }) => {
   const [sessionId, setSessionId] = useState(null);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export const EnablerContextProvider = ({ children, cartId, connector }) => {
         processorUrl: processorConfig[connector],
         sessionId: sessionId,
         enablerUrl: enablerConfig[connector],
+        language: language,
       }}
     >
       {children}
