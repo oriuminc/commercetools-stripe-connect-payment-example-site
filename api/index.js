@@ -1,26 +1,19 @@
-import express from "express";
-import { fileURLToPath } from "url";
-import path from "path";
-import { dirname } from "path";
 import cors from "cors";
 import dotenv from "dotenv";
+import express from "express";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
-import commerceTools from "./CommerceToolsHelper.js";
 import Stripe from "stripe";
+import commerceTools from "./CommerceToolsHelper.js";
 
 const app = express();
 
 app.use(express.json());
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const buildPath =
-  process.env.NODE_ENV === "production"
-    ? path.join(__dirname, "../../build") // Vercel serverless function path
-    : path.join(__dirname, "../build"); // Local development path
-app.use(express.static(buildPath));
-app.use("/confirm", express.static(buildPath));
 
 const corsOptions = {
   origin: "*",
@@ -33,10 +26,8 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 // app.use(cors());
 
-dotenv.config();
-
-const STRIPE_KEY = process.env.REACT_APP_SK;
-const STRIPE_ADMIN = process.env.REACT_APP_ADMIN;
+const STRIPE_KEY = process.env.STRIPE_KEY;
+const STRIPE_ADMIN = process.env.STRIPE_ADMIN;
 
 const stripe = new Stripe(STRIPE_KEY);
 
@@ -56,6 +47,12 @@ app.get("/api/settings", async (req, res) => {
     icon: icon,
     primary_color: account.settings.branding.primary_color,
   });
+});
+
+app.get("/api/project/languages", async (_, res) => {
+  console.log("Fetching available languages");
+  const languages = await commerceTools.getLanguages();
+  res.send(languages);
 });
 
 app.get("/api/products/:currency", async (req, res) => {
@@ -103,9 +100,10 @@ app.get("/api/cart/:cartId?", async (req, res) => {
 /* ------ CREATE CART ------ */
 app.post("/api/cart", async (req, res) => {
   const customerId = req.body.customerId || null;
-  const language = req.body.language;
+  const currency = req.body.currency || "USD";
+  const country = req.body.country || "US";
   console.log(`Creating cart for customerId: ${customerId}`);
-  res.send(await commerceTools.createCart(customerId, language));
+  res.send(await commerceTools.createCart(customerId, currency, country));
 });
 
 /* ------ ADD CART LINE ITEM ------ */
@@ -157,12 +155,12 @@ app.post("/create-payment-intent", async (req, res) => {
   let total = cart.totalPrice.centAmount;
   let summary = "";
   cart.lineItems.forEach((item) => {
-    summary += item.id + "  [" + item.name["us-US"] + "] ";
+    summary += item.id + "  [" + item.name["de-DE"] + "] ";
   });
 
   const payload = {
     amount: total,
-    currency: currency,
+    currency,
     metadata: {
       summary: summary,
       commerceToolsCartId: cart.id,
@@ -172,13 +170,13 @@ app.post("/create-payment-intent", async (req, res) => {
     customer: ctCustomer.externalId,
   };
 
-  if (currency === "usd") {
+  if (currency === "USD") {
     payload.payment_method_types = ["card", "afterpay_clearpay"];
   }
-  if (currency === "eur") {
+  if (currency === "EUR") {
     payload.payment_method_types = ["card", "sofort", "giropay"];
   }
-  if (currency === "gbp") {
+  if (currency === "GBP") {
     payload.payment_method_types = ["card", "bacs_debit"];
   }
 
@@ -263,5 +261,19 @@ app.get("/charge/:charge_id", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", environment: "vercel" });
 });
+
+if (process.env.NODE_ENV === "dev") {
+  app.listen(5000);
+} else if (
+  process.env.NODE_ENV === "production" ||
+  process.env.VERCEL === "1"
+) {
+  const buildPath = path.join(__dirname, "../client/build"); // Vercel serverless function path
+
+  app.use(express.static(buildPath));
+  app.get("*", (_, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
+}
 
 export default app;

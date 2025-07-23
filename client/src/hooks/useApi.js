@@ -6,11 +6,12 @@ export const useApi = () => {
     ...DEV_REQUEST_HEADERS,
   };
 
-  const createCart = async (customerId, language) => {
+  const createCart = async (customerId, currency, country) => {
+    console.log(`Creating cart for customerId: ${customerId}, currency: ${currency}, country: ${country}`);
     const res = await fetch(`${BACKEND_URL}/api/cart`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ customerId, language }),
+      body: JSON.stringify({ customerId, currency, country }),
     });
 
     if (!res.ok) {
@@ -59,6 +60,15 @@ export const useApi = () => {
     return await res.json();
   };
 
+  const getLanguages = async () => {
+    const res = await fetch(`${BACKEND_URL}/api/project/languages`);
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch languages.");
+    }
+    return await res.json();
+  };
+
   const getProducts = async (currency) => {
     const res = await fetch(`${BACKEND_URL}/api/products/${currency}`, {
       headers,
@@ -84,6 +94,7 @@ export const useApi = () => {
     updateCart,
     addCustomerToCart,
     getConfig,
+    getLanguages,
     getProducts,
     getSubscriptionProducts,
   };

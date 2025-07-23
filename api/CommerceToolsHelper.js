@@ -3,19 +3,12 @@ import { createAuthMiddlewareForClientCredentialsFlow } from "@commercetools/sdk
 import { createHttpMiddleware } from "@commercetools/sdk-middleware-http";
 import { createRequestBuilder } from "@commercetools/api-request-builder";
 import crypto from "crypto";
-
+import dotenv from "dotenv";
 import fetch from "node-fetch";
 
 let requestBuilder;
 let client;
-
-const CURRENCY_MAP = {
-  "us-US": "USD",
-  "en-GB": "GBP",
-  "de-DE": "EUR",
-  "fr-FR": "EUR",
-};
-
+dotenv.config();
 async function createCtClient() {
   console.log("Creating CommerceTools Client...");
   console.log("projectKey: ", process.env.REACT_APP_CT_PROJECT_KEY);
@@ -40,7 +33,7 @@ async function createCtClient() {
         fetch,
       }),
       createHttpMiddleware({
-        host: process.env.REACT_APP_CT_API_URL,
+        host: process.env.REACT_APP_SESSION_URL,
         includeResponseHeaders: true,
         includeOriginalRequest: true,
         maskSensitiveHeaderData: true,
@@ -56,6 +49,17 @@ async function createCtClient() {
       }),
     ],
   });
+}
+
+async function getLanguages() {
+  if (!client) {
+    client = await createCtClient();
+  }
+  const uri = requestBuilder.project.build();
+  const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
+    console.log(e);
+  });
+  return rsp.body?.languages || [];
 }
 
 async function getProductTypeId(name) {
@@ -87,7 +91,9 @@ async function getSubscriptionProducts() {
   if (!client) {
     client = await createCtClient();
   }
-  const productTypeId = await getProductTypeId("payment-connector-subscription-information");
+  const productTypeId = await getProductTypeId(
+    "payment-connector-subscription-information"
+  );
   const uri = requestBuilder.products
     .where(`productType(id="${productTypeId}") and masterData(published=true) `)
     .perPage(10)
@@ -98,19 +104,17 @@ async function getSubscriptionProducts() {
   return rsp.body;
 }
 
-async function createCart(customerId, language ) {
+async function createCart(customerId, currency, country) {
   if (!client) {
     client = await createCtClient();
   }
-  const [country, lang] = language.split("-");
-
   let uri = requestBuilder.carts.build();
   const rsp = await client.execute({
     uri: uri,
     method: "POST",
     body: {
-      currency: CURRENCY_MAP[language],
-      country: country.toUpperCase(),
+      currency,
+      country,
       ...(customerId && { customerId }),
     },
     headers: {
@@ -498,6 +502,7 @@ async function cartAddShippingAddres(cartId, address, version) {
 }
 
 const commerceToolsHelper = {
+  getLanguages,
   getProducts,
   getSubscriptionProducts,
   createCart,

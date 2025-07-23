@@ -5,7 +5,6 @@
   "type": "module",
   "dependencies": {
     "@commercetools/api-request-builder": "^5.6.3",
-    "@commercetools/checkout-browser-sdk": "^0.9.0",
     "@commercetools/sdk-client": "^2.1.2",
     "@commercetools/sdk-middleware-auth": "^6.2.0",
     "@commercetools/sdk-middleware-http": "^6.1.0",
@@ -23,7 +22,6 @@
     "body-parser": "^1.19.0",
     "bootstrap": "^5.0.0-beta3",
     "cors": "^2.8.5",
-    "currency-symbol-map": "^5.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "immer": "^9.0.7",
@@ -37,12 +35,12 @@
   "scripts": {
     "start": "node Server.js",
     "local": "react-scripts start",
-    "build": "cd client && npm install && npm run build",
-    "vercel-build": "CI=false npm run build",
+    "build": "npm install --prefix client --legacy-peer-deps && cross-env CI=false npm run build",
+    "vercel-build": "npm install --prefix client --legacy-peer-deps && cross-env CI=false npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "npx prettier --write .",
-    "dev": "VERCEL_DEV_CACHE=0 vercel dev"
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix api\""
   },
   "eslintConfig": {
     "extends": [
@@ -68,6 +66,8 @@
   },
   "proxy": "http://localhost:8081",
   "devDependencies": {
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
     "prettier": "2.8.4"
   }
 }

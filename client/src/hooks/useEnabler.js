@@ -4,16 +4,10 @@ import { loadEnabler } from "../utils";
 
 export const useEnabler = () => {
   const enablerContext = useContext(EnablerContext);
-  const CURRENCY_MAP = {
-    "us-US": "USD",
-    "en-GB": "GBP",
-    "de-DE": "EUR",
-    "fr-FR": "EUR",
-  };
 
   const [elements, setElements] = useState(null);
 
-  const createElement = async ({ type, selector, onComplete, onError }) => {
+  const createElement = async ({ type, selector, onComplete, onError, currency }) => {
     if (!enablerContext.enablerUrl) {
       console.error("Enabler URL is not set.");
       return;
@@ -26,7 +20,7 @@ export const useEnabler = () => {
     const enabler = new Enabler({
       processorUrl: enablerContext.processorUrl,
       sessionId: enablerContext.sessionId,
-      currency: CURRENCY_MAP[enablerContext.language],
+      currency,
       onComplete: ({ isSuccess, paymentReference, paymentIntent }) => {
         onComplete(paymentIntent,isSuccess, paymentReference);
       },
@@ -58,6 +52,5 @@ export const useCheckout = () => {
   const enablerContext = useContext(EnablerContext);
   return {
     sessionId: enablerContext.sessionId,
-    language: enablerContext.language,
   };
 };

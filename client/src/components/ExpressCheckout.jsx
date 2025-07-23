@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useEnabler } from "../hooks/useEnabler";
 import {
   getAddressFromPaymentIntent,
   updateCartShippingAddress,
 } from "../utils";
 
-const ExpressCheckout = ({ cart, language }) => {
-  const { enabler, createElement } = useEnabler({language});
+const ExpressCheckout = ({ cart }) => {
+  const { enabler, createElement } = useEnabler();
+  const currency = useSelector((state) => state.locale.currency);
 
   const onError = () => {};
 
@@ -24,13 +26,18 @@ const ExpressCheckout = ({ cart, language }) => {
       selector: "#express",
       onComplete,
       onError,
-    }).then((element) => {
-      if (!element) return;
-      console.log({element})
-    });
+      currency,
+    })
+      .then((element) => {
+        if (!element) return;
+        console.log({ element });
+      })
+      .catch((error) => {
+        console.error("Error creating Express Checkout element:", error);
+      });
   }, [enabler]);
 
-  return <div id="express"> </div>;
+  return <div id="express"></div>;
 };
 
 export default ExpressCheckout;

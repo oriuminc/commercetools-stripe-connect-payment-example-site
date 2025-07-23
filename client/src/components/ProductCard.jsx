@@ -1,19 +1,22 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Carousel from "./Carousel";
+import { useHistory } from "react-router";
+import { useSelector } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import Modal from "react-bootstrap/Modal";
+import Carousel from "./Carousel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import getSymbolFromCurrency from "currency-symbol-map";
-import { formatAttributeValue, formatText } from "../utils";
-import {useHistory} from "react-router";
+import { useLocalizedString } from "../hooks/useLocalizedString";
+import { useFormattedPrice } from "../hooks/useFormattedPrice";
+import { formatText } from "../utils";
+import { Spinner } from "./Spinner";
 
 export default function ProductCard({
   product,
   brandColor,
-  currency,
   isSubscription = false,
   addToCart = async ({ productId, quantity, variantId }) => {},
-  subscriptionInterval , // 1 for monthly, 0 for yearly
+  subscriptionInterval, // 1 for monthly, 0 for yearly
 }) {
   const [selectedVariantId, setSelectedVariantId] = useState(1);
   const [show, setShow] = useState(false);
@@ -22,6 +25,11 @@ export default function ProductCard({
   const handleClose = () => setShow(false);
   const [buySubscription, setBuySubscription] = useState(false);
   const history = useHistory();
+  const currentLocale = useSelector((state) => state.locale.locale);
+  const currentCurrency = useSelector((state) => state.locale.currency);
+  const { getLocalizedString, parseLocalizedAttributeValue } =
+    useLocalizedString();
+  const { getFormattedPriceForLocale } = useFormattedPrice();
 
   const handleQuantityChange = (event) => {
     setQuantityValue(parseInt(event.target.value));
@@ -104,26 +112,15 @@ export default function ProductCard({
     }
   };
 
-  const displayPrice = (value) => {
-    if (!value) {
-      return `${getSymbolFromCurrency(currency)} 100`;
-    }
-    return `${getSymbolFromCurrency(currency)} ${(
-      value.centAmount / 100
-    ).toFixed(value.fractionDigits)}`;
-  };
-
   useEffect(() => {
-
     const asyncCall = async () => {
       await handleAddToCart();
-      history.push('/checkoutOrderConnector');
-
-    }
-    if(buySubscription){
+      history.push("/checkoutOrderConnector");
+    };
+    if (buySubscription) {
       asyncCall();
     }
-  },[buySubscription])
+  }, [buySubscription]);
 
   return (
     <>
@@ -137,60 +134,86 @@ export default function ProductCard({
                 style={styles.img}
               />
             </div>
-            <div className="card-body" style={{ paddingBottom: 10 }}>
+            <div className="card-body pb-[10px]">
               <p styles={styles.name}>
-                {product.masterData.current.name["us-US"]}
+                {getLocalizedString(product.masterData.current.name)}
               </p>
               <h3 style={styles.price}>
-                { subscriptionInterval === 1 ?
-                  (displayPrice(
-                    product.masterData.current.variants[0].prices[0]?.value
-                  ))
-                  :
-                  (displayPrice(
-                    product.masterData.current.masterVariant.prices[0]?.value
-                  ))
-                }
+                {subscriptionInterval === 1
+                  ? getFormattedPriceForLocale(
+                      product.masterData.current.variants[0].prices,
+                      currentLocale.split("-")[1],
+                      currentCurrency,
+                      true
+                    )
+                  : getFormattedPriceForLocale(
+                      product.masterData.current.masterVariant.prices,
+                      currentLocale.split("-")[1],
+                      currentCurrency,
+                      true
+                    )}
               </h3>
               <button
                 className="btn btn-primary"
                 style={{ backgroundColor: brandColor, color: "white" }}
-                onClick={()=> {
-                  if(subscriptionInterval === 1) {
-                    setSelectedVariantId(product.masterData.current.variants[0].id);
-                    setBuySubscription(true)
+                onClick={() => {
+                  if (subscriptionInterval === 1) {
+                    setSelectedVariantId(
+                      product.masterData.current.variants[0].id
+                    );
+                    setBuySubscription(true);
                   } else {
-                    setSelectedVariantId(product.masterData.current.masterVariant.id);
-                    setBuySubscription(true)
+                    setSelectedVariantId(
+                      product.masterData.current.masterVariant.id
+                    );
+                    setBuySubscription(true);
                   }
                 }}
               >
-                Subscribe
+                <FormattedMessage
+                  id="button.subscribe"
+                  defaultMessage={"Subscribe"}
+                />
               </button>
               <div className="col-7 flex flex-column gap-2">
-                <p>{product.masterData.current.description["us-US"]}</p>
-                { subscriptionInterval === 1 ?
+                <p>
+                  {getLocalizedString(product.masterData.current.description)}
+                </p>
+                {subscriptionInterval === 1 ? (
                   <ul>
-                    {product.masterData.current.variants[0].attributes.map(({ name, value }) => {
-                      if(name === "trial_period_days")
-                        return (<li key={name}>
-                          <strong className="font-medium">{formatText(name)}:</strong>{" "}
-                          {formatAttributeValue(value)}
-                        </li>)
-                    })}
+                    {product.masterData.current.variants[0].attributes.forEach(
+                      ({ name, value }) => {
+                        if (name === "trial_period_days")
+                          return (
+                            <li key={name}>
+                              <strong className="font-medium">
+                                {formatText(name)}:
+                              </strong>{" "}
+                              {formatText(parseLocalizedAttributeValue(value))}
+                            </li>
+                          );
+                      }
+                    )}
                   </ul>
-                  :
+                ) : (
                   <ul>
-                    {product.masterData.current.masterVariant.attributes.map(({ name, value }) => {
-                      if(name === "trial_period_days")
-                        return (<li key={name}>
-                          <strong className="font-medium">{formatText(name)}:</strong>{" "}
-                          {formatAttributeValue(value)}
-                        </li>)
-                    })}
+                    {product.masterData.current.masterVariant.attributes.forEach(
+                      ({ name, value }) => {
+                        if (name === "trial_period_days")
+                          return (
+                            <li key={name}>
+                              <strong className="font-medium">
+                                {formatText(name)}:
+                              </strong>
+                              {` ${formatText(
+                                parseLocalizedAttributeValue(value)
+                              )}`}
+                            </li>
+                          );
+                      }
+                    )}
                   </ul>
-                }
-
+                )}
               </div>
             </div>
           </div>
@@ -205,16 +228,16 @@ export default function ProductCard({
                 style={styles.img}
               />
             </div>
-            <div className="card-body" style={{ paddingBottom: 10 }}>
+            <div className="card-body pb-[10px]">
               <p styles={styles.name}>
-                {product.masterData.current.name["us-US"]}
+                {getLocalizedString(product.masterData.current.name)}
               </p>
               <h3 style={styles.price}>
-                {
-                  displayPrice(
-                    product.masterData.current.masterVariant.prices[0]?.value
-                  )
-                }
+                {getFormattedPriceForLocale(
+                  product.masterData.current.masterVariant.prices,
+                  currentLocale.split("-")[1],
+                  currentCurrency
+                )}
               </h3>
             </div>
           </div>
@@ -222,10 +245,10 @@ export default function ProductCard({
       </div>
       <Modal show={show} centered onHide={handleClose} size="xl">
         <Modal.Header style={styles.nameModal}>
-          {product.masterData.current.name["us-US"]}
+          {getLocalizedString(product.masterData.current.name)}
           <FontAwesomeIcon
             icon={faTimes}
-            style={{ cursor: "pointer" }}
+            className="cursor-pointer"
             onClick={handleClose}
           />
         </Modal.Header>
@@ -233,25 +256,62 @@ export default function ProductCard({
           <div className="row">
             <div className="col-4">
               <Carousel
-                id={"modal_" + product.id}
+                id={`modal_${product.id}`}
                 images={[
                   product.masterData.current.masterVariant.images[0]?.url,
                 ]}
               />
             </div>
             <div className="col-7 flex flex-column gap-2">
-              <p>{product.masterData.current.description["us-US"]}</p>
+              <p>
+                {getLocalizedString(product.masterData.current.description)}
+              </p>
               <ul>
                 {selectedVariant.attributes.map(({ name, value }) => (
                   <li key={name}>
-                    <strong className="font-medium">{formatText(name)}:</strong>{" "}
-                    {formatAttributeValue(value)}
+                    {(() => {
+                      switch (name) {
+                        case "productspec":
+                          return (
+                            <strong className="font-medium">
+                              <FormattedMessage
+                                id="label.productSpecifications"
+                                defaultMessage={"Product Specifications"}
+                              />
+                              {`: `}
+                            </strong>
+                          );
+                        case "color":
+                          return (
+                            <strong className="font-medium">
+                              <FormattedMessage
+                                id="label.productColor"
+                                defaultMessage={"Product Color"}
+                              />
+                              {`: `}
+                            </strong>
+                          );
+
+                        default:
+                          return (
+                            <strong className="font-medium">
+                              {`${formatText(name)}:`}
+                            </strong>
+                          );
+                      }
+                    })()}
+                    {formatText(parseLocalizedAttributeValue(value))}
                   </li>
                 ))}
               </ul>
               {variants?.length > 1 ? (
                 <div className="flex flex-column gap-2">
-                  <h4 className="font-medium pt-4">Variants</h4>
+                  <h4 className="font-medium pt-4">
+                    <FormattedMessage
+                      id="label.productVariants"
+                      defaultMessage={"Variants"}
+                    />
+                  </h4>
                   <div className="flex gap-2 flex-wrap">
                     {variants?.map(({ id }) => (
                       <label
@@ -282,7 +342,10 @@ export default function ProductCard({
           {!isSubscription ? (
             <div className="col-2">
               <label className="flex gap-2 justify-end">
-                Quantity
+                <FormattedMessage
+                  id="label.quantity"
+                  defaultMessage={"Quantity"}
+                />
                 <select
                   value={quantityValue}
                   onChange={handleQuantityChange}
@@ -297,15 +360,29 @@ export default function ProductCard({
               </label>
             </div>
           ) : null}
-          <div className="col-2">
+          <div className="col-md-auto">
             <button
-              className="btn"
+              className={`btn ${isLoading && "cursor-not-allowed"}`}
+              type="button"
               style={{ backgroundColor: brandColor, color: "blue" }}
               id={product.id}
               onClick={handleAddToCart}
               disabled={isLoading}
             >
-              Add to Cart
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <Spinner />
+                  <FormattedMessage
+                    id="button.addingToCart"
+                    defaultMessage={"Adding to cart"}
+                  />
+                </div>
+              ) : (
+                <FormattedMessage
+                  id="button.addToCart"
+                  defaultMessage={"Add to cart"}
+                />
+              )}
             </button>
           </div>
         </Modal.Footer>
