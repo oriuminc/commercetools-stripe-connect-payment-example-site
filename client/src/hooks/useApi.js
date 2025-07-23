@@ -8,6 +8,10 @@ export const useApi = () => {
 
   const createCart = async (customerId, currency, country) => {
     console.log(`Creating cart for customerId: ${customerId}, currency: ${currency}, country: ${country}`);
+    const test1 = process.env.NODE_ENV;
+    const test2 = process.env.REACT_APP_BACKEND_URL;
+    const test3 = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    console.log({ test1, test2, test3 });
     const res = await fetch(`${BACKEND_URL}/api/cart`, {
       method: "POST",
       headers,
