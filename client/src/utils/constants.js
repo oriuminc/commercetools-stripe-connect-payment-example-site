@@ -4,7 +4,7 @@ export const projectKey = process.env.REACT_APP_CT_PROJECT_KEY;
 
 export const BACKEND_URL =
   process.env.NODE_ENV === "production"
-    ? process.env.VERCEL_URL || ""
+    ? process.env.REACT_APP_VERCEL_URL || ""
     : "http://localhost:5000";
 
 export const CURRENCIES = {
