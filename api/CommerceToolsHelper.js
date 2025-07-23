@@ -18,7 +18,7 @@ async function createCtClient() {
     };
     requestBuilder = createRequestBuilder(options);
   }
-
+  console.log("RequestBuilder created successfully.");
   return createClient({
     middlewares: [
       createAuthMiddlewareForClientCredentialsFlow({
@@ -53,9 +53,13 @@ async function createCtClient() {
 
 async function getLanguages() {
   if (!client) {
+    console.log("Creating CommerceTools Client for fetching languages...");
     client = await createCtClient();
+    console.log("CommerceTools Client created successfully.");
   }
   const uri = requestBuilder.project.build();
+  console.log("Fetching available languages from CommerceTools");
+  console.log("uri: ", uri);
   const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
     console.log(e);
   });
