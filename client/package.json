@@ -20,15 +20,15 @@
     "react-country-region-selector": "^3.4.0",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
-    "react-intl": "^7.1.11",
+    "react-intl": "~6.4.4",
     "react-jss": "^10.6.0",
     "react-number-format": "^4.5.5",
-    "react-redux": "^8.1.2",
+    "react-redux": "~8.1.2",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
     "react-switch-selector": "^2.3.0",
-    "redux": "^5.0.1",
+    "redux": "~5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -61,6 +61,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.4"
+    "tailwindcss": "^3.4.4",
+    "typescript": "^4.9.5"
   }
 }
