@@ -61,8 +61,6 @@ export const useApi = () => {
   };
 
   const getLanguages = async () => {
-    const test2 = process.env.VERCEL_URL;
-    console.log({ test2});
     const res = await fetch(`${BACKEND_URL}/api/project/languages`);
 
     if (!res.ok) {
