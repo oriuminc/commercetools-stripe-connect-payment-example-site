@@ -61,7 +61,7 @@ export const useApi = () => {
   };
 
   const getLanguages = async () => {
-    const res = await fetch(`${BACKEND_URL}/api/project/languages`);
+    const res = await fetch(`${BACKEND_URL}/api/project/languages/`);
 
     if (!res.ok) {
       throw new Error("Failed to fetch languages.");
