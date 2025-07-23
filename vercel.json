@@ -23,7 +23,7 @@
     },
     {
       "source": "/(settings|products|customer|cart|create-checkout-session|session|create-payment-intent|create-order|capture-payment|cancel-payment|request-refund|payment-intent|charge|events|confirm)(.*)",
-      "destination": "/api/index2.js"
+      "destination": "/api/index.js"
     },
     {
       "source": "/(.*)",
