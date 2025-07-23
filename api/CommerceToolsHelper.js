@@ -12,17 +12,12 @@ dotenv.config();
 async function createCtClient() {
   console.log("Creating CommerceTools Client...");
   console.log("projectKey: ", process.env.REACT_APP_CT_PROJECT_KEY);
-  console.log("authUrl: ", process.env.REACT_APP_CT_AUTH_URL);
-  console.log("sessionUrl: ", process.env.REACT_APP_SESSION_URL);
-  console.log("clientId: ", process.env.REACT_APP_CT_CLIENT_ID);
-  console.log("clientSecret: ", process.env.REACT_APP_CT_SECRET);
   if (!requestBuilder) {
     const options = {
       projectKey: process.env.REACT_APP_CT_PROJECT_KEY,
     };
     requestBuilder = createRequestBuilder(options);
   }
-  console.log("RequestBuilder created successfully.");
   return createClient({
     middlewares: [
       createAuthMiddlewareForClientCredentialsFlow({
@@ -37,7 +32,7 @@ async function createCtClient() {
         fetch,
       }),
       createHttpMiddleware({
-        host: process.env.REACT_APP_SESSION_URL,
+        host: process.env.REACT_APP_CT_API_URL,
         includeResponseHeaders: true,
         includeOriginalRequest: true,
         maskSensitiveHeaderData: true,
@@ -56,15 +51,11 @@ async function createCtClient() {
 }
 
 async function getLanguages() {
+  console.log("Checking if CommerceTools Client is already created...");
   if (!client) {
-    console.log("Creating CommerceTools Client for fetching languages...");
     client = await createCtClient();
-    console.log("CommerceTools Client created successfully.");
   }
-  console.log("Fetching available languages from CommerceTools123...");
   const uri = requestBuilder.project.build();
-  console.log("Fetching available languages from CommerceTools");
-  console.log("uri: ", uri);
   const rsp = await client.execute({ uri, method: "GET" }).catch((e) => {
     console.log(e);
   });
