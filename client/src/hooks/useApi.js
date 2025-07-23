@@ -61,10 +61,8 @@ export const useApi = () => {
   };
 
   const getLanguages = async () => {
-    const test1 = process.env.NODE_ENV;
-    const test2 = process.env.REACT_APP_VERCEL_URL;
-    const test3 = process.env.REACT_APP_VERCEL_PROJECT_PRODUCTION_URL;
-    console.log({ test1, test2, test3 });
+    const test2 = process.env.VERCEL_URL;
+    console.log({ test2});
     const res = await fetch(`${BACKEND_URL}/api/project/languages`);
 
     if (!res.ok) {
