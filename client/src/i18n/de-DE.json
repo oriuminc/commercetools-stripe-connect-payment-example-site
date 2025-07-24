@@ -38,5 +38,10 @@
   "label.quantityShort": "Menge",
   "label.subtotal": "Zwischensumme",
   "label.subscriptionProducts": "Abonnementprodukte",
-  "label.userInformation": "Benutzerinformationen"
+  "label.userInformation": "Benutzerinformationen",
+  "label.userSubscriptions": "Benutzerabonnements",
+  "label.userAvailableSubscriptionsLabel": "Der aktuelle Benutzer hat",
+  "label.userAvailableSubscriptionsCount": "{count, plural, one {# Abonnement} other {# Abonnements}}",
+  "label.userNoSubscriptions": "Der aktuelle Benutzer hat keine Abonnements verfügbar.",
+  "label.userManageSubscriptionsLabel": "Um Abonnements zu verwalten."
 }

@@ -38,5 +38,10 @@
   "label.quantityShort": "Qty",
   "label.subtotal": "Subtotal",
   "label.subscriptionProducts": "Subscription Products",
-  "label.userInformation": "User Information"
+  "label.userInformation": "User Information",
+  "label.userSubscriptions": "User Subscriptions",
+  "label.userAvailableSubscriptionsLabel": "The current user has",
+  "label.userAvailableSubscriptionsCount": "{count, plural, one {# subscription} other {# subscriptions}}",
+  "label.userNoSubscriptions": "The current user has no subscriptions available.",
+  "label.userManageSubscriptionsLabel": "To manage subscriptions."
 }

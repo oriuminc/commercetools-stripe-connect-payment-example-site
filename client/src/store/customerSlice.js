@@ -14,6 +14,7 @@ const customerSlice = createSlice({
     customerId: CUSTOMERS["en-US"].id,
     customerName: CUSTOMERS["en-US"].name,
     customerSubscriptions: [],
+    numberOfSubscriptions: 0,
     availableCustomers: { ...CUSTOMERS },
   },
   reducers: {
@@ -26,10 +27,16 @@ const customerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCustomerSubscription.fulfilled, (state, action) => {
-      // Handle the fulfilled state if needed
-      console.log("Customer subscription fetched:");
-      // console.log(action.payload.subscriptions);
       const subscriptions = [];
+      if (
+        !action.payload ||
+        !action.payload.subscriptions ||
+        action.payload.subscriptions.length === 0
+      ) {
+        state.customerSubscriptions = [];
+        return;
+      }
+
       action.payload.subscriptions.forEach((subscription) => {
         subscriptions.push({
           id: subscription.id,
@@ -50,12 +57,16 @@ const customerSlice = createSlice({
             period: {
               startDate: subscription.latest_invoice.lines.data[0].period.start,
               endDate: subscription.latest_invoice.lines.data[0].period.end,
-            }
-          }
+            },
+          },
         });
       });
-      console.log(subscriptions)
+      console.log(
+        `Customer subscription fetched. Having ${subscriptions.length} subscriptions.`
+      );
+      console.log(subscriptions);
       state.customerSubscriptions = [...subscriptions];
+      state.numberOfSubscriptions = subscriptions.length;
     });
   },
 });

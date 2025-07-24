@@ -163,11 +163,17 @@ export const getCartById = async (cartId) => {
 
 export const getCustomerSubscription = async (customerId) => {
   try {
+    if (customerId === undefined || customerId === null || customerId === "")
+      return [];
     const bearerToken = await fetchAdminToken();
-    const { REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL, REACT_APP_SUBSCRIPTION_API_ID } = process.env;
-    console.log(`Bearer token: ${bearerToken}`);
+    const {
+      REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL,
+      REACT_APP_SUBSCRIPTION_API_ID,
+    } = process.env;
+
     const response = await fetch(
-      `${REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL}/${REACT_APP_SUBSCRIPTION_API_ID}/${customerId}`, {
+      `${REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL}/${REACT_APP_SUBSCRIPTION_API_ID}/${customerId}`,
+      {
         method: "GET",
         headers: {
           Authorization: `Bearer ${bearerToken}`,
@@ -175,14 +181,11 @@ export const getCustomerSubscription = async (customerId) => {
         },
       }
     );
-    // let body = await response.json();
-    // console.log("Customer subscription response:");
-    // console.log(body);
+
     return await response.json();
   } catch {
-    return []
+    return [];
   }
-
 };
 
 const MODE = process.env.NODE_ENV;
