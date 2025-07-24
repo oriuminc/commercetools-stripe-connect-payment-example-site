@@ -12,6 +12,7 @@ import CommercetoolsCheckoutConnector from "./components/CheckoutCtConnector";
 import SubscriptionList from "./components/SubscriptionList";
 import { useApi } from "./hooks/useApi";
 import { fetchLanguages } from "./store/localeSlice";
+import { fetchCustomerSubscription } from "./store/customerSlice";
 import I18nProvider from "./i18n";
 import "./styles/index.css";
 
@@ -99,6 +100,7 @@ export default function App() {
 
   useEffect(() => {
     dispatch(fetchLanguages());
+    dispatch(fetchCustomerSubscription(customerId));
   }, [dispatch]);
 
   useEffect(() => {

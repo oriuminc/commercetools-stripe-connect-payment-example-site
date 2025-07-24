@@ -2,15 +2,18 @@ import { BACKEND_URL, projectKey } from "./constants";
 
 export const loadEnabler = async (enablerUrl) => {
   try {
-    if (!enablerUrl || typeof enablerUrl !== 'string') {
+    if (!enablerUrl || typeof enablerUrl !== "string") {
       console.error("Invalid enabler URL:", enablerUrl);
       return null;
     }
 
     console.log("Attempting to load enabler from:", enablerUrl);
-    const module = enablerUrl === 'composable'
-      ? await import(process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL)
-      : await import(process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL);
+    const module =
+      enablerUrl === "composable"
+        ? await import(process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL)
+        : await import(
+            process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL
+          );
     console.log(JSON.stringify(module, null, 2));
     return module;
   } catch (error) {
@@ -158,7 +161,31 @@ export const getCartById = async (cartId) => {
   return await cart.json();
 };
 
-const MODE =  process.env.NODE_ENV;
+export const getCustomerSubscription = async (customerId) => {
+  try {
+    const bearerToken = await fetchAdminToken();
+    const { REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL, REACT_APP_SUBSCRIPTION_API_ID } = process.env;
+    console.log(`Bearer token: ${bearerToken}`);
+    const response = await fetch(
+      `${REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL}/${REACT_APP_SUBSCRIPTION_API_ID}/${customerId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // let body = await response.json();
+    // console.log("Customer subscription response:");
+    // console.log(body);
+    return await response.json();
+  } catch {
+    return []
+  }
+
+};
+
+const MODE = process.env.NODE_ENV;
 console.log({ MODE });
 export const DEV_REQUEST_HEADERS =
   MODE === "dev"

@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import Helmet from "react-helmet";
 import { Link } from "react-router-dom";
 import SwitchSelector from "react-switch-selector";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import ListGroup from "react-bootstrap/ListGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faUser } from "@fortawesome/free-solid-svg-icons";
 import LanguageSelector from "./LanguageSelector";
+import UsersList from "./UsersList";
 import { useApi } from "../hooks/useApi";
-import {
-  setCurrency,
-  setLocale
-} from "../store/localeSlice";
-import { setCustomerId, setCustomerName } from "../store/customerSlice";
 import logo from "../images/logo.svg";
-import { COMMON_COLOURS, CUSTOMERS } from "../utils";
+import { COMMON_COLOURS  } from "../utils";
 
 export default function Header({
   brandColor,
@@ -31,19 +24,16 @@ export default function Header({
   resetCart = () => {},
   setCustomerToCart = async () => {},
 }) {
-  const intl = useIntl();
+  // Temporarily disabled new customer input
+  // const intl = useIntl();
   const { getConfig } = useApi();
   const [isLoaded, setIsLoaded] = useState(false);
   const [shopName, setShopName] = useState();
   const [shopIcon, setShopIcon] = useState();
   const [showModal, setShowModal] = useState(false);
-  const [userInput, setUserInput] = useState("");
+  // Temporarily disabled new customer input
+  // const [userInput, setUserInput] = useState("");
   const iconColor = ctCheckoutToggled ? "#0d7575" : "#37309c";
-  const dispatch = useDispatch();
-  const currentLocale = useSelector((state) => state.locale.locale);
-  const availableCustomers = useSelector(
-    (state) => state.customer.availableCustomers
-  );
 
   const switchSelectorOptions = [
     {
@@ -112,23 +102,16 @@ export default function Header({
     }
   };
 
-  const handleUserSubmit = async () => {
-    try {
-      await setCustomerToCart(userInput);
-      setShowModal(false);
-    } catch (error) {
-      console.error("Error setting customer to cart:", error);
-      alert("Failed to set Customer ID.");
-    }
-  };
-
-  const onClickUserHandler = (locale) => {
-    dispatch(setLocale(locale));
-    dispatch(setCurrency(locale.split("-")[1]));
-    dispatch(setCustomerId(CUSTOMERS[locale].id));
-    dispatch(setCustomerName(CUSTOMERS[locale].name));
-    setShowModal(false);
-  };
+  // Temporarily disabled new customer input
+  // const handleUserSubmit = async () => {
+  //   try {
+  //     await setCustomerToCart(userInput);
+  //     setShowModal(false);
+  //   } catch (error) {
+  //     console.error("Error setting customer to cart:", error);
+  //     alert("Failed to set Customer ID.");
+  //   }
+  // };
 
   return isLoaded ? (
     <>
@@ -177,7 +160,8 @@ export default function Header({
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <Form.Group className="mb-8">
+                    {/* Temporarily disabled new customer input */}
+                    {/* <Form.Group className="mb-8">
                       <Form.Label>
                         <FormattedMessage
                           id="label.enterValue"
@@ -193,8 +177,12 @@ export default function Header({
                           id: "label.enterValuePlaceholder",
                         })}
                       />
-                    </Form.Group>
-                    <ListGroup as="ul">
+                    </Form.Group> */}
+                    <UsersList
+                      isCheckoutConncertor={ctCheckoutToggled}
+                      onCloseModal={() => setShowModal(false)}
+                    />
+                    {/* <ListGroup as="ul">
                       <p className="text-3 mb-2">
                         <FormattedMessage
                           id="label.loggedInUser"
@@ -221,7 +209,7 @@ export default function Header({
                           </ListGroup.Item>
                         )
                       )}
-                    </ListGroup>
+                    </ListGroup> */}
                   </Modal.Body>
                   <Modal.Footer>
                     <Button
@@ -233,7 +221,8 @@ export default function Header({
                         defaultMessage="Close"
                       />
                     </Button>
-                    <Button
+                    {/* Temporarily disabled new customer input */}
+                    {/* <Button
                       variant="primary"
                       onClick={handleUserSubmit}
                       disabled={!userInput.trim()}
@@ -242,7 +231,7 @@ export default function Header({
                         id="button.submit"
                         defaultMessage="Submit"
                       />
-                    </Button>
+                    </Button> */}
                   </Modal.Footer>
                 </Modal>
               </div>
