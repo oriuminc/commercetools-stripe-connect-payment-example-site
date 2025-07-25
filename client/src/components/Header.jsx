@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import Helmet from "react-helmet";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SwitchSelector from "react-switch-selector";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -31,6 +31,7 @@ export default function Header({
   const [shopName, setShopName] = useState();
   const [shopIcon, setShopIcon] = useState();
   const [showModal, setShowModal] = useState(false);
+  const location = useLocation();
   // Temporarily disabled new customer input
   // const [userInput, setUserInput] = useState("");
   const iconColor = ctCheckoutToggled ? "#0d7575" : "#37309c";
@@ -129,6 +130,7 @@ export default function Header({
             <div className="col-6" style={{ height: 50 }}>
               <SwitchSelector
                 name="checkout-switch"
+                disabled={location.pathname === "/subscriptions"}
                 onChange={(value) => setCtCheckoutToggled(value)}
                 options={switchSelectorOptions}
                 initialSelectedIndex={0}

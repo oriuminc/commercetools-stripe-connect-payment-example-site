@@ -16,6 +16,7 @@ const customerSlice = createSlice({
     customerSubscriptions: [],
     numberOfSubscriptions: 0,
     availableCustomers: { ...CUSTOMERS },
+    isFetchingData: false,
   },
   reducers: {
     setCustomerId: (state, action) => {
@@ -26,14 +27,19 @@ const customerSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchCustomerSubscription.pending, (state) => {
+      state.isFetchingData = true;
+    });
     builder.addCase(fetchCustomerSubscription.fulfilled, (state, action) => {
       const subscriptions = [];
+      state.isFetchingData = false;
       if (
         !action.payload ||
         !action.payload.subscriptions ||
         action.payload.subscriptions.length === 0
       ) {
         state.customerSubscriptions = [];
+        state.numberOfSubscriptions = 0;
         return;
       }
 
@@ -48,6 +54,7 @@ const customerSlice = createSlice({
             startDate: subscription.current_period_start,
             endDate: subscription.current_period_end,
           },
+          recurrence: subscription.latest_invoice.lines.data[0].plan.interval,
           details: {
             description: subscription.latest_invoice.lines.data[0].description,
             quantity: subscription.latest_invoice.lines.data[0].quantity,
@@ -67,6 +74,9 @@ const customerSlice = createSlice({
       console.log(subscriptions);
       state.customerSubscriptions = [...subscriptions];
       state.numberOfSubscriptions = subscriptions.length;
+    });
+    builder.addCase(fetchCustomerSubscription.rejected, (state) => {
+      state.isFetchingData = false;
     });
   },
 });

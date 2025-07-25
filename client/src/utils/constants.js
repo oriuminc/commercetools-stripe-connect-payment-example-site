@@ -7,6 +7,12 @@ export const BACKEND_URL =
     ? process.env.REACT_APP_VERCEL_URL || ""
     : "http://localhost:5000";
 
+export const LOCALE_FORMAT_OPTIONS = {
+  style: "currency",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+};
+
 export const CURRENCIES = {
   AT: "EUR",
   AU: "AUD",

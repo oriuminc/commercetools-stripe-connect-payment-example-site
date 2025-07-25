@@ -103,19 +103,25 @@ const UsersList = ({ isCheckoutConncertor, onCloseModal }) => {
                 </>
               )}
             </p>
-            <span className="mt-2">
-              <FormattedMessage
-                id="label.userManageSubscriptionsLabel"
-                defaultMessage={"To manage subscriptions."}
-              />
-              &nbsp;
-              <Link to="/subscriptions" className="text-[#635bff] underline">
+            {numberOfSubscriptions > 0 && (
+              <span className="mt-2">
                 <FormattedMessage
-                  id="button.clickHere"
-                  defaultMessage={"Click here"}
+                  id="label.userManageSubscriptionsLabel"
+                  defaultMessage={"To manage subscriptions."}
                 />
-              </Link>
-            </span>
+                &nbsp;
+                <Link
+                  to="/subscriptions"
+                  className="text-[#635bff] underline"
+                  onClick={onCloseModal}
+                >
+                  <FormattedMessage
+                    id="button.clickHere"
+                    defaultMessage={"Click here"}
+                  />
+                </Link>
+              </span>
+            )}
           </Card.Text>
         </Card.Body>
       </Card>
