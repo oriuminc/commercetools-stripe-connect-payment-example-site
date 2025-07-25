@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import { FormattedDate, FormattedMessage, FormattedNumber } from "react-intl";
+import {
+  FormattedDate,
+  FormattedMessage,
+  FormattedNumber,
+  useIntl,
+} from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
 import Accordion from "react-bootstrap/Accordion";
 import Badge from "react-bootstrap/Badge";
@@ -18,6 +23,7 @@ const CustomerSubscriptionsList = () => {
     (state) => state.customer.customerSubscriptions
   );
   const dispatch = useDispatch();
+  const intl = useIntl();
 
   const getBadgeColorStatus = (status) => {
     switch (status) {
@@ -36,14 +42,43 @@ const CustomerSubscriptionsList = () => {
     }
   };
 
+  const getRecurrenceLabel = (recurrence) => {
+    switch (recurrence) {
+      case "month":
+        return intl.formatMessage({
+          id: "button.monthlySubscription",
+          defaultMessage: "Monthly",
+        });
+      case "year":
+        return intl.formatMessage({
+          id: "button.yearlySubscription",
+          defaultMessage: "Yearly",
+        });
+      default:
+        return intl.formatMessage({
+          id: "label.noInformation",
+          defaultMessage: "No information available",
+        });
+    }
+  };
+
   const getCollectionMethodLabel = (method) => {
     switch (method) {
       case "charge_automatically":
-        return "Charge Automatically";
+        return intl.formatMessage({
+          id: "label.chargeAutomatically",
+          defaultMessage: "Charge automatically",
+        });
       case "send_invoice":
-        return "Send Invoice";
+        return intl.formatMessage({
+          id: "label.chargeSendInvoice",
+          defaultMessage: "Send invoice",
+        });
       default:
-        return "Unknown Method";
+        return intl.formatMessage({
+          id: "label.chargeUnknown",
+          defaultMessage: "Unknown method",
+        });
     }
   };
 
@@ -94,12 +129,16 @@ const CustomerSubscriptionsList = () => {
                     </span>
                   </p>
                   <p className="font-semibold inline-flex flex-col">
-                    Recurrence:&nbsp;
+                    <FormattedMessage
+                      id="label.recurrence"
+                      defaultMessage={"Recurrence"}
+                    />
+                    :&nbsp;
                     <Badge
                       pill
                       className={`rounded-full px-3 py-1 text-sm font-medium capitalize bg-indigo-400`}
                     >
-                      {element.recurrence}
+                      {getRecurrenceLabel(element.recurrence)}
                     </Badge>
                   </p>
                 </div>
@@ -143,7 +182,7 @@ const CustomerSubscriptionsList = () => {
                   <p className="font-semibold">
                     <FormattedMessage
                       id="label.quantityShort"
-                      defaultMessage={"Qty:"}
+                      defaultMessage={"Qty"}
                     />
                     :&nbsp;
                     <span className="text-current font-normal">
@@ -153,7 +192,7 @@ const CustomerSubscriptionsList = () => {
                   <p className="font-semibold">
                     <FormattedMessage
                       id="label.status"
-                      defaultMessage={"Status:"}
+                      defaultMessage={"Status"}
                     />
                     :&nbsp;
                     <Badge
