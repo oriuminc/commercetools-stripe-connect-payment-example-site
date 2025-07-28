@@ -1,4 +1,4 @@
-import { BACKEND_URL, projectKey } from "./constants";
+import { BACKEND_URL, projectKey, SUBSCRIPTIONS_API_URL } from "./constants";
 
 export const loadEnabler = async (enablerUrl) => {
   try {
@@ -165,26 +165,48 @@ export const getCustomerSubscription = async (customerId) => {
   try {
     if (customerId === undefined || customerId === null || customerId === "")
       return [];
-    const bearerToken = await fetchAdminToken();
-    const {
-      REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL,
-      REACT_APP_SUBSCRIPTION_API_ID,
-    } = process.env;
 
-    const response = await fetch(
-      `${REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL}/${REACT_APP_SUBSCRIPTION_API_ID}/${customerId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${bearerToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const bearerToken = await fetchAdminToken();
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch customer subscription");
+    }
 
     return await response.json();
   } catch {
     return [];
+  }
+};
+
+export const cancelCustomerSubscription = async (
+  customerId,
+  subscriptionId
+) => {
+  try {
+    const bearerToken = await fetchAdminToken();
+    const response = await fetch(
+      `${SUBSCRIPTIONS_API_URL}/${customerId}/${subscriptionId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to cancel subscription");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
   }
 };
 

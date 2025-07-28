@@ -1,10 +1,21 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { CUSTOMERS, getCustomerSubscription } from "../utils";
+import {
+  CUSTOMERS,
+  cancelCustomerSubscription,
+  getCustomerSubscription,
+} from "../utils";
 
 export const fetchCustomerSubscription = createAsyncThunk(
   "customer/fetchCustomerSubscription",
   async (customerId) => {
     return await getCustomerSubscription(customerId);
+  }
+);
+
+export const deleteCustomerSubscription = createAsyncThunk(
+  "customer/deleteCustomerSubscription",
+  async ({ subscriptionId, customerId }) => {
+    return await cancelCustomerSubscription(customerId, subscriptionId);
   }
 );
 
@@ -17,6 +28,7 @@ const customerSlice = createSlice({
     numberOfSubscriptions: 0,
     availableCustomers: { ...CUSTOMERS },
     isFetchingData: false,
+    requestHadError: false,
   },
   reducers: {
     setCustomerId: (state, action) => {
@@ -68,6 +80,7 @@ const customerSlice = createSlice({
           },
         });
       });
+      // ToDo: Remove console logs in production
       console.log(
         `Customer subscription fetched. Having ${subscriptions.length} subscriptions.`
       );
@@ -77,6 +90,26 @@ const customerSlice = createSlice({
     });
     builder.addCase(fetchCustomerSubscription.rejected, (state) => {
       state.isFetchingData = false;
+    });
+    builder.addCase(deleteCustomerSubscription.pending, (state) => {
+      state.isFetchingData = true;
+      state.requestHadError = false;
+    });
+    builder.addCase(deleteCustomerSubscription.fulfilled, (state, action) => {
+      state.isFetchingData = false;
+      const subscriptionId = action.payload.id;
+      state.customerSubscriptions = state.customerSubscriptions.filter(
+        (subscription) => subscription.id !== subscriptionId
+      );
+      state.numberOfSubscriptions = state.customerSubscriptions.length;
+      // ToDo: Remove console logs in production
+      console.log(
+        `Customer subscription with ID ${subscriptionId} deleted successfully.`
+      );
+    });
+    builder.addCase(deleteCustomerSubscription.rejected, (state) => {
+      state.isFetchingData = false;
+      state.requestHadError = true;
     });
   },
 });
