@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FormattedDate,
   FormattedMessage,
@@ -7,9 +7,11 @@ import {
 } from "react-intl";
 import { useDispatch, useSelector } from "react-redux";
 import Accordion from "react-bootstrap/Accordion";
+import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
+import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import CustomToggle from "./AccordionCustomToogle";
 import { Spinner } from "./Spinner";
@@ -17,6 +19,8 @@ import { fetchCustomerSubscription } from "../store/customerSlice";
 import { LOCALE_FORMAT_OPTIONS } from "../utils";
 
 const CustomerSubscriptionsList = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState(null);
   const customerId = useSelector((state) => state.customer.customerId);
   const isLoading = useSelector((state) => state.customer.isFetchingData);
   const subscriptions = useSelector(
@@ -38,7 +42,7 @@ const CustomerSubscriptionsList = () => {
       case "unpaid":
         return "bg-red-500";
       default:
-        return "bg-blue-300";
+        return "bg-amber-600";
     }
   };
 
@@ -82,6 +86,13 @@ const CustomerSubscriptionsList = () => {
     }
   };
 
+  const onClickDeleteSubscriptionHandler = (subscriptionId) => {
+    // Logic to delete the subscription
+    console.log(`Deleting subscription with ID: ${subscriptionId}`);
+    setShowModal(true);
+    setSelectedSubscriptionId(subscriptionId);
+  };
+
   useEffect(
     () => dispatch(fetchCustomerSubscription(customerId)),
     [customerId, dispatch]
@@ -99,10 +110,15 @@ const CustomerSubscriptionsList = () => {
     </div>
   ) : subscriptions.length === 0 ? (
     <div className="flex items-start justify-center h-full">
-      No subscriptions
+      <p className="text-xl font-medium">
+        <FormattedMessage
+          id="label.userNoSubscriptions"
+          defaultMessage={"No subscriptions"}
+        />
+      </p>
     </div>
   ) : (
-    <Row>
+    <Row ms={2} lg={3}>
       {subscriptions.map((element) => (
         <Col key={element.id} className="mb-4">
           <Card className="shadow-md">
@@ -294,12 +310,71 @@ const CustomerSubscriptionsList = () => {
                       </Card.Body>
                     </Accordion.Collapse>
                   </Card>
+                  <Card>
+                    <CustomToggle eventKey="2">
+                      <FormattedMessage
+                        id="label.userManageSubscription"
+                        defaultMessage={"Manage subscription"}
+                      />
+                    </CustomToggle>
+                    <Accordion.Collapse eventKey="2">
+                      <Card.Body>
+                        <div className="flex justify-content-evenly">
+                          <Button
+                            variant="outline-danger"
+                            onClick={() =>
+                              onClickDeleteSubscriptionHandler(element.id)
+                            }
+                          >
+                            <FormattedMessage
+                              id="button.cancel"
+                              defaultMessage={"Cancel"}
+                            />
+                          </Button>
+                          <Button variant="outline-primary">
+                            <FormattedMessage
+                              id="button.update"
+                              defaultMessage={"Update"}
+                            />
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Accordion.Collapse>
+                  </Card>
                 </Accordion>
               </Card.Text>
             </Card.Body>
           </Card>
         </Col>
       ))}
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="text-3xl">
+          <Modal.Title>
+            <FormattedMessage id="label.warning" defaultMessage={"Warning"} />
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            <FormattedMessage
+              id="label.userDeleteSubscriptionWarning"
+              defaultMessage={
+                "Are you sure you want to delete the subscription with ID {id}? This action cannot be undone."
+              }
+              values={{ id: selectedSubscriptionId }}
+            />
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            <FormattedMessage id="button.cancel" defaultMessage={"Cancel"} />
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Row>
   );
 };

@@ -51,6 +51,7 @@ export default function App() {
       productId,
       variantId,
       version: newCart.version,
+      customerId,
     });
     setCart(updatedCart);
   };
@@ -62,6 +63,7 @@ export default function App() {
       variantId,
       quantity,
       version: cart.version,
+      customerId,
     });
     setCart(updatedCart);
   };

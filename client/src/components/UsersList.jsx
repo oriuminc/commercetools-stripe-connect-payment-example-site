@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom/cjs/react-router-dom";
+import { Link, useLocation } from "react-router-dom/cjs/react-router-dom";
 import { FormattedMessage } from "react-intl";
 import Badge from "react-bootstrap/Badge";
 import Card from "react-bootstrap/Card";
@@ -11,6 +11,7 @@ import { COMMON_COLOURS, CUSTOMERS } from "../utils";
 
 const UsersList = ({ isCheckoutConncertor, onCloseModal }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const availableCustomers = useSelector(
     (state) => state.customer.availableCustomers
   );
@@ -103,7 +104,7 @@ const UsersList = ({ isCheckoutConncertor, onCloseModal }) => {
                 </>
               )}
             </p>
-            {numberOfSubscriptions > 0 && (
+            {(numberOfSubscriptions > 0 && location.pathname !== "/subscriptions") && (
               <span className="mt-2">
                 <FormattedMessage
                   id="label.userManageSubscriptionsLabel"
