@@ -161,6 +161,29 @@ export const getCartById = async (cartId) => {
   return await cart.json();
 };
 
+export const getCustomerStripeId = async (customerId) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/api/customers/${customerId}/stripe-id`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch customer Stripe ID");
+    }
+
+    const data = await response.json();
+    return data.stripeId;
+  } catch (error) {
+    return null;
+  }
+};
+
 export const getCustomerSubscription = async (customerId) => {
   try {
     if (customerId === undefined || customerId === null || customerId === "")
@@ -184,19 +207,12 @@ export const getCustomerSubscription = async (customerId) => {
   }
 };
 
-export const cancelCustomerSubscription = async (
-  customerId,
-  subscriptionId
-) => {
+export const cancelCustomerSubscription = async (subscriptionId) => {
   try {
-    const bearerToken = await fetchAdminToken();
     const response = await fetch(
-      `${SUBSCRIPTIONS_API_URL}/${customerId}/${subscriptionId}`,
+      `${BACKEND_URL}/api/subscription/${subscriptionId}`,
       {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${bearerToken}`,
-        },
       }
     );
 

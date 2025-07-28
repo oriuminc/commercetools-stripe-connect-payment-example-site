@@ -17,7 +17,7 @@ const __dirname = dirname(__filename);
 
 const corsOptions = {
   origin: "*",
-  methods: ["GET", "POST", "OPTIONS"], // puedes agregar más métodos si es necesario
+  methods: ["GET", "POST", "OPTIONS", "DELETE"], // puedes agregar más métodos si es necesario
   allowedHeaders: ["Content-Type", "ngrok-skip-browser-warning"], // puedes agregar más encabezados si es necesario
   optionsSuccessStatus: 200, // algunos navegadores (IE11, algunos SmartTVs) requieren esto
 };
@@ -256,6 +256,54 @@ app.get("/charge/:charge_id", async (req, res) => {
   const charge = await stripe.charges.retrieve(charge_id);
 
   res.send(charge);
+});
+
+app.get("/api/customers/:customerId/stripe-id", async (req, res) => {
+  try {
+    const customerId = req.params.customerId;
+    const ctCustomer = await commerceTools.getCustomer(customerId);
+
+    if (!ctCustomer || !ctCustomer.custom.fields) {
+      return res.status(404).json({ error: "Customer not found" });
+    }
+    // ToDo: Remove console logs in production
+    console.log("StripeID:", ctCustomer.custom.fields.stripeConnector_stripeCustomerId);
+    res.status(200).json({
+      stripeId: ctCustomer.custom.fields.stripeConnector_stripeCustomerId,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/api/subscription/:id", async (req, res) => {
+  const subscriptionId = req.params.id;
+
+  try {
+    const deleted = await stripe.subscriptions.del(subscriptionId);
+    res.json({ success: true, deleted });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ToDo: Retrieve subscriptions for a customer using stripeId
+app.get("/api/subscriptions/:stripeCustomerId", async (req, res) => {
+  const { stripeCustomerId } = req.params;
+
+  try {
+    const subscriptions = await stripe.subscriptions.list({
+      customer: stripeCustomerId,
+      limit: 100,
+    });
+    // ToDo: Remove console logs in production
+    console.log("Fetching subscriptions for customer:", stripeCustomerId);
+    console.log(subscriptions);
+
+    res.status(200).json(subscriptions.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.get("/api/health", (req, res) => {

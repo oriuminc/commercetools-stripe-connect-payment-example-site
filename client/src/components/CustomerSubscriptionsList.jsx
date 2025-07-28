@@ -18,6 +18,7 @@ import CustomToggle from "./AccordionCustomToogle";
 import { Spinner } from "./Spinner";
 import {
   deleteCustomerSubscription,
+  fetchCustomerStripeId,
   fetchCustomerSubscription,
 } from "../store/customerSlice";
 import { LOCALE_FORMAT_OPTIONS } from "../utils";
@@ -27,6 +28,9 @@ const CustomerSubscriptionsList = () => {
   const [showToast, setShowToast] = useState(false);
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState(null);
   const customerId = useSelector((state) => state.customer.customerId);
+  const customerStripeId = useSelector(
+    (state) => state.customer.customerStripeId
+  );
   const isLoading = useSelector((state) => state.customer.isFetchingData);
   const requestHadError = useSelector(
     (state) => state.customer.requestHadError
@@ -103,21 +107,16 @@ const CustomerSubscriptionsList = () => {
   };
 
   const onDeleteSubscriptionHandler = () => {
-    dispatch(
-      deleteCustomerSubscription({
-        subscriptionId: selectedSubscriptionId,
-        customerId,
-      })
-    );
+    dispatch(deleteCustomerSubscription(selectedSubscriptionId));
     setShowModal(false);
     setShowToast(true);
     setSelectedSubscriptionId(null);
   };
 
-  useEffect(
-    () => dispatch(fetchCustomerSubscription(customerId)),
-    [customerId, dispatch]
-  );
+  useEffect(() => {
+    dispatch(fetchCustomerStripeId(customerId));
+    dispatch(fetchCustomerSubscription(customerId));
+  }, [customerId, dispatch]);
 
   return (
     <>

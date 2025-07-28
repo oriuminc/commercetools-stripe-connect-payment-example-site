@@ -8,13 +8,19 @@ import {
   setLocale,
   updateAvailableLanguages,
 } from "../store/localeSlice";
-import { fetchCustomerSubscription } from "../store/customerSlice";
+import {
+  fetchCustomerStripeId,
+  fetchCustomerSubscription,
+} from "../store/customerSlice";
 import { setCustomerId, setCustomerName } from "../store/customerSlice";
 import { CUSTOMERS } from "../utils";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
   const customerId = useSelector((state) => state.customer.customerId);
+  const customerStripeId = useSelector(
+    (state) => state.customer.customerStripeId
+  );
   const currentLanguage = useSelector((state) => state.locale.locale);
   const availableLanguages = useSelector(
     (state) => state.locale.availableLanguages
@@ -41,11 +47,11 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
     [dispatch, currentLanguage]
   );
 
-  useEffect(
-    () => dispatch(fetchCustomerSubscription(customerId)),
-    [dispatch, customerId]
-  );
-  
+  useEffect(() => {
+    dispatch(fetchCustomerStripeId(customerId));
+    dispatch(fetchCustomerSubscription(customerId));
+  }, [dispatch, customerId]);
+
   return (
     <>
       <div className="" style={styles.language}>
