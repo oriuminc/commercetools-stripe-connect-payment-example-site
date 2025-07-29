@@ -18,9 +18,6 @@ import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
   const customerId = useSelector((state) => state.customer.customerId);
-  const customerStripeId = useSelector(
-    (state) => state.customer.customerStripeId
-  );
   const currentLanguage = useSelector((state) => state.locale.locale);
   const availableLanguages = useSelector(
     (state) => state.locale.availableLanguages

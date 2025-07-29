@@ -12,10 +12,6 @@ import CommercetoolsCheckoutConnector from "./components/CheckoutCtConnector";
 import SubscriptionList from "./components/SubscriptionList";
 import { useApi } from "./hooks/useApi";
 import { fetchLanguages } from "./store/localeSlice";
-import {
-  fetchCustomerStripeId,
-  fetchCustomerSubscription,
-} from "./store/customerSlice";
 import I18nProvider from "./i18n";
 import "./styles/index.css";
 import CustomerSubscriptionsList from "./components/CustomerSubscriptionsList";
@@ -29,9 +25,6 @@ export default function App() {
     useState(false);
   const dispatch = useDispatch();
   const customerId = useSelector((state) => state.customer.customerId);
-  const customerStripeId = useSelector(
-    (state) => state.customer.customerStripeId
-  );
   const currency = useSelector((state) => state.locale.currency);
   const locale = useSelector((state) => state.locale.locale);
   const { createCart, updateCart, addCustomerToCart } = useApi();
@@ -118,8 +111,6 @@ export default function App() {
 
   useEffect(() => {
     dispatch(fetchLanguages());
-    dispatch(fetchCustomerStripeId(customerId));
-    dispatch(fetchCustomerSubscription(customerId));
   }, [dispatch]);
 
   useEffect(() => {

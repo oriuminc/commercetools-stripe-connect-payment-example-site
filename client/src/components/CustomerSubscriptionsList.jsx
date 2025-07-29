@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   FormattedDate,
   FormattedMessage,
@@ -16,21 +16,13 @@ import Row from "react-bootstrap/Row";
 import Toast from "react-bootstrap/Toast";
 import CustomToggle from "./AccordionCustomToogle";
 import { Spinner } from "./Spinner";
-import {
-  deleteCustomerSubscription,
-  fetchCustomerStripeId,
-  fetchCustomerSubscription,
-} from "../store/customerSlice";
+import { deleteCustomerSubscription } from "../store/customerSlice";
 import { LOCALE_FORMAT_OPTIONS } from "../utils";
 
 const CustomerSubscriptionsList = () => {
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState(null);
-  const customerId = useSelector((state) => state.customer.customerId);
-  const customerStripeId = useSelector(
-    (state) => state.customer.customerStripeId
-  );
   const isLoading = useSelector((state) => state.customer.isFetchingData);
   const requestHadError = useSelector(
     (state) => state.customer.requestHadError
@@ -149,11 +141,6 @@ const CustomerSubscriptionsList = () => {
     setShowToast(true);
     setSelectedSubscriptionId(null);
   };
-
-  useEffect(() => {
-    dispatch(fetchCustomerStripeId(customerId));
-    dispatch(fetchCustomerSubscription(customerId));
-  }, [customerId, dispatch]);
 
   return (
     <>
