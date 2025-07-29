@@ -139,9 +139,6 @@ const CustomerSubscriptionsList = () => {
   };
 
   const onClickDeleteSubscriptionHandler = (subscriptionId) => {
-    // Logic to delete the subscription
-    // ToDo: Remove console logs in production
-    console.log(`Deleting subscription with ID: ${subscriptionId}`);
     setShowModal(true);
     setSelectedSubscriptionId(subscriptionId);
   };

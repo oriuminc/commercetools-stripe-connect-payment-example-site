@@ -266,8 +266,7 @@ app.get("/api/customers/:customerId/stripe-id", async (req, res) => {
     if (!ctCustomer || !ctCustomer.custom.fields) {
       return res.status(404).json({ error: "Customer not found" });
     }
-    // ToDo: Remove console logs in production
-    console.log("StripeID:", ctCustomer.custom.fields.stripeConnector_stripeCustomerId);
+
     res.status(200).json({
       stripeId: ctCustomer.custom.fields.stripeConnector_stripeCustomerId,
     });
@@ -287,7 +286,6 @@ app.delete("/api/subscription/:id", async (req, res) => {
   }
 });
 
-// ToDo: Retrieve subscriptions for a customer using stripeId
 app.get("/api/subscriptions/:stripeCustomerId", async (req, res) => {
   const { stripeCustomerId } = req.params;
 
@@ -296,9 +294,6 @@ app.get("/api/subscriptions/:stripeCustomerId", async (req, res) => {
       customer: stripeCustomerId,
       limit: 100,
     });
-    // ToDo: Remove console logs in production
-    console.log("Fetching subscriptions for customer:", stripeCustomerId);
-    console.log(subscriptions);
 
     res.status(200).json(subscriptions.data);
   } catch (error) {

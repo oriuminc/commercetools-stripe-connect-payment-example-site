@@ -5,7 +5,7 @@ import {
   getCustomerStripeId,
   getCustomerSubscription,
 } from "../utils";
-// ToDo: Fetch stripeId from the API
+
 export const fetchCustomerStripeId = createAsyncThunk(
   "customer/fetchCustomerStripeId",
   async (customerId) => {
@@ -99,11 +99,7 @@ const customerSlice = createSlice({
           },
         });
       });
-      // ToDo: Remove console logs in production
-      console.log(
-        `Customer subscription fetched. Having ${subscriptions.length} subscriptions.`
-      );
-      console.log(subscriptions);
+
       state.customerSubscriptions = [...subscriptions];
       state.numberOfSubscriptions = subscriptions.length;
     });
@@ -117,14 +113,11 @@ const customerSlice = createSlice({
     builder.addCase(deleteCustomerSubscription.fulfilled, (state, action) => {
       state.isFetchingData = false;
       const subscriptionId = action.payload.deleted.id;
+      
       state.customerSubscriptions = state.customerSubscriptions.filter(
         (subscription) => subscription.id !== subscriptionId
       );
       state.numberOfSubscriptions = state.customerSubscriptions.length;
-      // ToDo: Remove console logs in production
-      console.log(
-        `Customer subscription with ID ${subscriptionId} deleted successfully.`
-      );
     });
     builder.addCase(deleteCustomerSubscription.rejected, (state) => {
       state.isFetchingData = false;
