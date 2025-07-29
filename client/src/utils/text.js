@@ -23,4 +23,4 @@ export const formatText = (text) => {
 
 export const formatAttributeValue = (name) => {
   return formatText(parseAttributeValue(name));
-}
+};

@@ -11,7 +11,7 @@ import LanguageSelector from "./LanguageSelector";
 import UsersList from "./UsersList";
 import { useApi } from "../hooks/useApi";
 import logo from "../images/logo.svg";
-import { COMMON_COLOURS  } from "../utils";
+import { COMMON_COLOURS } from "../utils";
 
 export default function Header({
   brandColor,

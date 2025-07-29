@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{html,js,jsx}"],
-  safelist: [
-    "bg-custom-teal",
-    "bg-custom-indigo"
-  ],
+  safelist: ["bg-custom-teal", "bg-custom-indigo"],
   theme: {
     fontFamily: {
       sans: ["Graphik", "sans-serif"],
@@ -27,7 +24,7 @@ module.exports = {
       },
       borderRadius: {
         "4xl": "2rem",
-      }
+      },
     },
   },
 };
