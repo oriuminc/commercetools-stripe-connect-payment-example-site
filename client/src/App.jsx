@@ -107,7 +107,7 @@ export default function App() {
   useEffect(() => {
     console.log("Cart updated:", cart);
     console.log("Customer ID:", customerId);
-  }, [cart]);
+  }, [cart, customerId]);
 
   useEffect(() => {
     dispatch(fetchLanguages());

@@ -113,7 +113,7 @@ const customerSlice = createSlice({
     builder.addCase(deleteCustomerSubscription.fulfilled, (state, action) => {
       state.isFetchingData = false;
       const subscriptionId = action.payload.deleted.id;
-      
+
       state.customerSubscriptions = state.customerSubscriptions.filter(
         (subscription) => subscription.id !== subscriptionId
       );
