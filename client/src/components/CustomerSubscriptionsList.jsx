@@ -58,6 +58,46 @@ const CustomerSubscriptionsList = () => {
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "active":
+        return intl.formatMessage({
+          id: "label.subscriptionStatusActive",
+          defaultMessage: "Active",
+        });
+      case "canceled":
+        return intl.formatMessage({
+          id: "label.subscriptionStatusCanceled",
+          defaultMessage: "Canceled",
+        });
+      case "incomplete":
+        return intl.formatMessage({
+          id: "label.subscriptionStatusIncomplete",
+          defaultMessage: "Incomplete",
+        });
+      case "past_due":
+        return intl.formatMessage({
+          id: "label.subscriptionStatusPastDue",
+          defaultMessage: "Past Due",
+        });
+      case "trialing":
+        return intl.formatMessage({
+          id: "label.subscriptionStatusTrialing",
+          defaultMessage: "Trialing",
+        });
+      case "unpaid":
+        return intl.formatMessage({
+          id: "label.subscriptionStatusUnpaid",
+          defaultMessage: "Unpaid",
+        });
+      default:
+        return intl.formatMessage({
+          id: "label.subscriptionStatusUnknown",
+          defaultMessage: "Unknown",
+        });
+    }
+  };
+
   const getRecurrenceLabel = (recurrence) => {
     switch (recurrence) {
       case "month":
@@ -140,7 +180,7 @@ const CustomerSubscriptionsList = () => {
           </p>
         </div>
       ) : (
-        <Row ms={2} lg={3}>
+        <Row ms={2} lg={3} className="justify-content-center">
           {subscriptions.map((element) => (
             <Col key={element.id} className="mb-4">
               <Card className="shadow-md">
@@ -241,7 +281,7 @@ const CustomerSubscriptionsList = () => {
                             element.status
                           )}`}
                         >
-                          {element.status}
+                          {getStatusLabel(element.status)}
                         </Badge>
                       </p>
                     </div>
