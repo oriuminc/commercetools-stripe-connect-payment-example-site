@@ -14,13 +14,15 @@ import { useApi } from "./hooks/useApi";
 import { fetchLanguages } from "./store/localeSlice";
 import I18nProvider from "./i18n";
 import "./styles/index.css";
+import CustomerSubscriptionsList from "./components/CustomerSubscriptionsList";
 
 export default function App() {
   const [cart, setCart] = useState();
   const [brandColor, setBrandColor] = useState("#425466");
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [ctCheckoutToggled, setCtCheckoutToggled] = useState(true);
-  const [shouldDisplaySubscriptionList, setShouldDisplaySubscriptionList] = useState(false);
+  const [shouldDisplaySubscriptionList, setShouldDisplaySubscriptionList] =
+    useState(false);
   const dispatch = useDispatch();
   const customerId = useSelector((state) => state.customer.customerId);
   const currency = useSelector((state) => state.locale.currency);
@@ -37,13 +39,18 @@ export default function App() {
   };
 
   const handleCreateCart = async ({ productId, quantity, variantId }) => {
-    const newCart = await createCart(customerId, currency, locale.split("-")[1]);
+    const newCart = await createCart(
+      customerId,
+      currency,
+      locale.split("-")[1]
+    );
     const updatedCart = await updateCart({
       cartId: newCart.id,
       quantity,
       productId,
       variantId,
       version: newCart.version,
+      customerId,
     });
     setCart(updatedCart);
   };
@@ -55,6 +62,7 @@ export default function App() {
       variantId,
       quantity,
       version: cart.version,
+      customerId,
     });
     setCart(updatedCart);
   };
@@ -82,12 +90,16 @@ export default function App() {
     if (value) {
       // setCustomerId(null);
       setCart(undefined);
-    } 
+    }
   };
-  
+
   const loginUserToCart = async () => {
     console.log(`Toggle new. CURRENCY: ${currency} LOCALE: ${locale}`);
-    const newCart = await createCart(customerId, currency, locale.split("-")[1]);
+    const newCart = await createCart(
+      customerId,
+      currency,
+      locale.split("-")[1]
+    );
     setCart(newCart);
     // setCustomerId("f1307a84-2890-437b-9213-2231a8e43413");
   };
@@ -95,16 +107,16 @@ export default function App() {
   useEffect(() => {
     console.log("Cart updated:", cart);
     console.log("Customer ID:", customerId);
-  }, [cart]);
+  }, [cart, customerId]);
 
   useEffect(() => {
     dispatch(fetchLanguages());
   }, [dispatch]);
 
   useEffect(() => {
-    if(!ctCheckoutToggled) {
+    if (!ctCheckoutToggled) {
       setShouldDisplaySubscriptionList(true);
-    } else {  
+    } else {
       setShouldDisplaySubscriptionList(false);
     }
   }, [ctCheckoutToggled]);
@@ -169,6 +181,21 @@ export default function App() {
           <Route path="/.well-known/apple-developer-merchantid-domain-association">
             <WellKnowApplePay />
           </Route>
+          <Route path="/subscriptions">
+            <Header
+              cart={cart}
+              resetCart={resetCart}
+              brandColor={brandColor}
+              setBrandColor={setBrandColor}
+              currency={currency}
+              showCart={true}
+              totalQuantity={totalQuantity}
+              ctCheckoutToggled={ctCheckoutToggled}
+              setCtCheckoutToggled={handleCtCheckoutToggled}
+              setCustomerToCart={handleAddCustomerToCart}
+            />
+            <CustomerSubscriptionsList />
+          </Route>
           <Route path="/">
             <Header
               cart={cart}
@@ -189,10 +216,7 @@ export default function App() {
                 currency={currency}
               />
             )}
-            <ProductList
-              addToCart={addToCart}
-              brandColor={brandColor}
-            />
+            <ProductList addToCart={addToCart} brandColor={brandColor} />
           </Route>
         </Switch>
       </BrowserRouter>

@@ -1,13 +1,7 @@
 import { useIntl } from "react-intl";
-
+import { LOCALE_FORMAT_OPTIONS } from "../utils/constants";
 export const useFormattedPrice = () => {
   const { formatNumber } = useIntl();
-
-  const LOCALE_FORMAT_OPTIONS = {
-    style: "currency",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  };
 
   const NEITHER_COUNTRY_NOR_CURRENCY_OPTIONS = {
     currency: "USD",

@@ -117,11 +117,11 @@ cp client/.env-sample client/.env
 | --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | REACT_APP_PK                | Stripe Publishable Key                                   | pktest\*\*\*\*                                                                                                                  |
 | REACT_APP_BASE_URL          | Base URL of the server example site                      | http://localhost:8081                                                                                                           |
-| REACT_APP_CT_PROJECT_KEY       | commercetools Project Key                                | **\***                                                                                                                          |
-| REACT_APP_CT_CLIENT_ID     | commercetools Client ID                                  | **\***                                                                                                                          |
-| REACT_APP_CT_SECRET     | commercetools Secret Key                                 | **\***                                                                                                                          |
+| REACT_APP_CT_PROJECT_KEY    | commercetools Project Key                                | **\***                                                                                                                          |
+| REACT_APP_CT_CLIENT_ID      | commercetools Client ID                                  | **\***                                                                                                                          |
+| REACT_APP_CT_SECRET         | commercetools Secret Key                                 | **\***                                                                                                                          |
 | REACT_APP_SESSION_URL       | commercetools API session url                            | [https://session.us-central1.gcp.commercetools.com](https://session.us-central1.gcp.commercetools.com/)                         |
-| REACT_APP_CT_AUTH_URL          | commercetools Auth URL                                   | https://auth.europe-west1.gcp.commercetools.com                                                                                 |
+| REACT_APP_CT_AUTH_URL       | commercetools Auth URL                                   | https://auth.europe-west1.gcp.commercetools.com                                                                                 |
 | REACT_APP_ENABLER_BUILD_URL | URL of the Connector enabler deployed in commercetools   | https://assets-307a12410-95f0-4c70-8d69-75ca21sd28ad4c.assets.us-central1.gcp.preview.commercetools.app/connector-enabler.es.js |
 | REACT_APP_PROCESOR_URL      | URL of the Connector Processor deployed in commercetools | https://service-1d71326-3fd2-4bd5-b7c4-a12134.us-central1.gcp.preview.commercetools.app                                         |
 
