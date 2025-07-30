@@ -7,7 +7,7 @@ export const BACKEND_URL =
     ? process.env.REACT_APP_VERCEL_URL || ""
     : "http://localhost:5000";
 
-export const SUBSCRIPTIONS_API_URL = `${process.env.REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL}/${process.env.REACT_APP_SUBSCRIPTION_API_ID}`;
+export const SUBSCRIPTIONS_API_URL = `${process.env.REACT_APP_COMPOSABLE_CONNECTOR_PROCESSOR_URL}/subscription-api`;
 
 export const LOCALE_FORMAT_OPTIONS = {
   style: "currency",

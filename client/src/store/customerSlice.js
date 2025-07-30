@@ -22,8 +22,8 @@ export const fetchCustomerSubscription = createAsyncThunk(
 
 export const deleteCustomerSubscription = createAsyncThunk(
   "customer/deleteCustomerSubscription",
-  async (subscriptionId) => {
-    return await cancelCustomerSubscription(subscriptionId);
+  async ({ customerId, subscriptionId }) => {
+    return await cancelCustomerSubscription(customerId, subscriptionId);
   }
 );
 
@@ -112,7 +112,7 @@ const customerSlice = createSlice({
     });
     builder.addCase(deleteCustomerSubscription.fulfilled, (state, action) => {
       state.isFetchingData = false;
-      const subscriptionId = action.payload.deleted.id;
+      const subscriptionId = action.payload.id;
 
       state.customerSubscriptions = state.customerSubscriptions.filter(
         (subscription) => subscription.id !== subscriptionId

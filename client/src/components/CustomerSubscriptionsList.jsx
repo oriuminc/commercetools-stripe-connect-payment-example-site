@@ -27,6 +27,7 @@ const CustomerSubscriptionsList = () => {
   const requestHadError = useSelector(
     (state) => state.customer.requestHadError
   );
+  const customerId = useSelector((state) => state.customer.customerId);
   const subscriptions = useSelector(
     (state) => state.customer.customerSubscriptions
   );
@@ -136,7 +137,12 @@ const CustomerSubscriptionsList = () => {
   };
 
   const onDeleteSubscriptionHandler = () => {
-    dispatch(deleteCustomerSubscription(selectedSubscriptionId));
+    dispatch(
+      deleteCustomerSubscription({
+        customerId,
+        subscriptionId: selectedSubscriptionId,
+      })
+    );
     setShowModal(false);
     setShowToast(true);
     setSelectedSubscriptionId(null);

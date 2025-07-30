@@ -258,6 +258,7 @@ app.get("/charge/:charge_id", async (req, res) => {
   res.send(charge);
 });
 
+// Get customer Stripe ID from CommerceTools - TEST only
 app.get("/api/customers/:customerId/stripe-id", async (req, res) => {
   try {
     const customerId = req.params.customerId;
@@ -275,6 +276,7 @@ app.get("/api/customers/:customerId/stripe-id", async (req, res) => {
   }
 });
 
+// Cancel customer subscription directly using Stripe - TEST only
 app.delete("/api/subscription/:id", async (req, res) => {
   const subscriptionId = req.params.id;
 
@@ -286,6 +288,7 @@ app.delete("/api/subscription/:id", async (req, res) => {
   }
 });
 
+// Fetch customer subscriptions using Stripe - TEST only
 app.get("/api/subscriptions/:stripeCustomerId", async (req, res) => {
   const { stripeCustomerId } = req.params;
 

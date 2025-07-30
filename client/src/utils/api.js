@@ -207,12 +207,19 @@ export const getCustomerSubscription = async (customerId) => {
   }
 };
 
-export const cancelCustomerSubscription = async (subscriptionId) => {
+export const cancelCustomerSubscription = async (
+  customerId,
+  subscriptionId
+) => {
   try {
+    const bearerToken = await fetchAdminToken();
     const response = await fetch(
-      `${BACKEND_URL}/api/subscription/${subscriptionId}`,
+      `${SUBSCRIPTIONS_API_URL}/${customerId}/${subscriptionId}`,
       {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
       }
     );
 
