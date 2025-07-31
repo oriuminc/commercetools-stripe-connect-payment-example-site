@@ -30,6 +30,8 @@ const CustomerSubscriptionsList = () => {
   const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [updatedOptions, setUpdatedOptions] = useState(null);
   const [manageAction, setManageAction] = useState(null);
+  const [areAllInformationCorrect, setAreAllInformationCorrect] =
+    useState(false);
   const isLoading = useSelector((state) => state.customer.isFetchingData);
   const requestHadError = useSelector(
     (state) => state.customer.requestHadError
@@ -206,6 +208,7 @@ const CustomerSubscriptionsList = () => {
   const onCloseUpdateModalHandler = () => {
     setShowUpdateModal(false);
     setUpdatedOptions(null);
+    setAreAllInformationCorrect(false);
   };
 
   const onCloseToastHandler = () => {
@@ -532,18 +535,29 @@ const CustomerSubscriptionsList = () => {
           >
             <Modal.Header closeButton className="text-3xl">
               <Modal.Title>
-                <p>Information</p>
+                <FormattedMessage
+                  id="label.information"
+                  defaultMessage={"Information"}
+                />
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <p>
-                Below, you can update subscription{" "}
+                <FormattedMessage
+                  id="label.userUpdateSubscriptionLabel"
+                  defaultMessage={"Below, you can update the subscription"}
+                />{" "}
                 <span className="font-medium">
                   {selectedSubscription !== null ? selectedSubscription.id : ""}
                 </span>
               </p>
-              <Form.Group className="mt-3">
-                <Form.Label>Select the new quantity</Form.Label>
+              <Form.Group className="my-3">
+                <Form.Label>
+                  <FormattedMessage
+                    id="label.selectNewQuantity"
+                    defaultMessage={"Select the new quantity"}
+                  />
+                </Form.Label>
                 <Form.Control
                   as="select"
                   className="cursor-pointer"
@@ -556,7 +570,10 @@ const CustomerSubscriptionsList = () => {
                   }}
                 >
                   <option disabled value={""}>
-                    Select one option
+                    {intl.formatMessage({
+                      id: "select.selectOption",
+                      defaultMessage: "Select an option",
+                    })}
                   </option>
                   {Array.from(
                     { length: 5 },
@@ -570,6 +587,20 @@ const CustomerSubscriptionsList = () => {
                   )}
                 </Form.Control>
               </Form.Group>
+              <Form>
+                <Form.Check
+                  id="confirmUpdate"
+                  type="checkbox"
+                  label={intl.formatMessage({
+                    id: "checkbox.allInformationCorrect",
+                    defaultMessage:
+                      "I confirm that all information is correct.",
+                  })}
+                  onChange={(e) =>
+                    setAreAllInformationCorrect(e.target.checked)
+                  }
+                />
+              </Form>
             </Modal.Body>
             <Modal.Footer>
               <Button
@@ -580,7 +611,7 @@ const CustomerSubscriptionsList = () => {
               </Button>
               <Button
                 variant="primary"
-                disabled={!updatedOptions}
+                disabled={updatedOptions === null || !areAllInformationCorrect}
                 onClick={onUpdateSubscriptionHandler}
               >
                 <FormattedMessage

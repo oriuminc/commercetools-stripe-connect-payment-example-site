@@ -255,6 +255,7 @@ export const updateCustomerSubscription = async (
               quantity: updateData.quantity,
             },
           ],
+          proration_behavior: "none", // Can be "create_prorations", "always_invoice" or "none"
         },
       }),
     });

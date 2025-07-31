@@ -15,6 +15,7 @@
   "button.update": "Aktualisieren",
   "button.viewCart": "Warenkorb ansehen",
   "button.yearlySubscription": "Jährlich",
+  "checkbox.allInformationCorrect": "Ich bestätige, dass alle Informationen korrekt sind.",
   "label.amountDue": "Fälliger Betrag",
   "label.amountRemaining": "Verbleibender Betrag",
   "label.chargeAutomatically": "Automatisch abbuchen",
@@ -32,6 +33,7 @@
   "label.enterValue": "Geben Sie einen Wert ein, z. B.",
   "label.enterValuePlaceholder": "Geben Sie hier Ihren Wert ein",
   "label.error": "Fehler",
+  "label.information": "Information",
   "label.loadingFallback": "Laden, bitte warten…",
   "label.loadingProducts": "Produkte werden geladen…",
   "label.loadingSubscriptionProducts": "Abonnementprodukte werden geladen…",
@@ -55,6 +57,7 @@
   "label.recurrence": "Wiederholung",
   "label.seeBillingDetails": "Rechnungsdetails anzeigen",
   "label.seeCurrentPeriodDetails": "Details zum aktuellen Zeitraum anzeigen",
+  "label.selectNewQuantity": "Wählen Sie die neue Menge aus",
   "label.startDate": "Startdatum",
   "label.status": "Status",
   "label.subtotal": "Zwischensumme",
@@ -79,5 +82,9 @@
   "label.userManageSubscriptionsLabel": "Um Abonnements zu verwalten.",
   "label.userNoSubscriptions": "Der aktuelle Benutzer hat keine Abonnements verfügbar.",
   "label.userSubscriptions": "Benutzerabonnements",
-  "label.warning": "Warnung"
+  "label.userUpdateSubscriptionLabel": "Hier können Sie das Abonnement aktualisieren",
+  "label.userUpdateSubscriptionError": "Beim Aktualisieren des Abonnements ist ein Fehler aufgetreten.",
+  "label.userUpdateSubscriptionSuccess": "Abonnement erfolgreich aktualisiert.",
+  "label.warning": "Warnung",
+  "select.selectOption": "Option auswählen"
 }
