@@ -82,8 +82,8 @@
   "label.userManageSubscriptionsLabel": "To manage subscriptions.",
   "label.userNoSubscriptions": "The current user has no subscriptions available.",
   "label.userSubscriptions": "User Subscriptions",
-  "label.userUpdateSubscriptionLabel": "Below, you can update the subscription",
   "label.userUpdateSubscriptionError": "There was an error updating the subscription.",
+  "label.userUpdateSubscriptionLabel": "Below, you can update the subscription",
   "label.userUpdateSubscriptionSuccess": "Subscription updated successfully.",
   "label.warning": "Warning",
   "select.selectOption": "Select an option"

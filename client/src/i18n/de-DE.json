@@ -82,8 +82,8 @@
   "label.userManageSubscriptionsLabel": "Um Abonnements zu verwalten.",
   "label.userNoSubscriptions": "Der aktuelle Benutzer hat keine Abonnements verfügbar.",
   "label.userSubscriptions": "Benutzerabonnements",
-  "label.userUpdateSubscriptionLabel": "Hier können Sie das Abonnement aktualisieren",
   "label.userUpdateSubscriptionError": "Beim Aktualisieren des Abonnements ist ein Fehler aufgetreten.",
+  "label.userUpdateSubscriptionLabel": "Hier können Sie das Abonnement aktualisieren",
   "label.userUpdateSubscriptionSuccess": "Abonnement erfolgreich aktualisiert.",
   "label.warning": "Warnung",
   "select.selectOption": "Option auswählen"
