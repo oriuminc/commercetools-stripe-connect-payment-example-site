@@ -233,6 +233,42 @@ export const cancelCustomerSubscription = async (
   }
 };
 
+export const updateCustomerSubscription = async (
+  customerId,
+  subscriptionId,
+  updateData
+) => {
+  try {
+    const bearerToken = await fetchAdminToken();
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      body: JSON.stringify({
+        id: subscriptionId,
+        params: {
+          items: [
+            {
+              id: updateData.subscriptionItemId,
+              quantity: updateData.quantity,
+            },
+          ],
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update subscription");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 const MODE = process.env.NODE_ENV;
 console.log({ MODE });
 export const DEV_REQUEST_HEADERS =
