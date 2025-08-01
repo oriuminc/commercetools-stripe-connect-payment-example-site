@@ -11,18 +11,27 @@ import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import Toast from "react-bootstrap/Toast";
 import CustomToggle from "./AccordionCustomToogle";
 import { Spinner } from "./Spinner";
-import { deleteCustomerSubscription } from "../store/customerSlice";
+import {
+  deleteCustomerSubscription,
+  updateCustomerSubscription,
+} from "../store/customerSlice";
 import { LOCALE_FORMAT_OPTIONS } from "../utils";
 
 const CustomerSubscriptionsList = () => {
-  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState(null);
+  const [selectedSubscription, setSelectedSubscription] = useState(null);
+  const [updatedOptions, setUpdatedOptions] = useState(null);
+  const [manageAction, setManageAction] = useState(null);
+  const [areAllInformationCorrect, setAreAllInformationCorrect] =
+    useState(false);
   const isLoading = useSelector((state) => state.customer.isFetchingData);
   const requestHadError = useSelector(
     (state) => state.customer.requestHadError
@@ -131,21 +140,82 @@ const CustomerSubscriptionsList = () => {
     }
   };
 
-  const onClickDeleteSubscriptionHandler = (subscriptionId) => {
-    setShowModal(true);
-    setSelectedSubscriptionId(subscriptionId);
+  const toastBody = {
+    delete: () =>
+      requestHadError ? (
+        <FormattedMessage
+          id="label.userDeleteSubscriptionError"
+          defaultMessage={"There was an error deleting the subscription."}
+        />
+      ) : (
+        <FormattedMessage
+          id="label.userDeleteSubscriptionSuccess"
+          defaultMessage={"Subscription deleted successfully."}
+        />
+      ),
+    update: () =>
+      requestHadError ? (
+        <FormattedMessage
+          id="label.userUpdateSubscriptionError"
+          defaultMessage={"There was an error updating the subscription."}
+        />
+      ) : (
+        <FormattedMessage
+          id="label.userUpdateSubscriptionSuccess"
+          defaultMessage={"Subscription updated successfully."}
+        />
+      ),
+  };
+
+  const onClickDeleteSubscriptionHandler = (subscription) => {
+    setShowDeleteModal(true);
+    setSelectedSubscription(subscription);
+    setManageAction("delete");
   };
 
   const onDeleteSubscriptionHandler = () => {
     dispatch(
       deleteCustomerSubscription({
         customerId,
-        subscriptionId: selectedSubscriptionId,
+        subscriptionId: selectedSubscription.id,
       })
     );
-    setShowModal(false);
+    setShowDeleteModal(false);
     setShowToast(true);
-    setSelectedSubscriptionId(null);
+  };
+
+  const onClickUpdateSubscriptionHandler = (subscription) => {
+    setShowUpdateModal(true);
+    setSelectedSubscription(subscription);
+    setManageAction("update");
+  };
+
+  const onUpdateSubscriptionHandler = () => {
+    dispatch(
+      updateCustomerSubscription({
+        customerId,
+        subscriptionId: selectedSubscription.id,
+        updateData: {
+          ...updatedOptions,
+          subscriptionItemId: selectedSubscription.details.subscriptionItemId,
+        },
+      })
+    );
+    setShowUpdateModal(false);
+    setShowToast(true);
+  };
+
+  const onCloseUpdateModalHandler = () => {
+    setShowUpdateModal(false);
+    setUpdatedOptions(null);
+    setAreAllInformationCorrect(false);
+  };
+
+  const onCloseToastHandler = () => {
+    setShowToast(false);
+    setManageAction(null);
+    setSelectedSubscription(null);
+    setUpdatedOptions(null);
   };
 
   return (
@@ -383,7 +453,7 @@ const CustomerSubscriptionsList = () => {
                               <Button
                                 variant="outline-danger"
                                 onClick={() =>
-                                  onClickDeleteSubscriptionHandler(element.id)
+                                  onClickDeleteSubscriptionHandler(element)
                                 }
                               >
                                 <FormattedMessage
@@ -391,7 +461,12 @@ const CustomerSubscriptionsList = () => {
                                   defaultMessage={"Cancel"}
                                 />
                               </Button>
-                              <Button variant="outline-primary">
+                              <Button
+                                variant="outline-primary"
+                                onClick={() =>
+                                  onClickUpdateSubscriptionHandler(element)
+                                }
+                              >
                                 <FormattedMessage
                                   id="button.update"
                                   defaultMessage={"Update"}
@@ -408,8 +483,8 @@ const CustomerSubscriptionsList = () => {
             </Col>
           ))}
           <Modal
-            show={showModal}
-            onHide={() => setShowModal(false)}
+            show={showDeleteModal}
+            onHide={() => setShowDeleteModal(false)}
             aria-labelledby="contained-modal-title-vcenter"
             centered
           >
@@ -428,15 +503,117 @@ const CustomerSubscriptionsList = () => {
                   defaultMessage={
                     "Are you sure you want to delete the subscription with ID {id}? This action cannot be undone."
                   }
-                  values={{ id: selectedSubscriptionId }}
+                  values={{
+                    id:
+                      selectedSubscription !== null
+                        ? selectedSubscription.id
+                        : "",
+                  }}
                 />
               </p>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowModal(false)}>
+              <Button
+                variant="secondary"
+                onClick={() => setShowDeleteModal(false)}
+              >
                 <FormattedMessage id="button.abort" defaultMessage={"Abort"} />
               </Button>
               <Button variant="danger" onClick={onDeleteSubscriptionHandler}>
+                <FormattedMessage
+                  id="button.confirm"
+                  defaultMessage={"Confirm"}
+                />
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal
+            show={showUpdateModal}
+            onHide={onCloseUpdateModalHandler}
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton className="text-3xl">
+              <Modal.Title>
+                <FormattedMessage
+                  id="label.information"
+                  defaultMessage={"Information"}
+                />
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>
+                <FormattedMessage
+                  id="label.userUpdateSubscriptionLabel"
+                  defaultMessage={"Below, you can update the subscription"}
+                />{" "}
+                <span className="font-medium">
+                  {selectedSubscription !== null ? selectedSubscription.id : ""}
+                </span>
+              </p>
+              <Form.Group className="my-3">
+                <Form.Label>
+                  <FormattedMessage
+                    id="label.selectNewQuantity"
+                    defaultMessage={"Select the new quantity"}
+                  />
+                </Form.Label>
+                <Form.Control
+                  as="select"
+                  className="cursor-pointer"
+                  defaultValue={""}
+                  onChange={(e) => {
+                    setUpdatedOptions({
+                      ...updatedOptions,
+                      quantity: e.target.value,
+                    });
+                  }}
+                >
+                  <option disabled value={""}>
+                    {intl.formatMessage({
+                      id: "select.selectOption",
+                      defaultMessage: "Select an option",
+                    })}
+                  </option>
+                  {Array.from(
+                    { length: 5 },
+                    (_, i) =>
+                      selectedSubscription !== null &&
+                      selectedSubscription.details.quantity !== i + 1 && (
+                        <option key={`option_${i + 1}`} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      )
+                  )}
+                </Form.Control>
+              </Form.Group>
+              <Form>
+                <Form.Check
+                  id="confirmUpdate"
+                  type="checkbox"
+                  label={intl.formatMessage({
+                    id: "checkbox.allInformationCorrect",
+                    defaultMessage:
+                      "I confirm that all information is correct.",
+                  })}
+                  onChange={(e) =>
+                    setAreAllInformationCorrect(e.target.checked)
+                  }
+                />
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowUpdateModal(false)}
+              >
+                <FormattedMessage id="button.abort" defaultMessage={"Abort"} />
+              </Button>
+              <Button
+                variant="primary"
+                disabled={updatedOptions === null || !areAllInformationCorrect}
+                onClick={onUpdateSubscriptionHandler}
+              >
                 <FormattedMessage
                   id="button.confirm"
                   defaultMessage={"Confirm"}
@@ -452,7 +629,7 @@ const CustomerSubscriptionsList = () => {
         className="position-fixed top-[4rem] right-[2.4rem]"
       >
         <Toast
-          onClose={() => setShowToast(false)}
+          onClose={onCloseToastHandler}
           show={showToast}
           autohide
           delay={4500}
@@ -471,17 +648,7 @@ const CustomerSubscriptionsList = () => {
             </strong>
           </Toast.Header>
           <Toast.Body className="text-white font-medium">
-            {requestHadError ? (
-              <FormattedMessage
-                id="label.userDeleteSubscriptionError"
-                defaultMessage={"There was an error deleting the subscription."}
-              />
-            ) : (
-              <FormattedMessage
-                id="label.userDeleteSubscriptionSuccess"
-                defaultMessage={"Subscription deleted successfully."}
-              />
-            )}
+            {toastBody[manageAction]?.()}
           </Toast.Body>
         </Toast>
       </div>

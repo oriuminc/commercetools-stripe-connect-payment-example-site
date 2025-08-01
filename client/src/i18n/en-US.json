@@ -15,6 +15,7 @@
   "button.update": "Update",
   "button.viewCart": "View Cart",
   "button.yearlySubscription": "Yearly",
+  "checkbox.allInformationCorrect": "I confirm that all information is correct.",
   "label.amountDue": "Amount Due",
   "label.amountRemaining": "Amount Remaining",
   "label.chargeAutomatically": "Charge automatically",
@@ -32,6 +33,7 @@
   "label.enterValue": "Enter a value, e.g.",
   "label.enterValuePlaceholder": "Enter your value here",
   "label.error": "Error",
+  "label.information": "Information",
   "label.loadingFallback": "Loading, please wait…",
   "label.loadingProducts": "Loading products…",
   "label.loadingSubscriptionProducts": "Loading subscription products…",
@@ -55,6 +57,7 @@
   "label.recurrence": "Recurrence",
   "label.seeBillingDetails": "See billing details",
   "label.seeCurrentPeriodDetails": "See current period details",
+  "label.selectNewQuantity": "Select the new quantity",
   "label.startDate": "Start Date",
   "label.status": "Status",
   "label.subtotal": "Subtotal",
@@ -79,5 +82,9 @@
   "label.userManageSubscriptionsLabel": "To manage subscriptions.",
   "label.userNoSubscriptions": "The current user has no subscriptions available.",
   "label.userSubscriptions": "User Subscriptions",
-  "label.warning": "Warning"
+  "label.userUpdateSubscriptionError": "There was an error updating the subscription.",
+  "label.userUpdateSubscriptionLabel": "Below, you can update the subscription",
+  "label.userUpdateSubscriptionSuccess": "Subscription updated successfully.",
+  "label.warning": "Warning",
+  "select.selectOption": "Select an option"
 }
