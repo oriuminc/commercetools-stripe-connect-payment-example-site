@@ -60,7 +60,7 @@ export const fetchAdminToken = async () => {
     });
   }
   console.log("Token fetched:", token);
-  return token.access_token;
+  return token;
 };
 
 export const getCTSessionId = async (cartId) => {
@@ -76,7 +76,7 @@ export const getCTSessionId = async (cartId) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken.access_token}`,
     },
     body: JSON.stringify({
       cart: {
@@ -184,16 +184,15 @@ export const getCustomerStripeId = async (customerId) => {
   }
 };
 
-export const getCustomerSubscription = async (customerId) => {
+export const getCustomerSubscription = async (customerId, token) => {
   try {
     if (customerId === undefined || customerId === null || customerId === "")
       return [];
 
-    const bearerToken = await fetchAdminToken();
     const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -209,16 +208,16 @@ export const getCustomerSubscription = async (customerId) => {
 
 export const cancelCustomerSubscription = async (
   customerId,
-  subscriptionId
+  subscriptionId,
+  token
 ) => {
   try {
-    const bearerToken = await fetchAdminToken();
     const response = await fetch(
       `${SUBSCRIPTIONS_API_URL}/${customerId}/${subscriptionId}`,
       {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${bearerToken}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -236,15 +235,15 @@ export const cancelCustomerSubscription = async (
 export const updateCustomerSubscription = async (
   customerId,
   subscriptionId,
-  updateData
+  updateData,
+  token
 ) => {
   try {
-    const bearerToken = await fetchAdminToken();
     const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         id: subscriptionId,

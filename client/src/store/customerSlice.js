@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   CUSTOMERS,
   cancelCustomerSubscription,
+  fetchAdminToken,
   getCustomerStripeId,
   getCustomerSubscription,
   updateCustomerSubscription as updateCustomerSubscriptionAPI,
@@ -16,30 +17,77 @@ export const fetchCustomerStripeId = createAsyncThunk(
 
 export const fetchCustomerSubscription = createAsyncThunk(
   "customer/fetchCustomerSubscription",
-  async (customerId) => {
-    return await getCustomerSubscription(customerId);
+  async (customerId, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
+    return await getCustomerSubscription(customerId, token);
   }
 );
 
 export const deleteCustomerSubscription = createAsyncThunk(
   "customer/deleteCustomerSubscription",
-  async ({ customerId, subscriptionId }) => {
-    return await cancelCustomerSubscription(customerId, subscriptionId);
+  async ({ customerId, subscriptionId }, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
+    return await cancelCustomerSubscription(customerId, subscriptionId, token);
   }
 );
 
 export const updateCustomerSubscription = createAsyncThunk(
   "customer/updateCustomerSubscription",
   async ({ customerId, subscriptionId, updateData }, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
     const result = await updateCustomerSubscriptionAPI(
       customerId,
       subscriptionId,
-      updateData
+      updateData,
+      token
     );
 
     await thunkAPI.dispatch(fetchCustomerSubscription(customerId));
 
     return result;
+  }
+);
+
+export const ensureCommerceToolsAuthToken = createAsyncThunk(
+  "customer/ensureCommerceToolsAuthToken",
+  async (_, thunkAPI) => {
+    const {
+      commerceToolsAuthToken,
+      commerceToolsAuthIssuedAt,
+      commerceToolsAuthExpiresIn,
+    } = thunkAPI.getState().customer;
+
+    const isTokenValid =
+      commerceToolsAuthToken &&
+      commerceToolsAuthIssuedAt &&
+      commerceToolsAuthExpiresIn &&
+      Date.now() <
+        commerceToolsAuthExpiresIn * 1000 + commerceToolsAuthIssuedAt;
+
+    if (isTokenValid) {
+      return {
+        token: commerceToolsAuthToken,
+        issuedAt: commerceToolsAuthIssuedAt,
+        expiresIn: commerceToolsAuthExpiresIn,
+      };
+    }
+
+    try {
+      const token = await fetchAdminToken();
+      return {
+        token: token.access_token,
+        issuedAt: Date.now(),
+        expiresIn: token.expires_in,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
   }
 );
 
@@ -54,6 +102,9 @@ const customerSlice = createSlice({
     availableCustomers: { ...CUSTOMERS },
     isFetchingData: false,
     requestHadError: false,
+    commerceToolsAuthToken: null,
+    commerceToolsAuthIssuedAt: null,
+    commerceToolsAuthExpiresIn: null,
   },
   reducers: {
     setCustomerId: (state, action) => {
@@ -157,6 +208,11 @@ const customerSlice = createSlice({
         state.isFetchingData = false;
         state.requestHadError = true;
       });
+    builder.addCase(ensureCommerceToolsAuthToken.fulfilled, (state, action) => {
+      state.commerceToolsAuthToken = action.payload.token;
+      state.commerceToolsAuthIssuedAt = action.payload.issuedAt;
+      state.commerceToolsAuthExpiresIn = action.payload.expiresIn;
+    });
   },
 });
 
