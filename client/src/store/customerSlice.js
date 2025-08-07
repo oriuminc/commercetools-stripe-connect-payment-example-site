@@ -2,8 +2,10 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   CUSTOMERS,
   cancelCustomerSubscription,
+  fetchAdminToken,
   getCustomerStripeId,
   getCustomerSubscription,
+  updateCustomerSubscription as updateCustomerSubscriptionAPI,
 } from "../utils";
 
 export const fetchCustomerStripeId = createAsyncThunk(
@@ -15,15 +17,77 @@ export const fetchCustomerStripeId = createAsyncThunk(
 
 export const fetchCustomerSubscription = createAsyncThunk(
   "customer/fetchCustomerSubscription",
-  async (customerId) => {
-    return await getCustomerSubscription(customerId);
+  async (customerId, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
+    return await getCustomerSubscription(customerId, token);
   }
 );
 
 export const deleteCustomerSubscription = createAsyncThunk(
   "customer/deleteCustomerSubscription",
-  async ({ customerId, subscriptionId }) => {
-    return await cancelCustomerSubscription(customerId, subscriptionId);
+  async ({ customerId, subscriptionId }, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
+    return await cancelCustomerSubscription(customerId, subscriptionId, token);
+  }
+);
+
+export const updateCustomerSubscription = createAsyncThunk(
+  "customer/updateCustomerSubscription",
+  async ({ customerId, subscriptionId, updateData }, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
+    const result = await updateCustomerSubscriptionAPI(
+      customerId,
+      subscriptionId,
+      updateData,
+      token
+    );
+
+    await thunkAPI.dispatch(fetchCustomerSubscription(customerId));
+
+    return result;
+  }
+);
+
+export const ensureCommerceToolsAuthToken = createAsyncThunk(
+  "customer/ensureCommerceToolsAuthToken",
+  async (_, thunkAPI) => {
+    const {
+      commerceToolsAuthToken,
+      commerceToolsAuthIssuedAt,
+      commerceToolsAuthExpiresIn,
+    } = thunkAPI.getState().customer;
+
+    const isTokenValid =
+      commerceToolsAuthToken &&
+      commerceToolsAuthIssuedAt &&
+      commerceToolsAuthExpiresIn &&
+      Date.now() <
+        commerceToolsAuthExpiresIn * 1000 + commerceToolsAuthIssuedAt;
+
+    if (isTokenValid) {
+      return {
+        token: commerceToolsAuthToken,
+        issuedAt: commerceToolsAuthIssuedAt,
+        expiresIn: commerceToolsAuthExpiresIn,
+      };
+    }
+
+    try {
+      const token = await fetchAdminToken();
+      return {
+        token: token.access_token,
+        issuedAt: Date.now(),
+        expiresIn: token.expires_in,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
   }
 );
 
@@ -38,6 +102,9 @@ const customerSlice = createSlice({
     availableCustomers: { ...CUSTOMERS },
     isFetchingData: false,
     requestHadError: false,
+    commerceToolsAuthToken: null,
+    commerceToolsAuthIssuedAt: null,
+    commerceToolsAuthExpiresIn: null,
   },
   reducers: {
     setCustomerId: (state, action) => {
@@ -48,80 +115,103 @@ const customerSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchCustomerStripeId.pending, (state) => {
-      state.isFetchingData = true;
-    });
-    builder.addCase(fetchCustomerStripeId.fulfilled, (state, action) => {
-      state.customerStripeId = action.payload;
-    });
-    builder.addCase(fetchCustomerStripeId.rejected, (state) => {
-      state.isFetchingData = false;
-    });
-    builder.addCase(fetchCustomerSubscription.pending, (state) => {
-      state.isFetchingData = true;
-    });
-    builder.addCase(fetchCustomerSubscription.fulfilled, (state, action) => {
-      state.isFetchingData = false;
-      if (
-        !action.payload ||
-        !action.payload.subscriptions ||
-        action.payload.subscriptions.length === 0
-      ) {
-        state.customerSubscriptions = [];
-        state.numberOfSubscriptions = 0;
-        return;
-      }
-      const subscriptions = [];
-
-      action.payload.subscriptions.forEach((subscription) => {
-        subscriptions.push({
-          id: subscription.id,
-          status: subscription.status,
-          startDate: subscription.start_date,
-          endDate: subscription.ended_at,
-          collectionMethod: subscription.collection_method,
-          customerId: subscription.customer,
-          currentPeriod: {
-            startDate: subscription.current_period_start,
-            endDate: subscription.current_period_end,
-          },
-          recurrence: subscription.latest_invoice.lines.data[0].plan.interval,
-          details: {
-            description: subscription.latest_invoice.lines.data[0].description,
-            quantity: subscription.latest_invoice.lines.data[0].quantity,
-            amountDue: subscription.latest_invoice.amount_due,
-            amountRemaining: subscription.latest_invoice.amount_remaining,
-            currency: subscription.latest_invoice.currency,
-            period: {
-              startDate: subscription.latest_invoice.lines.data[0].period.start,
-              endDate: subscription.latest_invoice.lines.data[0].period.end,
-            },
-          },
-        });
+    builder
+      .addCase(fetchCustomerStripeId.pending, (state) => {
+        state.isFetchingData = true;
+      })
+      .addCase(fetchCustomerStripeId.fulfilled, (state, action) => {
+        state.customerStripeId = action.payload;
+      })
+      .addCase(fetchCustomerStripeId.rejected, (state) => {
+        state.isFetchingData = false;
       });
+    builder
+      .addCase(fetchCustomerSubscription.pending, (state) => {
+        state.isFetchingData = true;
+      })
+      .addCase(fetchCustomerSubscription.fulfilled, (state, action) => {
+        state.isFetchingData = false;
+        if (
+          !action.payload ||
+          !action.payload.subscriptions ||
+          action.payload.subscriptions.length === 0
+        ) {
+          state.customerSubscriptions = [];
+          state.numberOfSubscriptions = 0;
+          return;
+        }
+        const subscriptions = [];
 
-      state.customerSubscriptions = [...subscriptions];
-      state.numberOfSubscriptions = subscriptions.length;
-    });
-    builder.addCase(fetchCustomerSubscription.rejected, (state) => {
-      state.isFetchingData = false;
-    });
-    builder.addCase(deleteCustomerSubscription.pending, (state) => {
-      state.isFetchingData = true;
-      state.requestHadError = false;
-    });
-    builder.addCase(deleteCustomerSubscription.fulfilled, (state, action) => {
-      state.isFetchingData = false;
-      const subscriptionId = action.payload.id;
+        action.payload.subscriptions.forEach((subscription) => {
+          subscriptions.push({
+            id: subscription.id,
+            status: subscription.status,
+            startDate: subscription.start_date,
+            endDate: subscription.ended_at,
+            collectionMethod: subscription.collection_method,
+            customerId: subscription.customer,
+            currentPeriod: {
+              startDate: subscription.current_period_start,
+              endDate: subscription.current_period_end,
+            },
+            recurrence: subscription.latest_invoice.lines.data[0].plan.interval,
+            details: {
+              subscriptionItemId: subscription.items.data[0].id,
+              description:
+                subscription.latest_invoice.lines.data[0].description,
+              quantity: subscription.items.data[0].quantity,
+              amountDue: subscription.latest_invoice.amount_due,
+              amountRemaining: subscription.latest_invoice.amount_remaining,
+              currency: subscription.latest_invoice.currency,
+              period: {
+                startDate:
+                  subscription.latest_invoice.lines.data[0].period.start,
+                endDate: subscription.latest_invoice.lines.data[0].period.end,
+              },
+            },
+          });
+        });
 
-      state.customerSubscriptions = state.customerSubscriptions.filter(
-        (subscription) => subscription.id !== subscriptionId
-      );
-      state.numberOfSubscriptions = state.customerSubscriptions.length;
-    });
-    builder.addCase(deleteCustomerSubscription.rejected, (state) => {
-      state.isFetchingData = false;
-      state.requestHadError = true;
+        state.customerSubscriptions = [...subscriptions];
+        state.numberOfSubscriptions = subscriptions.length;
+      })
+      .addCase(fetchCustomerSubscription.rejected, (state) => {
+        state.isFetchingData = false;
+      });
+    builder
+      .addCase(deleteCustomerSubscription.pending, (state) => {
+        state.isFetchingData = true;
+        state.requestHadError = false;
+      })
+      .addCase(deleteCustomerSubscription.fulfilled, (state, action) => {
+        state.isFetchingData = false;
+        const subscriptionId = action.payload.id;
+
+        state.customerSubscriptions = state.customerSubscriptions.filter(
+          (subscription) => subscription.id !== subscriptionId
+        );
+        state.numberOfSubscriptions = state.customerSubscriptions.length;
+      })
+      .addCase(deleteCustomerSubscription.rejected, (state) => {
+        state.isFetchingData = false;
+        state.requestHadError = true;
+      });
+    builder
+      .addCase(updateCustomerSubscription.pending, (state) => {
+        state.isFetchingData = true;
+        state.requestHadError = false;
+      })
+      .addCase(updateCustomerSubscription.fulfilled, (state) => {
+        state.isFetchingData = false;
+      })
+      .addCase(updateCustomerSubscription.rejected, (state) => {
+        state.isFetchingData = false;
+        state.requestHadError = true;
+      });
+    builder.addCase(ensureCommerceToolsAuthToken.fulfilled, (state, action) => {
+      state.commerceToolsAuthToken = action.payload.token;
+      state.commerceToolsAuthIssuedAt = action.payload.issuedAt;
+      state.commerceToolsAuthExpiresIn = action.payload.expiresIn;
     });
   },
 });

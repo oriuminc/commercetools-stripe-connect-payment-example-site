@@ -60,7 +60,7 @@ export const fetchAdminToken = async () => {
     });
   }
   console.log("Token fetched:", token);
-  return token.access_token;
+  return token;
 };
 
 export const getCTSessionId = async (cartId) => {
@@ -76,7 +76,7 @@ export const getCTSessionId = async (cartId) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken.access_token}`,
     },
     body: JSON.stringify({
       cart: {
@@ -184,16 +184,15 @@ export const getCustomerStripeId = async (customerId) => {
   }
 };
 
-export const getCustomerSubscription = async (customerId) => {
+export const getCustomerSubscription = async (customerId, token) => {
   try {
     if (customerId === undefined || customerId === null || customerId === "")
       return [];
 
-    const bearerToken = await fetchAdminToken();
     const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -209,22 +208,59 @@ export const getCustomerSubscription = async (customerId) => {
 
 export const cancelCustomerSubscription = async (
   customerId,
-  subscriptionId
+  subscriptionId,
+  token
 ) => {
   try {
-    const bearerToken = await fetchAdminToken();
     const response = await fetch(
       `${SUBSCRIPTIONS_API_URL}/${customerId}/${subscriptionId}`,
       {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${bearerToken}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
 
     if (!response.ok) {
       throw new Error("Failed to cancel subscription");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCustomerSubscription = async (
+  customerId,
+  subscriptionId,
+  updateData,
+  token
+) => {
+  try {
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: subscriptionId,
+        params: {
+          items: [
+            {
+              id: updateData.subscriptionItemId,
+              quantity: updateData.quantity,
+            },
+          ],
+          proration_behavior: "none", // Can be "create_prorations", "always_invoice" or "none"
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update subscription");
     }
 
     return await response.json();
