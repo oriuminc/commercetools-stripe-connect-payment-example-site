@@ -5,6 +5,7 @@ import {
   fetchAdminToken,
   getCustomerStripeId,
   getCustomerSubscription,
+  patchCustomerSubscription as patchCustomerSubscriptionAPI,
   updateCustomerSubscription as updateCustomerSubscriptionAPI,
 } from "../utils";
 
@@ -35,16 +36,38 @@ export const deleteCustomerSubscription = createAsyncThunk(
   }
 );
 
+export const patchCustomerSubscription = createAsyncThunk(
+  "customer/patchCustomerSubscription",
+  async ({ customerId, subscriptionId, updateData }, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
+    const result = await patchCustomerSubscriptionAPI(
+      customerId,
+      subscriptionId,
+      updateData,
+      token
+    );
+
+    await thunkAPI.dispatch(fetchCustomerSubscription(customerId));
+
+    return result;
+  }
+);
+
+
 export const updateCustomerSubscription = createAsyncThunk(
   "customer/updateCustomerSubscription",
-  async ({ customerId, subscriptionId, updateData }, thunkAPI) => {
+  async ({ customerId, subscriptionId, newProductId, newVariantId, newPriceId }, thunkAPI) => {
     const { token } = await thunkAPI
       .dispatch(ensureCommerceToolsAuthToken())
       .unwrap();
     const result = await updateCustomerSubscriptionAPI(
       customerId,
       subscriptionId,
-      updateData,
+      newProductId,
+      newVariantId,
+      newPriceId,
       token
     );
 
@@ -197,14 +220,14 @@ const customerSlice = createSlice({
         state.requestHadError = true;
       });
     builder
-      .addCase(updateCustomerSubscription.pending, (state) => {
+      .addCase(patchCustomerSubscription.pending, (state) => {
         state.isFetchingData = true;
         state.requestHadError = false;
       })
-      .addCase(updateCustomerSubscription.fulfilled, (state) => {
+      .addCase(patchCustomerSubscription.fulfilled, (state) => {
         state.isFetchingData = false;
       })
-      .addCase(updateCustomerSubscription.rejected, (state) => {
+      .addCase(patchCustomerSubscription.rejected, (state) => {
         state.isFetchingData = false;
         state.requestHadError = true;
       });

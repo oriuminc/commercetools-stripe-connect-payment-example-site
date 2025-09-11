@@ -232,7 +232,7 @@ export const cancelCustomerSubscription = async (
   }
 };
 
-export const updateCustomerSubscription = async (
+export const patchCustomerSubscription = async (
   customerId,
   subscriptionId,
   updateData,
@@ -256,6 +256,39 @@ export const updateCustomerSubscription = async (
           ],
           proration_behavior: "none", // Can be "create_prorations", "always_invoice" or "none"
         },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update subscription");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCustomerSubscription = async (
+  customerId,
+  subscriptionId,
+  newProductId,
+  newVariantPosition,
+  newPriceId,
+  token
+) => {
+  try {
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        subscriptionId: subscriptionId,
+        newSubscriptionVariantId: newProductId,
+        newSubscriptionVariantPosition: newVariantPosition,
+        newSubscriptionPriceId: newPriceId
       }),
     });
 
