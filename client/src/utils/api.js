@@ -239,7 +239,7 @@ export const patchCustomerSubscription = async (
   token
 ) => {
   try {
-    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/advanced/${customerId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

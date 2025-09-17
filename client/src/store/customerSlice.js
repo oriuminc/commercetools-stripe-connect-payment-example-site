@@ -177,7 +177,7 @@ const customerSlice = createSlice({
               startDate: subscription.current_period_start,
               endDate: subscription.current_period_end,
             },
-            recurrence: subscription.latest_invoice.lines.data[0].plan.interval,
+            recurrence: subscription.latest_invoice.lines.data[0]?.plan?.interval ?? subscription.plan.interval,
             details: {
               subscriptionItemId: subscription.items.data[0].id,
               description:
