@@ -5,6 +5,7 @@ import {
   fetchAdminToken,
   getCustomerStripeId,
   getCustomerSubscription,
+  patchCustomerSubscription as patchCustomerSubscriptionAPI,
   updateCustomerSubscription as updateCustomerSubscriptionAPI,
 } from "../utils";
 
@@ -35,16 +36,38 @@ export const deleteCustomerSubscription = createAsyncThunk(
   }
 );
 
+export const patchCustomerSubscription = createAsyncThunk(
+  "customer/patchCustomerSubscription",
+  async ({ customerId, subscriptionId, updateData }, thunkAPI) => {
+    const { token } = await thunkAPI
+      .dispatch(ensureCommerceToolsAuthToken())
+      .unwrap();
+    const result = await patchCustomerSubscriptionAPI(
+      customerId,
+      subscriptionId,
+      updateData,
+      token
+    );
+
+    await thunkAPI.dispatch(fetchCustomerSubscription(customerId));
+
+    return result;
+  }
+);
+
+
 export const updateCustomerSubscription = createAsyncThunk(
   "customer/updateCustomerSubscription",
-  async ({ customerId, subscriptionId, updateData }, thunkAPI) => {
+  async ({ customerId, subscriptionId, newProductId, newVariantId, newPriceId }, thunkAPI) => {
     const { token } = await thunkAPI
       .dispatch(ensureCommerceToolsAuthToken())
       .unwrap();
     const result = await updateCustomerSubscriptionAPI(
       customerId,
       subscriptionId,
-      updateData,
+      newProductId,
+      newVariantId,
+      newPriceId,
       token
     );
 
@@ -154,19 +177,19 @@ const customerSlice = createSlice({
               startDate: subscription.current_period_start,
               endDate: subscription.current_period_end,
             },
-            recurrence: subscription.latest_invoice.lines.data[0].plan.interval,
+            recurrence: subscription.latest_invoice.lines.data?.at(-1)?.plan?.interval ?? subscription.plan.interval,
             details: {
-              subscriptionItemId: subscription.items.data[0].id,
+              subscriptionItemId: subscription.items.data?.at(-1).id,
               description:
-                subscription.latest_invoice.lines.data[0].description,
-              quantity: subscription.items.data[0].quantity,
+                subscription.latest_invoice.lines.data.at(-1).description,
+              quantity: subscription.items.data?.at(-1).quantity,
               amountDue: subscription.latest_invoice.amount_due,
               amountRemaining: subscription.latest_invoice.amount_remaining,
               currency: subscription.latest_invoice.currency,
               period: {
                 startDate:
-                  subscription.latest_invoice.lines.data[0].period.start,
-                endDate: subscription.latest_invoice.lines.data[0].period.end,
+                  subscription.latest_invoice.lines.data?.at(-1).period.start,
+                endDate: subscription.latest_invoice.lines.data?.at(-1).period.end,
               },
             },
           });
@@ -197,6 +220,18 @@ const customerSlice = createSlice({
         state.requestHadError = true;
       });
     builder
+      .addCase(patchCustomerSubscription.pending, (state) => {
+        state.isFetchingData = true;
+        state.requestHadError = false;
+      })
+      .addCase(patchCustomerSubscription.fulfilled, (state) => {
+        state.isFetchingData = false;
+      })
+      .addCase(patchCustomerSubscription.rejected, (state) => {
+        state.isFetchingData = false;
+        state.requestHadError = true;
+      });
+      builder
       .addCase(updateCustomerSubscription.pending, (state) => {
         state.isFetchingData = true;
         state.requestHadError = false;

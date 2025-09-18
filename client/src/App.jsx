@@ -194,7 +194,7 @@ export default function App() {
               setCtCheckoutToggled={handleCtCheckoutToggled}
               setCustomerToCart={handleAddCustomerToCart}
             />
-            <CustomerSubscriptionsList />
+            <CustomerSubscriptionsList currency={currency} />
           </Route>
           <Route path="/">
             <Header

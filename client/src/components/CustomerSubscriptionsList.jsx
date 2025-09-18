@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FormattedDate,
   FormattedMessage,
@@ -16,19 +16,26 @@ import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import Toast from "react-bootstrap/Toast";
 import CustomToggle from "./AccordionCustomToogle";
+import SwitchSelector from "react-switch-selector";
 import { Spinner } from "./Spinner";
 import {
   deleteCustomerSubscription,
-  updateCustomerSubscription,
+  patchCustomerSubscription,
+  updateCustomerSubscription
 } from "../store/customerSlice";
-import { LOCALE_FORMAT_OPTIONS } from "../utils";
+import { LOCALE_FORMAT_OPTIONS, COMMON_COLOURS } from "../utils";
+import { useApi } from "../hooks/useApi";
 
-const CustomerSubscriptionsList = () => {
+const CustomerSubscriptionsList = ({ currency }) => {
+  const { getSubscriptionProducts } = useApi();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [updateQuantity, setUpdateQuantity] = useState(true);
   const [showToast, setShowToast] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [updatedOptions, setUpdatedOptions] = useState(null);
+  const [updatedProductSku, setUpdatedProductSku] = useState(null);
+  const [subscriptionProducts, setSubscriptionProducts] = useState([]);
   const [manageAction, setManageAction] = useState(null);
   const [areAllInformationCorrect, setAreAllInformationCorrect] =
     useState(false);
@@ -42,6 +49,25 @@ const CustomerSubscriptionsList = () => {
   );
   const dispatch = useDispatch();
   const intl = useIntl();
+
+  const switchSelectorOptions = [
+  {
+    label: intl.formatMessage({
+      id: "label.quantity",
+      defaultMessage: "Quantity",
+    }),
+    selectedBackgroundColor: COMMON_COLOURS[0].hexCode,
+    value: true,
+  },
+  {
+    label: intl.formatMessage({
+      id: "label.product",
+      defaultMessage: "Product",
+    }),
+    selectedBackgroundColor: COMMON_COLOURS[1].hexCode,
+    value: false,
+  },
+];
 
   const getBadgeColorStatus = (status) => {
     switch (status) {
@@ -190,24 +216,50 @@ const CustomerSubscriptionsList = () => {
     setManageAction("update");
   };
 
+  const onSwitchUpdateValue = () => {
+    setUpdateQuantity(!updateQuantity);
+  }
+
   const onUpdateSubscriptionHandler = () => {
-    dispatch(
-      updateCustomerSubscription({
-        customerId,
-        subscriptionId: selectedSubscription.id,
-        updateData: {
-          ...updatedOptions,
-          subscriptionItemId: selectedSubscription.details.subscriptionItemId,
-        },
-      })
-    );
+    if (updateQuantity) {
+      dispatch(
+        patchCustomerSubscription({
+          customerId,
+          subscriptionId: selectedSubscription.id,
+          updateData: {
+            ...updatedOptions,
+            subscriptionItemId: selectedSubscription.details.subscriptionItemId,
+          },
+        })
+      );
+    } else {
+      const newVariant = subscriptionOptions.find(variant => variant.sku === updatedProductSku);
+      const newVariantId = newVariant.id;
+      const newPriceId = (newVariant.prices.find(price => price.value.currencyCode === currency)).id;
+      const newProductId = newVariant.productId;
+      dispatch(
+        updateCustomerSubscription({
+          customerId,
+          subscriptionId: selectedSubscription.id,
+          newProductId,
+          newVariantId,
+          newPriceId,
+        })
+      );
+    }
     setShowUpdateModal(false);
     setShowToast(true);
+    setUpdatedOptions(null);
+    setUpdatedProductSku(null);
+    setUpdateQuantity(true);
+    setAreAllInformationCorrect(false);
   };
 
   const onCloseUpdateModalHandler = () => {
     setShowUpdateModal(false);
     setUpdatedOptions(null);
+    setUpdatedProductSku(null);
+    setUpdateQuantity(true);
     setAreAllInformationCorrect(false);
   };
 
@@ -217,6 +269,27 @@ const CustomerSubscriptionsList = () => {
     setSelectedSubscription(null);
     setUpdatedOptions(null);
   };
+
+  const getProductVariants = (product) => {
+    return [...product.masterData.current.variants,
+    ...(product.masterData.current.masterVariant ? [product.masterData.current.masterVariant] : [])].map((variant) => ({
+      ...variant,
+      productId: product.id,
+      productName: product.masterData.current.name[intl.locale] || product.masterData.current.name["en"] || "Unnamed Product",
+      price: variant.prices.find(price => price.value.currencyCode === currency)
+    }));
+  }
+
+  const fetchSubscriptionProducts = async () => {
+    const products = await getSubscriptionProducts(currency);
+    setSubscriptionProducts(products);
+  };
+
+  useEffect(() => {
+    fetchSubscriptionProducts();
+  }, []);
+
+  const subscriptionOptions = subscriptionProducts.map(getProductVariants).flat();
 
   return (
     <>
@@ -542,51 +615,92 @@ const CustomerSubscriptionsList = () => {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>
-                <FormattedMessage
-                  id="label.userUpdateSubscriptionLabel"
-                  defaultMessage={"Below, you can update the subscription"}
-                />{" "}
-                <span className="font-medium">
-                  {selectedSubscription !== null ? selectedSubscription.id : ""}
-                </span>
-              </p>
-              <Form.Group className="my-3">
-                <Form.Label>
+              <div className="d-flex align-items-center justify-content-between gap-2">
+                <div>
                   <FormattedMessage
-                    id="label.selectNewQuantity"
-                    defaultMessage={"Select the new quantity"}
+                    id="label.userUpdateSubscriptionLabel"
+                    defaultMessage={"Below, you can update the subscription"}
+                  />{" "}
+                  <div className="font-medium">
+                    {selectedSubscription !== null ? selectedSubscription.id : ""}
+                  </div>
+                </div>
+                <div className="flex-auto">
+                  <SwitchSelector
+                    name="update-options-switch"
+                    onChange={onSwitchUpdateValue}
+                    options={switchSelectorOptions}
+                    initialSelectedIndex={0}
+                    fontSize={15}
                   />
-                </Form.Label>
-                <Form.Control
-                  as="select"
-                  className="cursor-pointer"
-                  defaultValue={""}
-                  onChange={(e) => {
-                    setUpdatedOptions({
-                      ...updatedOptions,
-                      quantity: e.target.value,
-                    });
-                  }}
-                >
-                  <option disabled value={""}>
-                    {intl.formatMessage({
-                      id: "select.selectOption",
-                      defaultMessage: "Select an option",
-                    })}
-                  </option>
-                  {Array.from(
-                    { length: 5 },
-                    (_, i) =>
-                      selectedSubscription !== null &&
-                      selectedSubscription.details.quantity !== i + 1 && (
-                        <option key={`option_${i + 1}`} value={i + 1}>
-                          {i + 1}
-                        </option>
-                      )
-                  )}
-                </Form.Control>
-              </Form.Group>
+                </div>
+              </div>
+              {updateQuantity ? (
+                <Form.Group className="my-3">
+                  <Form.Label>
+                    <FormattedMessage
+                      id="label.selectNewQuantity"
+                      defaultMessage={"Select the new quantity"}
+                    />
+                  </Form.Label>
+                  <Form.Control
+                    as="select"
+                    className="cursor-pointer"
+                    defaultValue={""}
+                    onChange={(e) => {
+                      setUpdatedOptions({
+                        ...updatedOptions,
+                        quantity: e.target.value,
+                      });
+                    }}
+                  >
+                    <option disabled value={""}>
+                      {intl.formatMessage({
+                        id: "select.selectOption",
+                        defaultMessage: "Select an option",
+                      })}
+                    </option>
+                    {Array.from(
+                      { length: 5 },
+                      (_, i) =>
+                        selectedSubscription !== null &&
+                        selectedSubscription.details.quantity !== i + 1 && (
+                          <option key={`option_${i + 1}`} value={i + 1}>
+                            {i + 1}
+                          </option>
+                        )
+                    )}
+                  </Form.Control>
+                </Form.Group>) : (
+                <Form.Group className="my-3">
+                  <Form.Label>
+                    <FormattedMessage
+                      id="label.selectNewProduct"
+                      defaultMessage={"Select the new product"}
+                    />
+                  </Form.Label>
+                  <Form.Control
+                    as="select"
+                    className="cursor-pointer"
+                    defaultValue={""}
+                    onChange={(e) => {
+                      setUpdatedProductSku(e.target.value);
+                    }}
+                  >
+                    <option disabled value={""}>
+                      {intl.formatMessage({
+                        id: "select.selectOption",
+                        defaultMessage: "Select an option",
+                      })}
+                    </option>
+                    {subscriptionOptions && subscriptionOptions.map((variant) => (
+                      <option key={variant.sku} value={variant.sku}>
+                        {`${variant.productName} (at ${(Math.round(variant.price.value.centAmount)/100).toFixed(2)} ${variant.price.value.currencyCode} / ${variant.attributes.find(attr => attr.name === "recurring_interval").value.key || "N/A"})`}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              )}
               <Form>
                 <Form.Check
                   id="confirmUpdate"
@@ -605,13 +719,13 @@ const CustomerSubscriptionsList = () => {
             <Modal.Footer>
               <Button
                 variant="secondary"
-                onClick={() => setShowUpdateModal(false)}
+                onClick={() => onCloseUpdateModalHandler()}
               >
                 <FormattedMessage id="button.abort" defaultMessage={"Abort"} />
               </Button>
               <Button
                 variant="primary"
-                disabled={updatedOptions === null || !areAllInformationCorrect}
+                disabled={(updatedOptions === null && updatedProductSku === null) || !areAllInformationCorrect}
                 onClick={onUpdateSubscriptionHandler}
               >
                 <FormattedMessage
