@@ -282,7 +282,6 @@ const CustomerSubscriptionsList = ({ currency }) => {
 
   const fetchSubscriptionProducts = async () => {
     const products = await getSubscriptionProducts(currency);
-    console.log("Fetched subscription products:", products);
     setSubscriptionProducts(products);
   };
 
