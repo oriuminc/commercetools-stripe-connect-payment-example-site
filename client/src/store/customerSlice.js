@@ -177,19 +177,19 @@ const customerSlice = createSlice({
               startDate: subscription.current_period_start,
               endDate: subscription.current_period_end,
             },
-            recurrence: subscription.latest_invoice.lines.data[0]?.plan?.interval ?? subscription.plan.interval,
+            recurrence: subscription.latest_invoice.lines.data?.at(-1)?.plan?.interval ?? subscription.plan.interval,
             details: {
-              subscriptionItemId: subscription.items.data[0].id,
+              subscriptionItemId: subscription.items.data?.at(-1).id,
               description:
-                subscription.latest_invoice.lines.data[0].description,
-              quantity: subscription.items.data[0].quantity,
+                subscription.latest_invoice.lines.data.at(-1).description,
+              quantity: subscription.items.data?.at(-1).quantity,
               amountDue: subscription.latest_invoice.amount_due,
               amountRemaining: subscription.latest_invoice.amount_remaining,
               currency: subscription.latest_invoice.currency,
               period: {
                 startDate:
-                  subscription.latest_invoice.lines.data[0].period.start,
-                endDate: subscription.latest_invoice.lines.data[0].period.end,
+                  subscription.latest_invoice.lines.data?.at(-1).period.start,
+                endDate: subscription.latest_invoice.lines.data?.at(-1).period.end,
               },
             },
           });
@@ -228,6 +228,18 @@ const customerSlice = createSlice({
         state.isFetchingData = false;
       })
       .addCase(patchCustomerSubscription.rejected, (state) => {
+        state.isFetchingData = false;
+        state.requestHadError = true;
+      });
+      builder
+      .addCase(updateCustomerSubscription.pending, (state) => {
+        state.isFetchingData = true;
+        state.requestHadError = false;
+      })
+      .addCase(updateCustomerSubscription.fulfilled, (state) => {
+        state.isFetchingData = false;
+      })
+      .addCase(updateCustomerSubscription.rejected, (state) => {
         state.isFetchingData = false;
         state.requestHadError = true;
       });

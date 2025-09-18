@@ -26,20 +26,6 @@ import {
 import { LOCALE_FORMAT_OPTIONS, COMMON_COLOURS } from "../utils";
 import { useApi } from "../hooks/useApi";
 
-
-const switchSelectorOptions = [
-  {
-    label: "Update quantity",
-    selectedBackgroundColor: COMMON_COLOURS[0].hexCode,
-    value: true,
-  },
-  {
-    label: "Update product",
-    selectedBackgroundColor: COMMON_COLOURS[1].hexCode,
-    value: false,
-  },
-];
-
 const CustomerSubscriptionsList = ({ currency }) => {
   const { getSubscriptionProducts } = useApi();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -63,6 +49,25 @@ const CustomerSubscriptionsList = ({ currency }) => {
   );
   const dispatch = useDispatch();
   const intl = useIntl();
+
+  const switchSelectorOptions = [
+  {
+    label: intl.formatMessage({
+      id: "label.quantity",
+      defaultMessage: "Quantity",
+    }),
+    selectedBackgroundColor: COMMON_COLOURS[0].hexCode,
+    value: true,
+  },
+  {
+    label: intl.formatMessage({
+      id: "label.product",
+      defaultMessage: "Product",
+    }),
+    selectedBackgroundColor: COMMON_COLOURS[1].hexCode,
+    value: false,
+  },
+];
 
   const getBadgeColorStatus = (status) => {
     switch (status) {
@@ -229,7 +234,6 @@ const CustomerSubscriptionsList = ({ currency }) => {
       );
     } else {
       const newVariant = subscriptionOptions.find(variant => variant.sku === updatedProductSku);
-      console.log(newVariant);
       const newVariantId = newVariant.id;
       const newPriceId = (newVariant.prices.find(price => price.value.currencyCode === currency)).id;
       const newProductId = newVariant.productId;
@@ -245,11 +249,17 @@ const CustomerSubscriptionsList = ({ currency }) => {
     }
     setShowUpdateModal(false);
     setShowToast(true);
+    setUpdatedOptions(null);
+    setUpdatedProductSku(null);
+    setUpdateQuantity(true);
+    setAreAllInformationCorrect(false);
   };
 
   const onCloseUpdateModalHandler = () => {
     setShowUpdateModal(false);
     setUpdatedOptions(null);
+    setUpdatedProductSku(null);
+    setUpdateQuantity(true);
     setAreAllInformationCorrect(false);
   };
 
@@ -265,6 +275,8 @@ const CustomerSubscriptionsList = ({ currency }) => {
     ...(product.masterData.current.masterVariant ? [product.masterData.current.masterVariant] : [])].map((variant) => ({
       ...variant,
       productId: product.id,
+      productName: product.masterData.current.name[intl.locale] || product.masterData.current.name["en"] || "Unnamed Product",
+      price: variant.prices.find(price => price.value.currencyCode === currency)
     }));
   }
 
@@ -604,22 +616,26 @@ const CustomerSubscriptionsList = ({ currency }) => {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>
-                <FormattedMessage
-                  id="label.userUpdateSubscriptionLabel"
-                  defaultMessage={"Below, you can update the subscription"}
-                />{" "}
-                <span className="font-medium">
-                  {selectedSubscription !== null ? selectedSubscription.id : ""}
-                </span>
-              </p>
-              <SwitchSelector
-                name="update-options-switch"
-                onChange={onSwitchUpdateValue}
-                options={switchSelectorOptions}
-                initialSelectedIndex={0}
-                fontSize={20}
-              />
+              <div className="d-flex align-items-center justify-content-between gap-2">
+                <div>
+                  <FormattedMessage
+                    id="label.userUpdateSubscriptionLabel"
+                    defaultMessage={"Below, you can update the subscription"}
+                  />{" "}
+                  <div className="font-medium">
+                    {selectedSubscription !== null ? selectedSubscription.id : ""}
+                  </div>
+                </div>
+                <div className="flex-auto">
+                  <SwitchSelector
+                    name="update-options-switch"
+                    onChange={onSwitchUpdateValue}
+                    options={switchSelectorOptions}
+                    initialSelectedIndex={0}
+                    fontSize={15}
+                  />
+                </div>
+              </div>
               {updateQuantity ? (
                 <Form.Group className="my-3">
                   <Form.Label>
@@ -680,7 +696,7 @@ const CustomerSubscriptionsList = ({ currency }) => {
                     </option>
                     {subscriptionOptions && subscriptionOptions.map((variant) => (
                       <option key={variant.sku} value={variant.sku}>
-                        {variant.sku}
+                        {`${variant.productName} (at ${(Math.round(variant.price.value.centAmount)/100).toFixed(2)} ${variant.price.value.currencyCode} / ${variant.attributes.find(attr => attr.name === "recurring_interval").value.key || "N/A"})`}
                       </option>
                     ))}
                   </Form.Control>
@@ -704,7 +720,7 @@ const CustomerSubscriptionsList = ({ currency }) => {
             <Modal.Footer>
               <Button
                 variant="secondary"
-                onClick={() => setShowUpdateModal(false)}
+                onClick={() => onCloseUpdateModalHandler()}
               >
                 <FormattedMessage id="button.abort" defaultMessage={"Abort"} />
               </Button>
