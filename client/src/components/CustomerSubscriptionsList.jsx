@@ -318,7 +318,7 @@ const CustomerSubscriptionsList = ({ currency }) => {
             <Col key={element.id} className="mb-4">
               <Card className="shadow-md">
                 <Card.Body>
-                  <Card.Title>{element.details.description}</Card.Title>
+                  <Card.Title>{element.details.title}</Card.Title>
                   <Card.Text as="div" className="flex flex-col gap-[0.8rem]">
                     <p className="font-semibold inline-flex flex-col">
                       <FormattedMessage
@@ -695,7 +695,7 @@ const CustomerSubscriptionsList = ({ currency }) => {
                     </option>
                     {subscriptionOptions && subscriptionOptions.map((variant) => (
                       <option key={variant.sku} value={variant.sku}>
-                        {`${variant.productName} (at ${(Math.round(variant.price.value.centAmount)/100).toFixed(2)} ${variant.price.value.currencyCode} / ${variant.attributes.find(attr => attr.name === "recurring_interval").value.key || "N/A"})`}
+                        {`${variant.productName} (${(Math.round(variant.price.value.centAmount)/100).toFixed(2)} ${variant.price.value.currencyCode} / ${variant.attributes.find(attr => attr.name === "recurring_interval").value.key || "N/A"})`}
                       </option>
                     ))}
                   </Form.Control>
