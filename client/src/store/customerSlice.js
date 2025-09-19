@@ -166,6 +166,7 @@ const customerSlice = createSlice({
         const subscriptions = [];
 
         action.payload.subscriptions.forEach((subscription) => {
+          const itemData = subscription.items.data?.at(-1); 
           subscriptions.push({
             id: subscription.id,
             status: subscription.status,
@@ -179,10 +180,11 @@ const customerSlice = createSlice({
             },
             recurrence: subscription.latest_invoice.lines.data?.at(-1)?.plan?.interval ?? subscription.plan.interval,
             details: {
-              subscriptionItemId: subscription.items.data?.at(-1).id,
+              subscriptionItemId: itemData.id,
               description:
                 subscription.latest_invoice.lines.data.at(-1).description,
-              quantity: subscription.items.data?.at(-1).quantity,
+              title: `${itemData?.quantity} x ${itemData?.price.metadata.ct_variant_sku.split('-').slice(1).map((chunk, index) => index === 0 ? chunk.charAt(0).toUpperCase() + chunk.slice(1) : chunk).join(' ')} (${(Math.round(itemData?.price.unit_amount * itemData?.quantity)/100).toFixed(2)} ${itemData?.price.currency.toUpperCase()} / ${itemData?.price.recurring.interval || "N/A"})`,
+              quantity: itemData.quantity,
               amountDue: subscription.latest_invoice.amount_due,
               amountRemaining: subscription.latest_invoice.amount_remaining,
               currency: subscription.latest_invoice.currency,
