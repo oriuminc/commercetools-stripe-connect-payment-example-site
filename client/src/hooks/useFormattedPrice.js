@@ -101,6 +101,18 @@ export const useFormattedPrice = () => {
       }
     }
 
+    // If no matching price found, try to use the first available price
+    if (!localizedPrice && localizedPrices.length > 0) {
+      localizedPrice = localizedPrices[0];
+      console.warn(`No price found for country: ${country}. Using first available price.`);
+    }
+
+    // Guard against undefined localizedPrice
+    if (!localizedPrice || !localizedPrice.value) {
+      console.error("No valid price found for product");
+      return "";
+    }
+
     amountType = localizedPrice.value.type;
     localizedPrice = localizedPrice.value.centAmount;
 
