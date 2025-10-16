@@ -8,11 +8,16 @@ import {
   setLocale,
   updateAvailableLanguages,
 } from "../store/localeSlice";
+import {
+  fetchCustomerStripeId,
+  fetchCustomerSubscription,
+} from "../store/customerSlice";
 import { setCustomerId, setCustomerName } from "../store/customerSlice";
 import { CUSTOMERS } from "../utils";
 import "../styles/checkout.css";
 
 const LanguageSelector = ({ brandColor, iconColor }) => {
+  const customerId = useSelector((state) => state.customer.customerId);
   const currentLanguage = useSelector((state) => state.locale.locale);
   const availableLanguages = useSelector(
     (state) => state.locale.availableLanguages
@@ -38,13 +43,19 @@ const LanguageSelector = ({ brandColor, iconColor }) => {
     () => dispatch(updateAvailableLanguages()),
     [dispatch, currentLanguage]
   );
+
+  useEffect(() => {
+    dispatch(fetchCustomerStripeId(customerId));
+    dispatch(fetchCustomerSubscription(customerId));
+  }, [dispatch, customerId]);
+
   return (
     <>
       <div className="" style={styles.language}>
         <Dropdown>
           <Dropdown.Toggle
             as="button"
-            className="flex items-center gap-1 shadow-none text-gray-700 hover:bg-blue-500 hover:shadow-xl"
+            className="flex items-center gap-1 shadow-none text-gray-700"
           >
             <FontAwesomeIcon icon={faGlobe} color={iconColor} />
             <p className="text-base text-gray-700">{currentLanguage}</p>

@@ -15,13 +15,16 @@ const processorConfig = {
     process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_PROCESSOR_URL,
 };
 const enablerConfig = {
-  composableConnectorConfig:
-    'composable',
-  commercetoolsCheckoutConnectorConfig:
-    'commercetoolsCheckout',
+  composableConnectorConfig: "composable",
+  commercetoolsCheckoutConnectorConfig: "commercetoolsCheckout",
 };
 
-export const EnablerContextProvider = ({ children, cartId, connector, language }) => {
+export const EnablerContextProvider = ({
+  children,
+  cartId,
+  connector,
+  language,
+}) => {
   const [sessionId, setSessionId] = useState(null);
 
   useEffect(() => {

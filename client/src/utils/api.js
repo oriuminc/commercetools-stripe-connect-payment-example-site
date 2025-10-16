@@ -1,16 +1,19 @@
-import { BACKEND_URL, projectKey } from "./constants";
+import { BACKEND_URL, projectKey, SUBSCRIPTIONS_API_URL } from "./constants";
 
 export const loadEnabler = async (enablerUrl) => {
   try {
-    if (!enablerUrl || typeof enablerUrl !== 'string') {
+    if (!enablerUrl || typeof enablerUrl !== "string") {
       console.error("Invalid enabler URL:", enablerUrl);
       return null;
     }
 
     console.log("Attempting to load enabler from:", enablerUrl);
-    const module = enablerUrl === 'composable'
-      ? await import(process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL)
-      : await import(process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL);
+    const module =
+      enablerUrl === "composable"
+        ? await import(process.env.REACT_APP_COMPOSABLE_CONNECTOR_ENABLER_URL)
+        : await import(
+            process.env.REACT_APP_COMMERCETOOLS_CHECKOUT_CONNECTOR_ENABLER_URL
+          );
     console.log(JSON.stringify(module, null, 2));
     return module;
   } catch (error) {
@@ -57,7 +60,7 @@ export const fetchAdminToken = async () => {
     });
   }
   console.log("Token fetched:", token);
-  return token.access_token;
+  return token;
 };
 
 export const getCTSessionId = async (cartId) => {
@@ -73,7 +76,7 @@ export const getCTSessionId = async (cartId) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken.access_token}`,
     },
     body: JSON.stringify({
       cart: {
@@ -158,7 +161,148 @@ export const getCartById = async (cartId) => {
   return await cart.json();
 };
 
-const MODE =  process.env.NODE_ENV;
+export const getCustomerStripeId = async (customerId) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/api/customers/${customerId}/stripe-id`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch customer Stripe ID");
+    }
+
+    const data = await response.json();
+    return data.stripeId;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getCustomerSubscription = async (customerId, token) => {
+  try {
+    if (customerId === undefined || customerId === null || customerId === "")
+      return [];
+
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch customer subscription");
+    }
+
+    return await response.json();
+  } catch {
+    return [];
+  }
+};
+
+export const cancelCustomerSubscription = async (
+  customerId,
+  subscriptionId,
+  token
+) => {
+  try {
+    const response = await fetch(
+      `${SUBSCRIPTIONS_API_URL}/${customerId}/${subscriptionId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to cancel subscription");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const patchCustomerSubscription = async (
+  customerId,
+  subscriptionId,
+  updateData,
+  token
+) => {
+  try {
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/advanced/${customerId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: subscriptionId,
+        params: {
+          items: [
+            {
+              id: updateData.subscriptionItemId,
+              quantity: updateData.quantity,
+            },
+          ],
+          proration_behavior: "none", // Can be "create_prorations", "always_invoice" or "none"
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update subscription");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCustomerSubscription = async (
+  customerId,
+  subscriptionId,
+  newProductId,
+  newVariantPosition,
+  newPriceId,
+  token
+) => {
+  try {
+    const response = await fetch(`${SUBSCRIPTIONS_API_URL}/${customerId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        subscriptionId: subscriptionId,
+        newSubscriptionVariantId: newProductId,
+        newSubscriptionVariantPosition: newVariantPosition,
+        newSubscriptionPriceId: newPriceId
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update subscription");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+const MODE = process.env.NODE_ENV;
 console.log({ MODE });
 export const DEV_REQUEST_HEADERS =
   MODE === "dev"

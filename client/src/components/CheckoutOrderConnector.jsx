@@ -34,7 +34,7 @@ export default function CheckoutOrderConnector({ cart, currency, language }) {
     >
       <div className="flex flex-row justify-between gap-5">
         <StripeComposableConnectorCheckout cart={cart} />
-        <div className="bg-black w-4/12">
+        <div className="w-4/12">
           {cart && cart.lineItems && <Cart cart={cart} currency={currency} />}
         </div>
       </div>
